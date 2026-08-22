@@ -3,152 +3,260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AssMat Flow — Gestion Assistante Maternelle</title>
+  <title>AssMat Flow — Dark Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-light: #eeef2;
-      --primary-hover: #4f46e5;
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
+      --bg: #090a0f;
+      --surface: #12151e;
+      --surface-card: #181c28;
+      --surface-hover: #1f2434;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: #6366f1;
+      
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
       --success: #10b981;
-      --success-bg: #ecfdf5;
+      --success-bg: rgba(16, 185, 129, 0.12);
       --warning: #f59e0b;
-      --danger: #ef4444;
-      --danger-bg: #fef2f2;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      --danger: #f43f5e;
+      --danger-bg: rgba(244, 63, 94, 0.12);
+      
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text-main); padding: 1.5rem; max-width: 1100px; margin: 0 auto; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.06) 0%, transparent 40%);
+    }
 
     /* Header */
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #818cf8, #4f46e5); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-    header h1 { font-size: 1.4rem; font-weight: 800; tracking: -0.02em; color: var(--text-main); }
-    header p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .brand { display: flex; align-items: center; gap: 1rem; }
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; color: #fff; }
+    header p { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Selecteur Enfant Toolbar */
+    /* Child Selector Bar */
     .child-selector-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--surface);
-      padding: 0.75rem 1.25rem;
-      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-lg);
       margin-bottom: 1.5rem;
       border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
     }
     .child-selector-wrapper { display: flex; align-items: center; gap: 0.75rem; }
     .child-selector-bar select {
-      background: #f1f5f9;
+      background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      font-weight: 700;
+      font-weight: 600;
       padding: 0.5rem 1rem;
-      color: var(--primary-hover);
+      color: #fff;
       cursor: pointer;
       outline: none;
     }
 
-    /* Navigation Tabs */
-    .nav-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: #e2e8f0; padding: 4px; border-radius: 12px; }
+    /* Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
     .tab-btn {
       flex: 1;
       background: transparent;
       border: none;
-      padding: 0.7rem 1rem;
-      border-radius: 9px;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
       cursor: pointer;
       font-weight: 600;
       font-size: 0.9rem;
       color: var(--text-muted);
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       text-align: center;
     }
-    .tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
+    .tab-btn.active {
+      background: var(--surface-card);
+      color: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
 
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Cartes & Containers */
+    /* Cards */
     .card {
       background: var(--surface);
-      border-radius: var(--radius);
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
-    .card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+    .card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
 
-    /* Formulaires & Grilles */
+    /* Forms */
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    
     input, select {
       width: 100%;
-      padding: 0.7rem 0.9rem;
+      padding: 0.75rem 1rem;
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       font-size: 0.95rem;
       font-weight: 500;
-      color: var(--text-main);
-      background: #fafafa;
+      color: #fff;
+      background: var(--surface-card);
       transition: all 0.2s ease;
       outline: none;
     }
-    input:focus, select:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
 
-    /* Boutons */
-    .btn { border: none; padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-danger { background: var(--danger-bg); color: var(--danger); }
-    .btn-danger:hover { background: #fee2e2; }
-    .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+    /* Buttons */
+    .btn {
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(244, 63, 94, 0.2);
+    }
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
 
-    /* Tableaux */
-    .table-container { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--surface); }
-    th { background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); text-align: center; }
-    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
+    /* Tables */
+    .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--surface-card); }
+    th {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background-color: #f8fafc; }
+    tr:hover td { background-color: var(--surface-hover); }
 
     /* Badges */
-    .badge { padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-    .badge-primary { background: #e0e7ff; color: var(--primary); }
-    .badge-success { background: var(--success-bg); color: var(--success); }
+    .badge { padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .badge-primary { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
-    /* Résumé financier & Pajemploi */
-    .summary-card { background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 1px solid #dbeafe; border-radius: var(--radius); padding: 1.25rem; margin-top: 1.25rem; }
-    .summary-line { display: flex; justify-content: space-between; margin-bottom: 0.6rem; font-size: 0.95rem; color: #475569; }
-    .summary-line.total { border-top: 2px dashed #bfdbfe; padding-top: 0.75rem; margin-top: 0.75rem; font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-    
-    .pajemploi-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 1rem; margin-top: 1rem; }
-    .pajemploi-box h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #166534; margin-bottom: 0.5rem; font-weight: 800; }
-    .pajemploi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; font-size: 0.85rem; color: #15803d; }
+    /* Summary Card */
+    .summary-card {
+      background: linear-gradient(135deg, rgba(24, 28, 40, 0.8), rgba(18, 21, 30, 0.9));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .summary-line { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--text-muted); }
+    .summary-line.total {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: 1rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .pajemploi-box {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      margin-top: 1.2rem;
+    }
+    .pajemploi-box h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--success); margin-bottom: 0.6rem; font-weight: 800; }
+    .pajemploi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; font-size: 0.9rem; color: #a7f3d0; }
 
     @media print {
-      body { background: white; padding: 0; }
+      body { background: white; color: black; padding: 0; }
       .no-print { display: none !important; }
-      .card { border: none; box-shadow: none; padding: 0; }
+      .card { border: none; box-shadow: none; padding: 0; background: white; }
       .tab-content { display: block !important; }
-      #fiche-paie-tab { display: block !important; }
+      td, th { color: black !important; }
     }
   </style>
 </head>
@@ -156,10 +264,10 @@
 
   <header class="no-print">
     <div class="brand">
-      <div class="brand-icon">👶</div>
+      <div class="brand-icon">⚡</div>
       <div>
         <h1>AssMat Flow</h1>
-        <p>Gestion intelligente d'assistance maternelle</p>
+        <p>Gestionnaire d'assistance maternelle</p>
       </div>
     </div>
   </header>
@@ -167,10 +275,10 @@
   <!-- BARRE DE SÉLECTION D'ENFANT -->
   <div class="child-selector-bar no-print">
     <div class="child-selector-wrapper">
-      <label style="margin:0;">Child profile :</label>
+      <label style="margin:0;">Enfant actif :</label>
       <select id="select-enfant" onchange="changerEnfantActif()"></select>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Ajouter un enfant</button>
+    <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Ajouter un profil</button>
   </div>
 
   <nav class="nav-tabs no-print">
@@ -183,7 +291,7 @@
   <!-- TAB 1 : PRÉSENCES -->
   <div id="presence" class="tab-content active">
     <div class="card no-print">
-      <h2>✨ Enregistrer une journée</h2>
+      <h2>Saisie de journée</h2>
       <div class="grid-2">
         <div class="form-group">
           <label>Date</label>
@@ -206,11 +314,11 @@
         </div>
       </div>
       <br>
-      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Valider la journée</button>
+      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Enregistrer la journée</button>
     </div>
 
     <div class="card">
-      <h2>📊 Suivi des présences du mois</h2>
+      <h2>Historique du mois</h2>
       <div class="table-container">
         <table id="table-presences">
           <thead>
@@ -233,7 +341,7 @@
   <!-- TAB 2 : CONTRAT -->
   <div id="contrat" class="tab-content">
     <div class="card">
-      <h2>⚙️ Paramètres du contrat</h2>
+      <h2>Paramètres du contrat</h2>
       <div class="grid-2">
         <div class="form-group">
           <label>Prénom de l'enfant</label>
@@ -270,7 +378,7 @@
       </div>
       <br>
       <div style="display:flex; gap: 1rem;">
-        <button class="btn btn-primary" style="flex:2;" onclick="sauvegarderContrat()">Enregistrer les modifications</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="sauvegarderContrat()">Sauvegarder le contrat</button>
         <button class="btn btn-danger" style="flex:1;" onclick="supprimerEnfantActif()">Supprimer ce profil</button>
       </div>
     </div>
@@ -280,14 +388,14 @@
   <div id="paie" class="tab-content">
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center;" class="no-print">
-        <h2>🧾 Fiche de Paie Mensuelle</h2>
-        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Exporter PDF / Imprimer</button>
+        <h2>Fiche de Paie Mensuelle</h2>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Exporter / Imprimer</button>
       </div>
 
       <div style="margin-top: 1rem;">
-        <div style="display: flex; gap: 2rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
-          <div><span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant</span><br><strong id="fp-enfant" style="font-size:1.1rem;"></strong></div>
-          <div><span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Employeur</span><br><strong id="fp-parent" style="font-size:1.1rem;"></strong></div>
+        <div style="display: flex; gap: 2rem; background: var(--surface-card); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
+          <div><span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant</span><br><strong id="fp-enfant" style="font-size:1.1rem; color:#fff;"></strong></div>
+          <div><span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Employeur</span><br><strong id="fp-parent" style="font-size:1.1rem; color:#fff;"></strong></div>
         </div>
 
         <div class="table-container">
@@ -308,11 +416,11 @@
           <div class="summary-line"><span>Salaire Net de base :</span><span id="fp-salaire-base">0.00 €</span></div>
           <div class="summary-line"><span>Total Heures Majorées / Compl. :</span><span id="fp-total-hs">0.00 €</span></div>
           <div class="summary-line"><span>Indemnités (Entretien & Repas) :</span><span id="fp-total-indemnites">0.00 €</span></div>
-          <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--primary);">0.00 €</span></div>
+          <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent);">0.00 €</span></div>
         </div>
 
         <div class="pajemploi-box no-print">
-          <h3>📌 Valeurs pour Déclaration Pajemploi</h3>
+          <h3>📌 Aide Déclaration Pajemploi</h3>
           <div class="pajemploi-grid">
             <div>Heures normales : <b id="pj-hn">0</b> h</div>
             <div>Heures sup/compl : <b id="pj-hs">0</b> h</div>
@@ -327,9 +435,9 @@
   <!-- TAB 4 : IMPÔTS -->
   <div id="impots" class="tab-content">
     <div class="card">
-      <h2>🏛️ Assistance Déclaration d'Impôts (Abattement ASSMAT)</h2>
+      <h2>Assistance Déclaration d'Impôts (Abattement ASSMAT)</h2>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.2rem;">
-        Calcul basé sur l'abattement forfaitaire spécifique (3h de SMIC horaire par jour de 8h+).
+        Calcul cumulé de l'abattement forfaitaire spécifique pour l'ensemble des enfants.
       </p>
 
       <div class="form-group" style="max-width: 250px;">
@@ -338,7 +446,7 @@
       </div>
 
       <div class="summary-card" style="margin-top: 1.5rem;">
-        <div class="summary-line"><span>Revenu Brut Total Estimé (Tous enfants) :</span><span id="imp-brut">0.00 €</span></div>
+        <div class="summary-line"><span>Revenu Brut Total Estimé :</span><span id="imp-brut">0.00 €</span></div>
         <div class="summary-line"><span>Abattement Forfaitaire Total Cumulé :</span><span id="imp-abattement" style="color: var(--danger); font-weight:700;">- 0.00 €</span></div>
         <div class="summary-line total"><span>NET IMPOSABLE À DÉCLARER :</span><span id="imp-net-imposable" style="color:var(--success);">0.00 €</span></div>
       </div>
@@ -420,7 +528,7 @@
       const repas = document.getElementById('input-repas').value;
       const contrat = enfants[activeEnfantId].contrat;
 
-      if (!date || !arrivee || !depart) return alert("Sélectionnez les heures d'arrivée et de départ.");
+      if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
 
       const [hA, mA] = arrivee.split(':').map(Number);
       const [hD, mD] = depart.split(':').map(Number);
@@ -494,7 +602,7 @@
       };
       sauvegarderGlobal();
       rafraichirSelecteurEnfants();
-      alert("Modifications enregistrées !");
+      alert("Contrat mis à jour !");
     }
 
     function calculerFicheDePaie() {
