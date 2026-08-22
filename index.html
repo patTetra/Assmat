@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistant Maîtrise AssMat</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 1rem; max-width: 1000px; margin: 0 auto; }
+    
+    header { text-align: center; margin-bottom: 1.5rem; }
+    header h1 { color: var(--primary); font-size: 1.8rem; }
+    
+    .nav-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
+    .tab-btn { background: #e2e8f0; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .tab-btn.active { background: var(--primary); color: white; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary); border-bottom: 2px solid var(--bg); padding-bottom: 0.5rem; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    input, select { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+    
+    button.btn-primary { background: var(--primary); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
+    button.btn-primary:hover { background: var(--primary-hover); }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--border); padding: 0.6rem; text-align: center; }
+    th { background: #f1f5f9; }
+
+    .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .summary-line { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .summary-line.total { font-weight: bold; font-size: 1.1rem; border-top: 1px solid #bfdbfe; padding-top: 0.5rem; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+      .card { border: none; box-shadow: none; padding: 0; }
+      .tab-content { display: block !important; }
+      #fiche-paie-tab { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="no-print">
+    <h1>👶 AssMat Manager</h1>
+    <p>Suivi de présence, Fiche de paie & Impôts</p>
+  </header>
+
+  <nav class="nav-tabs no-print">
+    <button class="tab-btn active" onclick="switchTab('presence')">📅 Présences</button>
+    <button class="tab-btn" onclick="switchTab('contrat')">⚙️ Contrat</button>
+    <button class="tab-btn" onclick="switchTab('paie')">📄 Fiche de Paie</button>
+    <button class="tab-btn" onclick="switchTab('impots')">🏛️ Impôts (Abattement)</button>
+  </nav>
+
+  <div id="presence" class="tab-content active">
+    <div class="card no-print">
+      <h2>Saisie du jour</h2>
+      <div class="grid-2">
+        <div>
+          <label>Date</label>
+          <input type="date" id="input-date">
+        </div>
+        <div>
+          <label>Arrivée</label>
+          <input type="time" id="input-arrivee" value="08:00">
+        </div>
+        <div>
+          <label>Départ</label>
+          <input type="time" id="input-depart" value="17:00">
+        </div>
+        <div>
+          <label>Repas pris ?</label>
+          <select id="input-repas">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+      </div>
+      <br>
+      <button class="btn-primary" onclick="ajouterPresence()">Enregistrer la journée</button>
+    </div>
+
+    <div class="card">
+      <h2>Historique du mois</h2>
+      <div style="overflow-x: auto;">
+        <table id="table-presences">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Horaires</th>
+              <th>Durée</th>
+              <th>H. Norm.</th>
+              <th>H. Comp.</th>
+              <th>H. Sup. (>45h)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="contrat" class="tab-content">
+    <div class="card">
+      <h2>Configuration du Contrat</h2>
+      <div class="grid-2">
+        <div>
+          <label>Nom de l'enfant</label>
+          <input type="text" id="cfg-enfant" value="Léo">
+        </div>
+        <div>
+          <label>Employeur (Parent)</label>
+          <input type="text" id="cfg-parent" value="M. et Mme Dupont">
+        </div>
+        <div>
+          <label>Tarif horaire Net (€)</label>
+          <input type="number" step="0.01" id="cfg-tarif-net" value="4.00">
+        </div>
+        <div>
+          <label>Majoration H. Sup (%)</label>
+          <input type="number" id="cfg-majoration" value="10">
+        </div>
+        <div>
+          <label>Indemnité d'entretien / jour (€)</label>
+          <input type="number" step="0.01" id="cfg-ie" value="3.50">
+        </div>
+        <div>
+          <label>Indemnité de repas / jour (€)</label>
+          <input type="number" step="0.01" id="cfg-ir" value="4.00">
+        </div>
+        <div>
+          <label>Heures mensualisées (Contrat)</label>
+          <input type="number" id="cfg-h-mensuel" value="120">
+        </div>
+        <div>
+          <label>Volume hebdo contractuel (h)</label>
+          <input type="number" id="cfg-h-hebdo" value="35">
+        </div>
+      </div>
+      <br>
+      <button class="btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+    </div>
+  </div>
+
+  <div id="paie" class="tab-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;" class="no-print">
+        <h2>Fiche de Paie Mensuelle</h2>
+        <button class="btn-primary" style="width: auto;" onclick="window.print()">🖨️ Imprimer / PDF</button>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <p><strong>Enfant :</strong> <span id="fp-enfant"></span> | <strong>Employeur :</strong> <span id="fp-parent"></span></p>
+        <hr style="margin: 0.5rem 0; border: 0; border-top: 1px solid var(--border);">
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Elément</th>
+              <th>Quantité / Volume</th>
+              <th>Taux</th>
+              <th>Total Net</th>
+            </tr>
+          </thead>
+          <tbody id="fp-body">
+            </tbody>
+        </table>
+
+        <div class="summary-box">
+          <div class="summary-line"><span>Salaire Net de base :</span><span id="fp-salaire-base">0.00 €</span></div>
+          <div class="summary-line"><span>Total Heures Comp. / Sup. :</span><span id="fp-total-hs">0.00 €</span></div>
+          <div class="summary-line"><span>Total Indemnités (Entretien + Repas) :</span><span id="fp-total-indemnites">0.00 €</span></div>
+          <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer">0.00 €</span></div>
+        </div>
+
+        <div style="margin-top: 1rem; background: #f8fafc; padding: 0.8rem; border-radius: 6px; font-size: 0.85rem;" class="no-print">
+          <strong>📌 Aide Déclaration Pajemploi :</strong>
+          <ul>
+            <li>Heures normales à déclarer : <b id="pj-hn">0</b> h</li>
+            <li>Heures complémentaires/supplémentaires : <b id="pj-hs">0</b> h</li>
+            <li>Jours d'activité : <b id="pj-jours">0</b> jours</li>
+            <li>Montant des indemnités : <b id="pj-indem">0.00</b> €</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="impots" class="tab-content">
+    <div class="card">
+      <h2>Déclaration d'Impôts (Régime Spécifique ASSMAT)</h2>
+      <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #475569;">
+        L'abattement est calculé sur la base de 3 fois le SMIC horaire par journée d'au moins 8h (ou au prorata si < 8h).
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <label>SMIC Horaire Brut appliqué (€)</label>
+          <input type="number" step="0.01" id="cfg-smic" value="11.65">
+        </div>
+      </div>
+
+      <div class="summary-box" style="margin-top: 1.5rem;">
+        <div class="summary-line"><span>Total Revenus Bruts (Salaire + Indemnités) :</span><span id="imp-brut">0.00 €</span></div>
+        <div class="summary-line"><span>Abattement Forfaitaire Total :</span><span id="imp-abattement" style="color: red;">- 0.00 €</span></div>
+        <div class="summary-line total"><span>Revenu Net Imposable à Déclarer :</span><span id="imp-net-imposable">0.00 €</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- ÉTAT ET DONNÉES ---
+    let contrat = JSON.parse(localStorage.getItem('assmat_contrat')) || {
+      enfant: 'Léo',
+      parent: 'M. et Mme Dupont',
+      tarifNet: 4.00,
+      majoration: 10,
+      ie: 3.50,
+      ir: 4.00,
+      hMensuel: 120,
+      hHebdo: 35,
+      smic: 11.65
+    };
+
+    let presences = JSON.parse(localStorage.getItem('assmat_presences')) || [];
+
+    // --- NAVIGATION ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      if(tabId === 'paie') calculerFicheDePaie();
+      if(tabId === 'impots') calculerImpots();
+    }
+
+    // --- LOGIQUE SAISIE ---
+    document.getElementById('input-date').valueAsDate = new Date();
+
+    function ajouterPresence() {
+      const date = document.getElementById('input-date').value;
+      const arrivee = document.getElementById('input-arrivee').value;
+      const depart = document.getElementById('input-depart').value;
+      const repas = document.getElementById('input-repas').value;
+
+      if (!date || !arrivee || !depart) return alert("Remplissez tous les champs.");
+
+      const [hA, mA] = arrivee.split(':').map(Number);
+      const [hD, mD] = depart.split(':').map(Number);
+      let duree = (hD + mD/60) - (hA + mA/60);
+      if (duree < 0) duree += 24;
+
+      // Calcul de la ventilation journalière simplifiée
+      let hNorm = Math.min(duree, contrat.hHebdo / 5);
+      let hComp = 0;
+      let hSup = 0;
+
+      if (duree > contrat.hHebdo / 5) {
+        let extra = duree - (contrat.hHebdo / 5);
+        if (duree > 9) { // Seuil usuel de 45h/semaine ramené à la journée (~9h/j)
+          hComp = 9 - (contrat.hHebdo / 5);
+          hSup = duree - 9;
+        } else {
+          hComp = extra;
+        }
+      }
+
+      presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      sauvegarderPresences();
+      afficherPresences();
+    }
+
+    function supprimerPresence(id) {
+      presences = presences.filter(p => p.id !== id);
+      sauvegarderPresences();
+      afficherPresences();
+    }
+
+    function afficherPresences() {
+      const tbody = document.querySelector('#table-presences tbody');
+      tbody.innerHTML = '';
+      presences.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.date}</td>
+            <td>${p.arrivee} - ${p.depart}</td>
+            <td>${p.duree.toFixed(2)}h</td>
+            <td>${p.hNorm.toFixed(2)}h</td>
+            <td>${p.hComp.toFixed(2)}h</td>
+            <td>${p.hSup.toFixed(2)}h</td>
+            <td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="supprimerPresence(${p.id})">❌</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    // --- CONTRAT ---
+    function chargerContratForm() {
+      document.getElementById('cfg-enfant').value = contrat.enfant;
+      document.getElementById('cfg-parent').value = contrat.parent;
+      document.getElementById('cfg-tarif-net').value = contrat.tarifNet;
+      document.getElementById('cfg-majoration').value = contrat.majoration;
+      document.getElementById('cfg-ie').value = contrat.ie;
+      document.getElementById('cfg-ir').value = contrat.ir;
+      document.getElementById('cfg-h-mensuel').value = contrat.hMensuel;
+      document.getElementById('cfg-h-hebdo').value = contrat.hHebdo;
+      document.getElementById('cfg-smic').value = contrat.smic;
+    }
+
+    function sauvegarderContrat() {
+      contrat = {
+        enfant: document.getElementById('cfg-enfant').value,
+        parent: document.getElementById('cfg-parent').value,
+        tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value),
+        majoration: parseFloat(document.getElementById('cfg-majoration').value),
+        ie: parseFloat(document.getElementById('cfg-ie').value),
+        ir: parseFloat(document.getElementById('cfg-ir').value),
+        hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value),
+        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value),
+        smic: parseFloat(document.getElementById('cfg-smic').value)
+      };
+      localStorage.setItem('assmat_contrat', JSON.stringify(contrat));
+      alert("Contrat mis à jour !");
+    }
+
+    // --- FICHE DE PAIE ---
+    function calculerFicheDePaie() {
+      document.getElementById('fp-enfant').innerText = contrat.enfant;
+      document.getElementById('fp-parent').innerText = contrat.parent;
+
+      let totHComp = presences.reduce((acc, p) => acc + p.hComp, 0);
+      let totHSup = presences.reduce((acc, p) => acc + p.hSup, 0);
+      let nbJours = presences.length;
+      let nbRepas = presences.filter(p => p.repas === 'oui').length;
+
+      let salaireBase = contrat.hMensuel * contrat.tarifNet;
+      let montantHComp = totHComp * contrat.tarifNet;
+      let tarifHSup = contrat.tarifNet * (1 + contrat.majoration / 100);
+      let montantHSup = totHSup * tarifHSup;
+      
+      let totalIE = nbJours * contrat.ie;
+      let totalIR = nbRepas * contrat.ir;
+      let totalIndem = totalIE + totalIR;
+
+      let netAPayer = salaireBase + montantHComp + montantHSup + totalIndem;
+
+      const body = document.getElementById('fp-body');
+      body.innerHTML = `
+        <tr><td>Heures Mensualisées (Base)</td><td>${contrat.hMensuel} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td>${salaireBase.toFixed(2)} €</td></tr>
+        <tr><td>Heures Complémentaires</td><td>${totHComp.toFixed(2)} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td>${montantHComp.toFixed(2)} €</td></tr>
+        <tr><td>Heures Supplémentaires</td><td>${totHSup.toFixed(2)} h</td><td>${tarifHSup.toFixed(2)} €</td><td>${montantHSup.toFixed(2)} €</td></tr>
+        <tr><td>Indemnités d'Entretien</td><td>${nbJours} jours</td><td>${contrat.ie.toFixed(2)} €</td><td>${totalIE.toFixed(2)} €</td></tr>
+        <tr><td>Indemnités de Repas</td><td>${nbRepas} repas</td><td>${contrat.ir.toFixed(2)} €</td><td>${totalIR.toFixed(2)} €</td></tr>
+      `;
+
+      document.getElementById('fp-salaire-base').innerText = salaireBase.toFixed(2) + ' €';
+      document.getElementById('fp-total-hs').innerText = (montantHComp + montantHSup).toFixed(2) + ' €';
+      document.getElementById('fp-total-indemnites').innerText = totalIndem.toFixed(2) + ' €';
+      document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
+
+      // Pajemploi
+      document.getElementById('pj-hn').innerText = contrat.hMensuel;
+      document.getElementById('pj-hs').innerText = (totHComp + totHSup).toFixed(0);
+      document.getElementById('pj-jours').innerText = nbJours;
+      document.getElementById('pj-indem').innerText = totalIndem.toFixed(2);
+    }
+
+    // --- CALCUL IMPÔTS ---
+    function calculerImpots() {
+      let totalBrutEstime = 0;
+      let totalAbattement = 0;
+
+      // Un salaire net est converti approximativement en brut (ratio standard ~1.28)
+      const ratioNetToBrut = 1.28;
+
+      presences.forEach(p => {
+        let paieJourNet = (p.duree * contrat.tarifNet) + contrat.ie + (p.repas === 'oui' ? contrat.ir : 0);
+        let paieJourBrut = paieJourNet * ratioNetToBrut;
+        totalBrutEstime += paieJourBrut;
+
+        // Règle abattement : 3 * SMIC horaire pour 8h+ (sinon au prorata)
+        let baseAbattementJour = 3 * contrat.smic;
+        if (p.duree < 8) {
+          totalAbattement += baseAbattementJour * (p.duree / 8);
+        } else {
+          totalAbattement += baseAbattementJour;
+        }
+      });
+
+      let netImposable = Math.max(0, totalBrutEstime - totalAbattement);
+
+      document.getElementById('imp-brut').innerText = totalBrutEstime.toFixed(2) + ' €';
+      document.getElementById('imp-abattement').innerText = '- ' + totalAbattement.toFixed(2) + ' €';
+      document.getElementById('imp-net-imposable').innerText = netImposable.toFixed(2) + ' €';
+    }
+
+    function sauvegarderPresences() {
+      localStorage.setItem('assmat_presences', JSON.stringify(presences));
+    }
+
+    // Initialisation
+    chargerContratForm();
+    afficherPresences();
+  </script>
+</body>
+</html>
