@@ -19,9 +19,22 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 1rem; max-width: 1000px; margin: 0 auto; }
     
-    header { text-align: center; margin-bottom: 1.5rem; }
+    header { text-align: center; margin-bottom: 1rem; }
     header h1 { color: var(--primary); font-size: 1.8rem; }
-    
+
+    /* Selector enfant */
+    .child-selector-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e0e7ff;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .child-selector-bar select { width: auto; font-weight: bold; padding: 0.4rem 0.8rem; }
+    .btn-sm { background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
     .nav-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
     .tab-btn { background: #e2e8f0; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; }
     .tab-btn.active { background: var(--primary); color: white; }
@@ -61,8 +74,17 @@
 
   <header class="no-print">
     <h1>👶 AssMat Manager</h1>
-    <p>Suivi de présence, Fiche de paie & Impôts</p>
+    <p>Suivi multi-enfants, Fiche de paie & Impôts</p>
   </header>
+
+  <!-- BARRE DE SÉLECTION D'ENFANT -->
+  <div class="child-selector-bar no-print">
+    <div>
+      <label style="display:inline; margin-right: 0.5rem;">Enfant actif :</label>
+      <select id="select-enfant" onchange="changerEnfantActif()"></select>
+    </div>
+    <button class="btn-sm" onclick="ajouterNouvelEnfant()">➕ Ajouter un enfant</button>
+  </div>
 
   <nav class="nav-tabs no-print">
     <button class="tab-btn active" onclick="switchTab('presence')">📅 Présences</button>
@@ -71,6 +93,7 @@
     <button class="tab-btn" onclick="switchTab('impots')">🏛️ Impôts (Abattement)</button>
   </nav>
 
+  <!-- TAB 1 : SAISIE DES PRÉSENCES -->
   <div id="presence" class="tab-content active">
     <div class="card no-print">
       <h2>Saisie du jour</h2>
@@ -114,19 +137,20 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody><!-- Rempli en JS --></tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <!-- TAB 2 : PARAMÈTRES CONTRAT -->
   <div id="contrat" class="tab-content">
     <div class="card">
       <h2>Configuration du Contrat</h2>
       <div class="grid-2">
         <div>
-          <label>Nom de l'enfant</label>
-          <input type="text" id="cfg-enfant" value="Léo">
+          <label>Nom / Prénom de l'enfant</label>
+          <input type="text" id="cfg-enfant" value="">
         </div>
         <div>
           <label>Employeur (Parent)</label>
@@ -158,10 +182,14 @@
         </div>
       </div>
       <br>
-      <button class="btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+      <div style="display:flex; gap: 1rem;">
+        <button class="btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+        <button class="btn-primary" style="background:#ef4444;" onclick="supprimerEnfantActif()">Supprimer cet enfant</button>
+      </div>
     </div>
   </div>
 
+  <!-- TAB 3 : FICHE DE PAIE / PAJEMPLOI -->
   <div id="paie" class="tab-content">
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center;" class="no-print">
@@ -183,7 +211,8 @@
             </tr>
           </thead>
           <tbody id="fp-body">
-            </tbody>
+            <!-- Injecté par JS -->
+          </tbody>
         </table>
 
         <div class="summary-box">
@@ -206,43 +235,88 @@
     </div>
   </div>
 
+  <!-- TAB 4 : ASSISTANCE IMPÔTS -->
   <div id="impots" class="tab-content">
     <div class="card">
-      <h2>Déclaration d'Impôts (Régime Spécifique ASSMAT)</h2>
+      <h2>Déclaration d'Impôts Global Tous Enfants</h2>
       <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #475569;">
-        L'abattement est calculé sur la base de 3 fois le SMIC horaire par journée d'au moins 8h (ou au prorata si < 8h).
+        L'abattement regroupe la totalité des journées travaillées pour <strong>tous les enfants enregistrés</strong>.
       </p>
 
       <div class="grid-2">
         <div>
           <label>SMIC Horaire Brut appliqué (€)</label>
-          <input type="number" step="0.01" id="cfg-smic" value="11.65">
+          <input type="number" step="0.01" id="cfg-smic" value="11.65" onchange="calculerImpots()">
         </div>
       </div>
 
       <div class="summary-box" style="margin-top: 1.5rem;">
-        <div class="summary-line"><span>Total Revenus Bruts (Salaire + Indemnités) :</span><span id="imp-brut">0.00 €</span></div>
-        <div class="summary-line"><span>Abattement Forfaitaire Total :</span><span id="imp-abattement" style="color: red;">- 0.00 €</span></div>
-        <div class="summary-line total"><span>Revenu Net Imposable à Déclarer :</span><span id="imp-net-imposable">0.00 €</span></div>
+        <div class="summary-line"><span>Total Revenus Bruts Estimés (Tous Enfants) :</span><span id="imp-brut">0.00 €</span></div>
+        <div class="summary-line"><span>Abattement Forfaitaire Total Cumulé :</span><span id="imp-abattement" style="color: red;">- 0.00 €</span></div>
+        <div class="summary-line total"><span>Revenu Net Imposable Global à Déclarer :</span><span id="imp-net-imposable">0.00 €</span></div>
       </div>
     </div>
   </div>
 
   <script>
-    // --- ÉTAT ET DONNÉES ---
-    let contrat = JSON.parse(localStorage.getItem('assmat_contrat')) || {
-      enfant: 'Léo',
-      parent: 'M. et Mme Dupont',
-      tarifNet: 4.00,
-      majoration: 10,
-      ie: 3.50,
-      ir: 4.00,
-      hMensuel: 120,
-      hHebdo: 35,
-      smic: 11.65
+    // --- GESTION DES DONNÉES ENFANTS ---
+    let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
+      "leo": {
+        contrat: { enfant: 'Léo', parent: 'M. et Mme Dupont', tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        presences: []
+      }
     };
+    
+    let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
-    let presences = JSON.parse(localStorage.getItem('assmat_presences')) || [];
+    // Initialisation du sélecteur
+    function rafraichirSelecteurEnfants() {
+      const select = document.getElementById('select-enfant');
+      select.innerHTML = '';
+      Object.keys(enfants).forEach(id => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.innerText = enfants[id].contrat.enfant || id;
+        if (id === activeEnfantId) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function changerEnfantActif() {
+      activeEnfantId = document.getElementById('select-enfant').value;
+      localStorage.setItem('assmat_active_id', activeEnfantId);
+      chargerFormulaireContrat();
+      afficherPresences();
+    }
+
+    function ajouterNouvelEnfant() {
+      const prenom = prompt("Prénom de l'enfant :");
+      if (!prenom) return;
+      
+      const id = 'enf_' + Date.now();
+      enfants[id] = {
+        contrat: { enfant: prenom, parent: 'Parents de ' + prenom, tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        presences: []
+      };
+      
+      activeEnfantId = id;
+      sauvegarderGlobal();
+      rafraichirSelecteurEnfants();
+      chargerFormulaireContrat();
+      afficherPresences();
+    }
+
+    function supprimerEnfantActif() {
+      if (Object.keys(enfants).length <= 1) return alert("Impossible de supprimer le seul enfant restant.");
+      if (confirm(`Voulez-vous vraiment supprimer ${enfants[activeEnfantId].contrat.enfant} ?`)) {
+        delete enfants[activeEnfantId];
+        activeEnfantId = Object.keys(enfants)[0];
+        sauvegarderGlobal();
+        rafraichirSelecteurEnfants();
+        chargerFormulaireContrat();
+        afficherPresences();
+      }
+    }
 
     // --- NAVIGATION ---
     function switchTab(tabId) {
@@ -255,7 +329,7 @@
       if(tabId === 'impots') calculerImpots();
     }
 
-    // --- LOGIQUE SAISIE ---
+    // --- SAISIE DES PRÉSENCES ---
     document.getElementById('input-date').valueAsDate = new Date();
 
     function ajouterPresence() {
@@ -263,6 +337,7 @@
       const arrivee = document.getElementById('input-arrivee').value;
       const depart = document.getElementById('input-depart').value;
       const repas = document.getElementById('input-repas').value;
+      const contrat = enfants[activeEnfantId].contrat;
 
       if (!date || !arrivee || !depart) return alert("Remplissez tous les champs.");
 
@@ -271,36 +346,34 @@
       let duree = (hD + mD/60) - (hA + mA/60);
       if (duree < 0) duree += 24;
 
-      // Calcul de la ventilation journalière simplifiée
       let hNorm = Math.min(duree, contrat.hHebdo / 5);
-      let hComp = 0;
-      let hSup = 0;
+      let hComp = 0, hSup = 0;
 
       if (duree > contrat.hHebdo / 5) {
-        let extra = duree - (contrat.hHebdo / 5);
-        if (duree > 9) { // Seuil usuel de 45h/semaine ramené à la journée (~9h/j)
+        if (duree > 9) {
           hComp = 9 - (contrat.hHebdo / 5);
           hSup = duree - 9;
         } else {
-          hComp = extra;
+          hComp = duree - (contrat.hHebdo / 5);
         }
       }
 
-      presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
-      sauvegarderPresences();
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      sauvegarderGlobal();
       afficherPresences();
     }
 
     function supprimerPresence(id) {
-      presences = presences.filter(p => p.id !== id);
-      sauvegarderPresences();
+      enfants[activeEnfantId].presences = enfants[activeEnfantId].presences.filter(p => p.id !== id);
+      sauvegarderGlobal();
       afficherPresences();
     }
 
     function afficherPresences() {
       const tbody = document.querySelector('#table-presences tbody');
       tbody.innerHTML = '';
-      presences.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(p => {
+      const list = enfants[activeEnfantId].presences;
+      list.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(p => {
         tbody.innerHTML += `
           <tr>
             <td>${p.date}</td>
@@ -316,7 +389,8 @@
     }
 
     // --- CONTRAT ---
-    function chargerContratForm() {
+    function chargerFormulaireContrat() {
+      const contrat = enfants[activeEnfantId].contrat;
       document.getElementById('cfg-enfant').value = contrat.enfant;
       document.getElementById('cfg-parent').value = contrat.parent;
       document.getElementById('cfg-tarif-net').value = contrat.tarifNet;
@@ -325,11 +399,10 @@
       document.getElementById('cfg-ir').value = contrat.ir;
       document.getElementById('cfg-h-mensuel').value = contrat.hMensuel;
       document.getElementById('cfg-h-hebdo').value = contrat.hHebdo;
-      document.getElementById('cfg-smic').value = contrat.smic;
     }
 
     function sauvegarderContrat() {
-      contrat = {
+      enfants[activeEnfantId].contrat = {
         enfant: document.getElementById('cfg-enfant').value,
         parent: document.getElementById('cfg-parent').value,
         tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value),
@@ -337,15 +410,19 @@
         ie: parseFloat(document.getElementById('cfg-ie').value),
         ir: parseFloat(document.getElementById('cfg-ir').value),
         hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value),
-        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value),
-        smic: parseFloat(document.getElementById('cfg-smic').value)
+        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value)
       };
-      localStorage.setItem('assmat_contrat', JSON.stringify(contrat));
+      sauvegarderGlobal();
+      rafraichirSelecteurEnfants();
       alert("Contrat mis à jour !");
     }
 
     // --- FICHE DE PAIE ---
     function calculerFicheDePaie() {
+      const data = enfants[activeEnfantId];
+      const contrat = data.contrat;
+      const presences = data.presences;
+
       document.getElementById('fp-enfant').innerText = contrat.enfant;
       document.getElementById('fp-parent').innerText = contrat.parent;
 
@@ -379,33 +456,32 @@
       document.getElementById('fp-total-indemnites').innerText = totalIndem.toFixed(2) + ' €';
       document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
 
-      // Pajemploi
       document.getElementById('pj-hn').innerText = contrat.hMensuel;
       document.getElementById('pj-hs').innerText = (totHComp + totHSup).toFixed(0);
       document.getElementById('pj-jours').innerText = nbJours;
       document.getElementById('pj-indem').innerText = totalIndem.toFixed(2);
     }
 
-    // --- CALCUL IMPÔTS ---
+    // --- CALCUL IMPÔTS GLOBAL ---
     function calculerImpots() {
+      const smic = parseFloat(document.getElementById('cfg-smic').value) || 11.65;
       let totalBrutEstime = 0;
       let totalAbattement = 0;
-
-      // Un salaire net est converti approximativement en brut (ratio standard ~1.28)
       const ratioNetToBrut = 1.28;
 
-      presences.forEach(p => {
-        let paieJourNet = (p.duree * contrat.tarifNet) + contrat.ie + (p.repas === 'oui' ? contrat.ir : 0);
-        let paieJourBrut = paieJourNet * ratioNetToBrut;
-        totalBrutEstime += paieJourBrut;
+      Object.keys(enfants).forEach(id => {
+        const item = enfants[id];
+        item.presences.forEach(p => {
+          let paieJourNet = (p.duree * item.contrat.tarifNet) + item.contrat.ie + (p.repas === 'oui' ? item.contrat.ir : 0);
+          totalBrutEstime += paieJourNet * ratioNetToBrut;
 
-        // Règle abattement : 3 * SMIC horaire pour 8h+ (sinon au prorata)
-        let baseAbattementJour = 3 * contrat.smic;
-        if (p.duree < 8) {
-          totalAbattement += baseAbattementJour * (p.duree / 8);
-        } else {
-          totalAbattement += baseAbattementJour;
-        }
+          let baseAbattement = 3 * smic;
+          if (p.duree < 8) {
+            totalAbattement += baseAbattement * (p.duree / 8);
+          } else {
+            totalAbattement += baseAbattement;
+          }
+        });
       });
 
       let netImposable = Math.max(0, totalBrutEstime - totalAbattement);
@@ -415,12 +491,14 @@
       document.getElementById('imp-net-imposable').innerText = netImposable.toFixed(2) + ' €';
     }
 
-    function sauvegarderPresences() {
-      localStorage.setItem('assmat_presences', JSON.stringify(presences));
+    function sauvegarderGlobal() {
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+      localStorage.setItem('assmat_active_id', activeEnfantId);
     }
 
     // Initialisation
-    chargerContratForm();
+    rafraichirSelecteurEnfants();
+    chargerFormulaireContrat();
     afficherPresences();
   </script>
 </body>
