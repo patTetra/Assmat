@@ -51,7 +51,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header */
     header { 
       display: flex; 
       justify-content: space-between;
@@ -87,7 +86,6 @@
     }
     header p { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* PASTILLE DE SYNCHRONISATION (LED) */
     .sync-status-container {
       display: flex;
       align-items: center;
@@ -126,7 +124,6 @@
       to { opacity: 1; transform: scale(1.2); }
     }
 
-    /* SLIDER ENFANTS */
     .slider-container {
       position: relative;
       margin-bottom: 1.25rem;
@@ -155,9 +152,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
     }
     .slide-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -185,7 +179,6 @@
       border-radius: 10px;
     }
 
-    /* Navigation Tabs */
     .nav-tabs {
       display: flex;
       gap: 0.35rem;
@@ -224,7 +217,6 @@
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Cards & Forms */
     .card {
       background: var(--surface);
       border-radius: var(--radius-lg);
@@ -284,7 +276,6 @@
       cursor: pointer;
     }
 
-    /* Buttons */
     .btn {
       border: none;
       padding: 0.75rem 1.2rem;
@@ -303,7 +294,6 @@
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
     .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
 
-    /* CALENDRIER VUE iOS */
     .calendar-header {
       display: flex;
       justify-content: space-between;
@@ -393,7 +383,6 @@
       opacity: 0.4;
     }
 
-    /* Modals / Popups iOS */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -418,7 +407,6 @@
       overflow-y: auto;
     }
 
-    /* Semaine Type Accordion */
     details summary {
       cursor: pointer;
       font-weight: 700;
@@ -443,7 +431,6 @@
     .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
     .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
 
-    /* Tables */
     .table-container { 
       width: 100%;
       overflow-x: auto; 
@@ -457,14 +444,11 @@
 
     .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
     .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
 
-    /* Info Card Contacts */
     .info-group {
       background: var(--surface-card);
       border-radius: var(--radius-md);
@@ -824,11 +808,11 @@
         contrat: { 
           prenomEnfant: 'Léo', 
           nomEnfant: 'Dupont',
-          naissance: '2023-05-14',
+          naissance: '',
           sortiesVoiture: true,
           mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
           pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
-          urgence: { nom: 'Grand-Mère (Jeanne)', tel: '0699887766' },
+          urgence: { nom: '', tel: '' },
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
         },
         semaineType: {
@@ -845,6 +829,39 @@
       }
     };
     
+    // MIGRATION / NORMALISATION DES DONNÉES ANCIENNES POUR NE RIEN PERDRE
+    function normaliserEtMigrerDonnees() {
+      Object.keys(enfants).forEach(id => {
+        let c = enfants[id].contrat || {};
+
+        // Récupérer prénom/nom anciens formats si manquants
+        if(!c.prenomEnfant && c.prenom) c.prenomEnfant = c.prenom;
+        if(!c.nomEnfant && c.nom) c.nomEnfant = c.nom;
+
+        // Migrer anciens contacts simples si présents
+        if(!c.mere) {
+          c.mere = {
+            nom: c.nomEnfant || '',
+            prenom: c.parent1 || c.parent || '',
+            port: c.tel1 || c.telephone || '',
+            maison: '', bureau: ''
+          };
+        }
+        if(!c.pere) {
+          c.pere = {
+            nom: c.nomEnfant || '',
+            prenom: c.parent2 || '',
+            port: c.tel2 || '',
+            maison: '', bureau: ''
+          };
+        }
+        if(!c.urgence) c.urgence = { nom: '', tel: '' };
+
+        enfants[id].contrat = c;
+      });
+    }
+
+    normaliserEtMigrerDonnees();
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
     // ----- GITHUB API & MODAL PARAMETRES -----
@@ -910,6 +927,7 @@
           
           if(remoteEnfants && Object.keys(remoteEnfants).length > 0) {
             enfants = remoteEnfants;
+            normaliserEtMigrerDonnees();
             if(!enfants[activeEnfantId]) activeEnfantId = Object.keys(enfants)[0];
             localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
             
@@ -997,7 +1015,11 @@
         const enf = enfants[id];
         const c = enf.contrat;
         
-        let subParent = `${c.mere?.prenom || ''} & ${c.pere?.prenom || ''} ${c.mere?.nom || c.nomEnfant || ''}`.trim();
+        let subParent = `${c.mere?.prenom || ''} ${c.mere?.prenom && c.pere?.prenom ? '&' : ''} ${c.pere?.prenom || ''}`.trim();
+        if (!subParent) subParent = 'Parents non renseignés';
+
+        let prenomAffiche = c.prenomEnfant || c.prenom || 'Enfant';
+        let nomAffiche = c.nomEnfant || c.nom || '';
         let ageText = c.naissance ? ` (${calculerAge(c.naissance)})` : '';
 
         const slide = document.createElement('div');
@@ -1006,17 +1028,16 @@
         slide.innerHTML = `
           <div class="slide-header">
             <div>
-              <div class="slide-title">👶 ${c.prenomEnfant || 'Enfant'} ${c.nomEnfant || ''} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${subParent || 'Parents non renseignés'}</div>
+              <div class="slide-title">👶 ${prenomAffiche} ${nomAffiche} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
               <span class="badge badge-primary">${c.hHebdo || 0}h / sem</span>
-              ${c.sortiesVoiture ? '<span class="badge badge-success">🚗 Voix autorisée</span>' : '<span class="badge badge-warning">🚫 Voix non aut.</span>'}
             </div>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); flex-wrap:wrap; gap:0.5rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
             <span>Tarif: <b>${c.tarifNet || 0}€/h</b></span>
-            <span>Urgence: <b style="color:var(--danger);">${c.urgence?.tel || 'Non renseigné'}</b></span>
+            <span>Mensualisé: <b>${c.hMensuel || 0}h</b></span>
           </div>
         `;
         track.appendChild(slide);
@@ -1088,7 +1109,8 @@
 
     function supprimerEnfantActif() {
       if (Object.keys(enfants).length <= 1) return alert("Conservez au moins un profil.");
-      if (confirm(`Supprimer le profil de ${enfants[activeEnfantId].contrat.prenomEnfant} ?`)) {
+      let prenom = enfants[activeEnfantId].contrat.prenomEnfant || enfants[activeEnfantId].contrat.prenom || 'cet enfant';
+      if (confirm(`Supprimer le profil de ${prenom} ?`)) {
         delete enfants[activeEnfantId];
         activeEnfantId = Object.keys(enfants)[0];
         sauvegarderGlobal();
@@ -1360,8 +1382,8 @@
     function chargerFormulaireContrat() {
       const c = enfants[activeEnfantId].contrat || {};
       
-      document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || '';
-      document.getElementById('cfg-nom-enfant').value = c.nomEnfant || '';
+      document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || c.prenom || '';
+      document.getElementById('cfg-nom-enfant').value = c.nomEnfant || c.nom || '';
       document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
       document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
 
@@ -1434,7 +1456,9 @@
       const contrat = data.contrat;
       const presences = data.presences || [];
 
-      document.getElementById('fp-enfant').innerText = `${contrat.prenomEnfant || ''} ${contrat.nomEnfant || ''}`;
+      let prenom = contrat.prenomEnfant || contrat.prenom || '';
+      let nom = contrat.nomEnfant || contrat.nom || '';
+      document.getElementById('fp-enfant').innerText = `${prenom} ${nom}`.trim();
       
       let parentsStr = [];
       if(contrat.mere?.prenom) parentsStr.push(`Mme ${contrat.mere.prenom} ${contrat.mere.nom}`);
