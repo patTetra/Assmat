@@ -29,7 +29,7 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 117,
-      "hHebdo": 27,
+      "hHebdo": 48.75,
       "jHebdo": 3,
       "semainesAn": 52
     },
@@ -71,28 +71,28 @@
     "semaineType": {
       "0": {
         "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "1": {
-        "actif": false,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "actif": true,
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2": {
         "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "3": {
         "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "4": {
-        "actif": false,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "actif": true,
+        "arrivee": "07:15",
+        "depart": "13:00"
       },
       "5": {
         "actif": false,
