@@ -26,7 +26,9 @@
       "urgence": {
         "nom": "",
         "tel": ""
-      }
+      },
+      "jHebdo": 4,
+      "semainesAn": 52
     },
     "presences": [
       {
@@ -186,7 +188,9 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 120,
-      "hHebdo": 35
+      "hHebdo": 35,
+      "jHebdo": 4,
+      "semainesAn": 52
     },
     "presences": [],
     "semaineType": {
@@ -227,10 +231,6 @@
       }
     },
     "planningPrevu": {
-      "2026-09-16": {
-        "status": "absent",
-        "note": "Medecin"
-      },
       "2026-09-10": {
         "status": "prevu",
         "arrivee": "08:10",
@@ -315,6 +315,96 @@
         "status": "prevu",
         "arrivee": "08:10",
         "depart": "18:20"
+      },
+      "2026-10-01": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-02": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-05": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-06": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-08": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-09": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-12": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-13": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-15": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-16": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-19": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-20": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-22": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-23": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-26": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-27": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-29": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
+      },
+      "2026-10-30": {
+        "status": "prevu",
+        "arrivee": "08:10",
+        "depart": "18:20"
       }
     }
   },
@@ -347,7 +437,9 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 120,
-      "hHebdo": 35
+      "hHebdo": 35,
+      "jHebdo": 4,
+      "semainesAn": 52
     },
     "semaineType": {
       "0": {
