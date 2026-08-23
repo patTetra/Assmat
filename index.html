@@ -64,7 +64,9 @@
       margin-bottom: 1.25rem; 
     }
     .brand { display: flex; align-items: center; gap: 0.85rem; }
-    .brand-icon {
+    
+    /* Bouton Paramètres à la place de l'éclair */
+    .brand-icon-btn {
       width: 42px;
       height: 42px;
       background: var(--accent-gradient);
@@ -75,7 +77,15 @@
       font-size: 1.3rem;
       box-shadow: 0 4px 12px var(--accent-glow);
       flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .brand-icon-btn:active {
+      transform: scale(0.92);
+    }
+
     header h1 { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
       font-size: 1.35rem; 
@@ -93,6 +103,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      cursor: pointer;
     }
     .sync-badge.online { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
     .sync-badge.offline { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); border: 1px solid var(--border); }
@@ -342,7 +353,7 @@
       opacity: 0.4;
     }
 
-    /* Modal / Popup iOS */
+    /* Modals / Popups iOS */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -360,7 +371,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 400px;
+      max-width: 440px;
       padding: 1.25rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
@@ -423,14 +434,15 @@
 
   <header class="no-print">
     <div class="brand">
-      <div class="brand-icon">⚡</div>
+      <!-- Bouton Réglages à la place de l'éclair -->
+      <button class="brand-icon-btn" onclick="ouvrirModalConfigGitHub()" title="Paramètres d'application & Synchro">⚙️</button>
       <div>
         <h1>AssMat Flow</h1>
         <p>Suivi d'assistance maternelle</p>
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:0.5rem;">
-      <span id="sync-status" class="sync-badge offline">Local</span>
+      <span id="sync-status" class="sync-badge offline" onclick="ouvrirModalConfigGitHub()">Local</span>
       <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
     </div>
   </header>
@@ -444,7 +456,7 @@
   <nav class="nav-tabs no-print">
     <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning Mois</button>
-    <button class="tab-btn" onclick="switchTab('contrat')">⚙️ Contrat & Synchro</button>
+    <button class="tab-btn" onclick="switchTab('contrat')">📜 Contrat Enfant</button>
     <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
   </nav>
 
@@ -527,35 +539,8 @@
     </div>
   </div>
 
-  <!-- TAB 3 : CONTRAT & SYNCHRO GITHUB -->
+  <!-- TAB 3 : CONTRAT ENFANT ACTIF -->
   <div id="contrat" class="tab-content">
-    <div class="card">
-      <h2>☁️ Configuration Synchro GitHub</h2>
-      <div class="grid-2">
-        <div class="form-group">
-          <label>Utilisateur GitHub</label>
-          <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
-        </div>
-        <div class="form-group">
-          <label>Nom du Dépôt (Repo)</label>
-          <input type="text" id="gh-repo" placeholder="ex: assmat-flow">
-        </div>
-        <div class="form-group">
-          <label>Fichier JSON</label>
-          <input type="text" id="gh-path" placeholder="data.json" value="data.json">
-        </div>
-        <div class="form-group">
-          <label>Clé API / Token (PAT)</label>
-          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
-        </div>
-      </div>
-      <br>
-      <div style="display:flex; gap:0.5rem;">
-        <button class="btn btn-primary btn-sm" onclick="sauvegarderConfigGitHub()">Enregistrer Config</button>
-        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Télécharger depuis GitHub</button>
-      </div>
-    </div>
-
     <div class="card">
       <h2>Paramètres du contrat</h2>
       <div class="grid-2">
@@ -638,6 +623,37 @@
     </div>
   </div>
 
+  <!-- MODAL CONFIGURATION GITHUB (Paramètres Globaux) -->
+  <div class="modal-overlay" id="modal-config-gh">
+    <div class="modal">
+      <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Utilisateur GitHub</label>
+          <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
+        </div>
+        <div class="form-group">
+          <label>Nom du Dépôt (Repo)</label>
+          <input type="text" id="gh-repo" placeholder="ex: assmat-flow">
+        </div>
+        <div class="form-group">
+          <label>Fichier JSON</label>
+          <input type="text" id="gh-path" placeholder="data.json" value="data.json">
+        </div>
+        <div class="form-group">
+          <label>Clé API / Token (PAT)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+      </div>
+      <br>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">Enregistrer & Synchroniser</button>
+        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
+        <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL EDITION JOURNEE (iOS Style) -->
   <div class="modal-overlay" id="modal-day">
     <div class="modal">
@@ -678,7 +694,7 @@
 
     let currentDateState = new Date();
     let selectedIsoDate = null;
-    let githubFileSha = null; // Stocke le hash du fichier sur GitHub pour permettre la mise à jour
+    let githubFileSha = null;
 
     let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
       user: '',
@@ -706,7 +722,16 @@
     
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
-    // ----- GITHUB API -----
+    // ----- GITHUB API & MODAL PARAMETRES -----
+    function ouvrirModalConfigGitHub() {
+      chargerFormulaireGitHub();
+      document.getElementById('modal-config-gh').classList.add('active');
+    }
+
+    function fermerModalConfigGitHub() {
+      document.getElementById('modal-config-gh').classList.remove('active');
+    }
+
     function majStatutSync(status, texte) {
       const badge = document.getElementById('sync-status');
       badge.className = `sync-badge ${status}`;
@@ -732,7 +757,7 @@
       };
       localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
       majStatutSync('online', 'GitHub Configuré');
-      alert("Configuration GitHub enregistrée !");
+      fermerModalConfigGitHub();
       chargerDepuisGitHub();
     }
 
@@ -751,7 +776,6 @@
           const data = await res.json();
           githubFileSha = data.sha;
           
-          // Décodage UTF-8 sécurisé depuis base64
           const jsonString = decodeURIComponent(escape(atob(data.content)));
           const remoteEnfants = JSON.parse(jsonString);
           
@@ -764,7 +788,6 @@
             majStatutSync('online', 'GitHub Synchro');
           }
         } else if(res.status === 404) {
-          // Fichier inexistant, il sera créé à la première sauvegarde
           majStatutSync('online', 'GitHub (Nouveau)');
         } else {
           majStatutSync('offline', 'Erreur GH');
@@ -781,7 +804,6 @@
       majStatutSync('syncing', 'Sauvegarde GH...');
       const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
       
-      // Encodage UTF-8 sécurisé vers base64
       const jsonString = JSON.stringify(enfants, null, 2);
       const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
