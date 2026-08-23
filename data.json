@@ -550,8 +550,9 @@
       },
       "2026-11-12": {
         "status": "prevu",
-        "arrivee": "08:10",
-        "depart": "18:20"
+        "arrivee": "09:10",
+        "depart": "18:20",
+        "note": ""
       },
       "2026-11-13": {
         "status": "prevu",
