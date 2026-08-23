@@ -456,12 +456,172 @@
       gap: 0.4rem;
     }
 
+    .print-only { display: none; }
+
+    /* ==========================================================================
+       STYLES SPÉCIFIQUES D'IMPRESSION (PDF & IMPRIMANTE A4)
+       ========================================================================== */
     @media print {
-      body { background: white; color: black; padding: 0; }
-      .no-print { display: none !important; }
-      .card { border: none; box-shadow: none; padding: 0; background: white; }
-      .tab-content { display: block !important; }
-      td, th { color: black !important; }
+      @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-family: 'Helvetica Neue', Arial, sans-serif !important;
+        font-size: 11pt !important;
+      }
+
+      /* Cacher toute l'UI web */
+      header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #presence, #planning, #contrat {
+        display: none !important;
+      }
+
+      /* Afficher proprement l'onglet Paie */
+      #paie {
+        display: block !important;
+      }
+
+      .print-only {
+        display: block !important;
+      }
+
+      .card {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* En-tête de la Fiche de Paie */
+      .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #000;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+
+      .print-header-title h1 {
+        font-size: 18pt;
+        font-weight: bold;
+        color: #000;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .print-header-title p {
+        font-size: 10pt;
+        color: #444;
+      }
+
+      .print-grid-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .print-box {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px 12px;
+        background: #fafafa !important;
+      }
+
+      .print-box-title {
+        font-size: 8pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 6px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 2px;
+      }
+
+      .print-box-content {
+        font-size: 10pt;
+        color: #000;
+        line-height: 1.4;
+      }
+
+      /* Table de paie */
+      .table-container {
+        border: 1px solid #000 !important;
+        border-radius: 0 !important;
+        margin-bottom: 20px !important;
+      }
+
+      table {
+        background: #fff !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+
+      th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+        border-right: 1px solid #ccc !important;
+        font-size: 9pt !important;
+        padding: 8px !important;
+      }
+
+      td {
+        color: #000 !important;
+        border-bottom: 1px solid #eee !important;
+        border-right: 1px solid #eee !important;
+        font-size: 10pt !important;
+        padding: 8px !important;
+      }
+
+      th:last-child, td:last-child {
+        border-right: none !important;
+      }
+
+      /* Récapitulatif */
+      .summary-card {
+        background: #fff !important;
+        border: none !important;
+        padding: 0 !important;
+        margin-top: 10px !important;
+        width: 60%;
+        margin-left: auto;
+      }
+
+      .summary-line {
+        color: #000 !important;
+        font-size: 10pt !important;
+        margin-bottom: 6px !important;
+      }
+
+      .summary-line.total {
+        border-top: 2px solid #000 !important;
+        padding-top: 8px !important;
+        margin-top: 8px !important;
+        font-size: 12pt !important;
+        color: #000 !important;
+      }
+
+      .print-signatures {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 9pt;
+      }
+
+      .print-signature-box {
+        width: 45%;
+        border-top: 1px solid #aaa;
+        padding-top: 5px;
+        min-height: 70px;
+      }
     }
   </style>
 </head>
@@ -566,7 +726,7 @@
     </div>
 
     <div class="card">
-      details>
+      <details>
         <summary>⚙️ Configurer la semaine type de base</summary>
         <div class="week-grid" id="week-schedule-grid"></div>
         <br>
@@ -678,18 +838,32 @@
   <!-- TAB 4 : FICHE DE PAIE -->
   <div id="paie" class="tab-content">
     <div class="card">
+      
+      <!-- En-tête uniquement visible à l'impression -->
+      <div class="print-only print-header">
+        <div class="print-header-title">
+          <h1>Fiche de Paie</h1>
+          <p>Relevé mensuel d'accueil de l'enfant</p>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11pt; font-weight: bold;" id="fp-print-date"></div>
+          <div style="font-size: 9pt; color: #666;">Document généré via AssMat Flow</div>
+        </div>
+      </div>
+
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;" class="no-print">
         <h2 style="margin:0;">Fiche de Paie</h2>
         <div style="display:flex; align-items:center; gap:0.5rem;">
           <div class="form-group" style="margin:0;">
             <input type="month" id="fp-select-mois" onchange="calculerFicheDePaie()" style="padding:0.4rem 0.6rem; font-size:0.85rem;">
           </div>
-          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Imprimer / PDF</button>
         </div>
       </div>
 
+      <!-- Bloc d'information Employeur / Enfant (Adapté Web + Print) -->
       <div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
+        <div class="no-print" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
           <div>
             <span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Période de Paie</span><br>
             <strong id="fp-periode" style="font-size:0.95rem; color:var(--accent-light);"></strong>
@@ -701,14 +875,29 @@
           </div>
         </div>
 
+        <!-- Structure d'informations dédiée à l'impression -->
+        <div class="print-only print-grid-info">
+          <div class="print-box">
+            <div class="print-box-title">Période & Objet</div>
+            <div class="print-box-content">
+              Mois de paie : <strong id="fp-print-periode"></strong><br>
+              Enfant accueilli : <strong id="fp-print-enfant"></strong>
+            </div>
+          </div>
+          <div class="print-box">
+            <div class="print-box-title">Employeur (Parents)</div>
+            <div class="print-box-content" id="fp-print-parents"></div>
+          </div>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th>Élément</th>
-                <th>Vol.</th>
-                <th>Taux</th>
-                <th>Total Net</th>
+                <th style="text-align:left;">Élément</th>
+                <th>Volume</th>
+                <th>Taux Net</th>
+                <th style="text-align:right;">Total Net</th>
               </tr>
             </thead>
             <tbody id="fp-body"></tbody>
@@ -721,6 +910,17 @@
           <div class="summary-line"><span>Indemnités (IE + IR) :</span><span id="fp-total-indemnites">0.00 €</span></div>
           <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent-light);">0.00 €</span></div>
         </div>
+
+        <!-- Bloc Signature pour l'impression -->
+        <div class="print-only print-signatures">
+          <div class="print-signature-box">
+            Signature Assistante Maternelle :
+          </div>
+          <div class="print-signature-box">
+            Signature Parent / Employeur :
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -825,7 +1025,6 @@
       }
     };
     
-    // MIGRATION / NORMALISATION DES DONNÉES ET PURGE DES ANCIENNES ABSENCES
     function normaliserEtMigrerDonnees() {
       Object.keys(enfants).forEach(id => {
         let c = enfants[id].contrat || {};
@@ -866,12 +1065,10 @@
     normaliserEtMigrerDonnees();
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
-    // INITIALISATION SÉLECTEUR DE MOIS PAIE
     const today = new Date();
     const defaultMonthVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('fp-select-mois').value = defaultMonthVal;
 
-    // ----- GITHUB API & MODAL PARAMETRES -----
     function ouvrirModalConfigGitHub() {
       chargerFormulaireGitHub();
       document.getElementById('modal-config-gh').classList.add('active');
@@ -1013,7 +1210,6 @@
       }
     }
 
-    // ----- UI & APPLICATION LOGIC -----
     function rendreSlider() {
       const track = document.getElementById('slider-track');
       const dots = document.getElementById('slider-dots');
@@ -1310,7 +1506,9 @@
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if(activeBtn) activeBtn.classList.add('active');
 
       if(tabId === 'paie') calculerFicheDePaie();
       if(tabId === 'planning') {
@@ -1387,25 +1585,21 @@
       document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
       document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
 
-      // Mère
       document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
       document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
       document.getElementById('cfg-mere-port').value = c.mere?.port || '';
       document.getElementById('cfg-mere-maison').value = c.mere?.maison || '';
       document.getElementById('cfg-mere-bureau').value = c.mere?.bureau || '';
 
-      // Père
       document.getElementById('cfg-pere-nom').value = c.pere?.nom || '';
       document.getElementById('cfg-pere-prenom').value = c.pere?.prenom || '';
       document.getElementById('cfg-pere-port').value = c.pere?.port || '';
       document.getElementById('cfg-pere-maison').value = c.pere?.maison || '';
       document.getElementById('cfg-pere-bureau').value = c.pere?.bureau || '';
 
-      // Urgence
       document.getElementById('cfg-urgence-nom').value = c.urgence?.nom || '';
       document.getElementById('cfg-urgence-tel').value = c.urgence?.tel || '';
 
-      // Tarifs
       document.getElementById('cfg-tarif-net').value = c.tarifNet || 4.00;
       document.getElementById('cfg-majoration').value = c.majoration || 10;
       document.getElementById('cfg-ie').value = c.ie || 3.50;
@@ -1456,7 +1650,6 @@
       const contrat = data.contrat;
       const presencesGlobales = data.presences || [];
 
-      // Récupération de la période sélectionnée (YYYY-MM)
       const selectedMonthStr = document.getElementById('fp-select-mois').value;
       let monthTitle = "Mois non défini";
 
@@ -1464,19 +1657,30 @@
         const [annee, mois] = selectedMonthStr.split('-');
         monthTitle = `${MOIS[parseInt(mois, 10) - 1]} ${annee}`;
       }
+      
+      // Affectation aux zones UI Web & zones Print
       document.getElementById('fp-periode').innerText = monthTitle;
+      document.getElementById('fp-print-periode').innerText = monthTitle;
+      
+      const dateEdition = new Date().toLocaleDateString('fr-FR');
+      document.getElementById('fp-print-date').innerText = `Éditée le : ${dateEdition}`;
 
-      // Filtrer les présences appartenant UNIQUEMENT au mois choisi
       const presencesDuMois = presencesGlobales.filter(p => p.date && p.date.startsWith(selectedMonthStr));
 
       let prenom = contrat.prenomEnfant || contrat.prenom || '';
       let nom = contrat.nomEnfant || contrat.nom || '';
-      document.getElementById('fp-enfant').innerText = `${prenom} ${nom}`.trim();
+      const nomCompletEnfant = `${prenom} ${nom}`.trim();
+
+      document.getElementById('fp-enfant').innerText = nomCompletEnfant;
+      document.getElementById('fp-print-enfant').innerText = nomCompletEnfant;
       
       let parentsStr = [];
       if(contrat.mere?.prenom) parentsStr.push(`Mme ${contrat.mere.prenom} ${contrat.mere.nom}`);
       if(contrat.pere?.prenom) parentsStr.push(`M. ${contrat.pere.prenom} ${contrat.pere.nom}`);
-      document.getElementById('fp-parent').innerText = parentsStr.join(' / ') || 'Parents';
+      
+      const parentLabel = parentsStr.join(' / ') || 'Non renseigné';
+      document.getElementById('fp-parent').innerText = parentLabel;
+      document.getElementById('fp-print-parents').innerText = parentLabel;
 
       let totHComp = presencesDuMois.reduce((acc, p) => acc + (p.hComp || 0), 0);
       let totHSup = presencesDuMois.reduce((acc, p) => acc + (p.hSup || 0), 0);
@@ -1496,11 +1700,11 @@
 
       const body = document.getElementById('fp-body');
       body.innerHTML = `
-        <tr><td>Heures Base</td><td>${contrat.hMensuel}h</td><td>${contrat.tarifNet.toFixed(2)}€</td><td><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
-        <tr><td>H. Compl.</td><td>${totHComp.toFixed(2)}h</td><td>${contrat.tarifNet.toFixed(2)}€</td><td><strong>${montantHComp.toFixed(2)} €</strong></td></tr>
-        <tr><td>H. Sup.</td><td>${totHSup.toFixed(2)}h</td><td>${tarifHSup.toFixed(2)}€</td><td><strong>${montantHSup.toFixed(2)} €</strong></td></tr>
-        <tr><td>Indem. Entretien</td><td>${nbJours}j</td><td>${contrat.ie.toFixed(2)}€</td><td><strong>${totalIE.toFixed(2)} €</strong></td></tr>
-        <tr><td>Indem. Repas</td><td>${nbRepas}r</td><td>${contrat.ir.toFixed(2)}€</td><td><strong>${totalIR.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Salaire de base mensualisé</td><td>${contrat.hMensuel} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Heures complémentaires</td><td>${totHComp.toFixed(2)} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHComp.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Heures supplémentaires (+${contrat.majoration}%)</td><td>${totHSup.toFixed(2)} h</td><td>${tarifHSup.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHSup.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Indemnités d'entretien</td><td>${nbJours} j</td><td>${contrat.ie.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIE.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Indemnités de repas</td><td>${nbRepas} r</td><td>${contrat.ir.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIR.toFixed(2)} €</strong></td></tr>
       `;
 
       document.getElementById('fp-salaire-base').innerText = salaireBase.toFixed(2) + ' €';
