@@ -85,6 +85,19 @@
     }
     header p { font-size: 0.8rem; color: var(--text-muted); }
 
+    .sync-badge {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .sync-badge.online { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .sync-badge.offline { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); border: 1px solid var(--border); }
+    .sync-badge.syncing { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
+
     /* SLIDER ENFANTS */
     .slider-container {
       position: relative;
@@ -261,7 +274,6 @@
       gap: 4px;
     }
     
-    /* CASE CALENDRIER & RÈGLES LARGEUR ÉGALE */
     .cal-day {
       background: var(--surface-card);
       border: 1px solid var(--border);
@@ -279,14 +291,12 @@
     .cal-day:active { transform: scale(0.95); }
     .cal-day.empty { background: transparent; border: none; cursor: default; }
     
-    /* WEEKEND GRISE */
     .cal-day.is-weekend {
       background: rgba(15, 23, 42, 0.45);
       border-color: rgba(255, 255, 255, 0.04);
       opacity: 0.75;
     }
     
-    /* VARIANTES DE COULEURS DE CASE */
     .cal-day.has-presence {
       background: rgba(99, 102, 241, 0.18);
       border: 1px solid rgba(129, 140, 248, 0.4);
@@ -300,7 +310,6 @@
 
     .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
     
-    /* HEURES L'UNE AU-DESSUS DE L'AUTRE */
     .cal-day-badge-stack {
       display: flex;
       flex-direction: column;
@@ -356,7 +365,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* Semaine Type Accordion & Styles Week-end */
+    /* Semaine Type Accordion */
     details summary {
       cursor: pointer;
       font-weight: 700;
@@ -420,7 +429,10 @@
         <p>Suivi d'assistance maternelle</p>
       </div>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <span id="sync-status" class="sync-badge offline">Local</span>
+      <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
+    </div>
   </header>
 
   <!-- SLIDER DES ENFANTS -->
@@ -432,7 +444,7 @@
   <nav class="nav-tabs no-print">
     <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning Mois</button>
-    <button class="tab-btn" onclick="switchTab('contrat')">⚙️ Contrat</button>
+    <button class="tab-btn" onclick="switchTab('contrat')">⚙️ Contrat & Synchro</button>
     <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
   </nav>
 
@@ -488,7 +500,6 @@
 
   <!-- TAB 2 : PLANNING TYPES iOS DU MOIS -->
   <div id="planning" class="tab-content">
-    
     <div class="card">
       <div class="calendar-header">
         <button class="btn btn-secondary btn-sm" onclick="changerMoisPlanning(-1)">◀</button>
@@ -516,8 +527,35 @@
     </div>
   </div>
 
-  <!-- TAB 3 : CONTRAT -->
+  <!-- TAB 3 : CONTRAT & SYNCHRO GITHUB -->
   <div id="contrat" class="tab-content">
+    <div class="card">
+      <h2>☁️ Configuration Synchro GitHub</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Utilisateur GitHub</label>
+          <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
+        </div>
+        <div class="form-group">
+          <label>Nom du Dépôt (Repo)</label>
+          <input type="text" id="gh-repo" placeholder="ex: assmat-flow">
+        </div>
+        <div class="form-group">
+          <label>Fichier JSON</label>
+          <input type="text" id="gh-path" placeholder="data.json" value="data.json">
+        </div>
+        <div class="form-group">
+          <label>Clé API / Token (PAT)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+      </div>
+      <br>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-primary btn-sm" onclick="sauvegarderConfigGitHub()">Enregistrer Config</button>
+        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Télécharger depuis GitHub</button>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Paramètres du contrat</h2>
       <div class="grid-2">
@@ -638,8 +676,16 @@
     const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-    let currentDateState = new Date(); // Date courante du calendrier
-    let selectedIsoDate = null; // Date sélectionnée dans la modale
+    let currentDateState = new Date();
+    let selectedIsoDate = null;
+    let githubFileSha = null; // Stocke le hash du fichier sur GitHub pour permettre la mise à jour
+
+    let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
+      user: '',
+      repo: '',
+      path: 'data.json',
+      token: ''
+    };
 
     let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
       "leo": {
@@ -660,6 +706,130 @@
     
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
+    // ----- GITHUB API -----
+    function majStatutSync(status, texte) {
+      const badge = document.getElementById('sync-status');
+      badge.className = `sync-badge ${status}`;
+      badge.innerText = texte;
+    }
+
+    function chargerFormulaireGitHub() {
+      document.getElementById('gh-user').value = githubConfig.user || '';
+      document.getElementById('gh-repo').value = githubConfig.repo || '';
+      document.getElementById('gh-path').value = githubConfig.path || 'data.json';
+      document.getElementById('gh-token').value = githubConfig.token || '';
+      if(githubConfig.user && githubConfig.repo && githubConfig.token) {
+        majStatutSync('online', 'GitHub Prêt');
+      }
+    }
+
+    function sauvegarderConfigGitHub() {
+      githubConfig = {
+        user: document.getElementById('gh-user').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        path: document.getElementById('gh-path').value.trim() || 'data.json',
+        token: document.getElementById('gh-token').value.trim()
+      };
+      localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
+      majStatutSync('online', 'GitHub Configuré');
+      alert("Configuration GitHub enregistrée !");
+      chargerDepuisGitHub();
+    }
+
+    async function chargerDepuisGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+      
+      majStatutSync('syncing', 'Chargement...');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
+      
+      try {
+        const res = await fetch(url, {
+          headers: { 'Authorization': `token ${githubConfig.token}` }
+        });
+        
+        if (res.status === 200) {
+          const data = await res.json();
+          githubFileSha = data.sha;
+          
+          // Décodage UTF-8 sécurisé depuis base64
+          const jsonString = decodeURIComponent(escape(atob(data.content)));
+          const remoteEnfants = JSON.parse(jsonString);
+          
+          if(remoteEnfants && Object.keys(remoteEnfants).length > 0) {
+            enfants = remoteEnfants;
+            if(!enfants[activeEnfantId]) activeEnfantId = Object.keys(enfants)[0];
+            localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+            
+            rafraichirTouteLInterface();
+            majStatutSync('online', 'GitHub Synchro');
+          }
+        } else if(res.status === 404) {
+          // Fichier inexistant, il sera créé à la première sauvegarde
+          majStatutSync('online', 'GitHub (Nouveau)');
+        } else {
+          majStatutSync('offline', 'Erreur GH');
+        }
+      } catch (err) {
+        console.error("Erreur chargement GitHub:", err);
+        majStatutSync('offline', 'Hors-ligne');
+      }
+    }
+
+    async function pousserVersGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+
+      majStatutSync('syncing', 'Sauvegarde GH...');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
+      
+      // Encodage UTF-8 sécurisé vers base64
+      const jsonString = JSON.stringify(enfants, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+      const bodyData = {
+        message: "Mise à jour données AssMat Flow",
+        content: base64Content
+      };
+      if (githubFileSha) bodyData.sha = githubFileSha;
+
+      try {
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${githubConfig.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (res.status === 200 || res.status === 201) {
+          const resData = await res.json();
+          githubFileSha = resData.content.sha;
+          majStatutSync('online', 'GitHub Synchro');
+        } else {
+          majStatutSync('offline', 'Erreur Push');
+        }
+      } catch (err) {
+        console.error("Erreur push GitHub:", err);
+        majStatutSync('offline', 'Erreur Réseau');
+      }
+    }
+
+    function sauvegarderGlobal() {
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+      localStorage.setItem('assmat_active_id', activeEnfantId);
+      pousserVersGitHub();
+    }
+
+    function rafraichirTouteLInterface() {
+      rendreSlider();
+      chargerFormulaireContrat();
+      afficherPresences();
+      chargerSemaineTypeInterface();
+      rendreCalendrier();
+      chargerHorairePrevuPourDate();
+    }
+
+    // ----- UI & APPLICATION LOGIC -----
     function rendreSlider() {
       const track = document.getElementById('slider-track');
       const dots = document.getElementById('slider-dots');
@@ -708,12 +878,7 @@
         localStorage.setItem('assmat_active_id', activeEnfantId);
         
         document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
-        
-        chargerFormulaireContrat();
-        afficherPresences();
-        chargerSemaineTypeInterface();
-        rendreCalendrier();
-        chargerHorairePrevuPourDate();
+        rafraichirTouteLInterface();
       }
     }
 
@@ -737,11 +902,7 @@
       };
       activeEnfantId = id;
       sauvegarderGlobal();
-      rendreSlider();
-      chargerFormulaireContrat();
-      afficherPresences();
-      chargerSemaineTypeInterface();
-      rendreCalendrier();
+      rafraichirTouteLInterface();
     }
 
     function supprimerEnfantActif() {
@@ -750,15 +911,10 @@
         delete enfants[activeEnfantId];
         activeEnfantId = Object.keys(enfants)[0];
         sauvegarderGlobal();
-        rendreSlider();
-        chargerFormulaireContrat();
-        afficherPresences();
-        chargerSemaineTypeInterface();
-        rendreCalendrier();
+        rafraichirTouteLInterface();
       }
     }
 
-    // CALENDRIER INTERACTIF iOS
     function changerMoisPlanning(delta) {
       currentDateState.setMonth(currentDateState.getMonth() + delta);
       rendreCalendrier();
@@ -776,11 +932,9 @@
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
 
-      // Offset Lundi (0) à Dimanche (6)
       let startingDay = firstDay.getDay() - 1;
       if (startingDay === -1) startingDay = 6;
 
-      // Cases vides avant le 1er du mois
       for (let i = 0; i < startingDay; i++) {
         grid.innerHTML += `<div class="cal-day empty"></div>`;
       }
@@ -790,7 +944,7 @@
       for (let day = 1; day <= lastDay.getDate(); day++) {
         const dateObj = new Date(year, month, day);
         let dayOfWeek = dateObj.getDay() - 1;
-        if (dayOfWeek === -1) dayOfWeek = 6; // 5 = Samedi, 6 = Dimanche
+        if (dayOfWeek === -1) dayOfWeek = 6;
 
         const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const prevu = planning[isoDate];
@@ -807,7 +961,6 @@
             badgeHtml = `<div class="cal-day-badge absent">Absent</div>`;
             dayClass += " has-absence";
           } else if (prevu.arrivee && prevu.depart) {
-            // Affichage vertical des heures : Arrivée en haut, Départ en bas
             badgeHtml = `
               <div class="cal-day-badge-stack">
                 <span class="time-line">${prevu.arrivee}</span>
@@ -879,10 +1032,9 @@
       if(!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
 
       for(let day = 1; day <= daysInMonth; day++) {
-        // Mois JS basé sur index 0 (janvier = 0)
         const dateObj = new Date(year, month, day);
         let dayIdx = dateObj.getDay() - 1;
-        if(dayIdx === -1) dayIdx = 6; // Lundi = 0, ..., Dimanche = 6
+        if(dayIdx === -1) dayIdx = 6;
 
         const isoDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         const configJour = st[dayIdx];
@@ -898,7 +1050,7 @@
 
       sauvegarderGlobal();
       rendreCalendrier();
-      alert(`Semaine type appliquée à tout le mois de ${MOIS[month]} ${year} !`);
+      alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
     }
 
     function chargerSemaineTypeInterface() {
@@ -951,7 +1103,6 @@
       }
     }
 
-    // TAB MANAGEMENT
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1092,18 +1243,10 @@
       document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
     }
 
-    function sauvegarderGlobal() {
-      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
-      localStorage.setItem('assmat_active_id', activeEnfantId);
-    }
-
     // INITIALISATION
-    rendreSlider();
-    chargerFormulaireContrat();
-    afficherPresences();
-    chargerSemaineTypeInterface();
-    rendreCalendrier();
-    chargerHorairePrevuPourDate();
+    chargerFormulaireGitHub();
+    chargerDepuisGitHub();
+    rafraichirTouteLInterface();
   </script>
 </body>
 </html>
