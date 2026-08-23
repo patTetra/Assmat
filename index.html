@@ -436,10 +436,37 @@
     .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
     .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-danger { background: rgba(244, 63, 94, 0.2); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
     .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
+
+    .legal-alert-box {
+      margin-top: 0.85rem;
+      padding: 0.85rem;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      color: #fecdd3;
+      line-height: 1.4;
+    }
+    .legal-alert-box h4 {
+      color: #f43f5e;
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legal-alert-box ul {
+      margin-left: 1.2rem;
+      margin-top: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+    .legal-alert-box li { margin-bottom: 0.2rem; }
 
     /* CARD DÉDIÉE PAJEMPLOI */
     .pajemploi-card {
@@ -783,8 +810,21 @@
           <span id="st-total-badge" class="badge badge-primary">0h / sem</span>
         </summary>
         <div class="week-grid" id="week-schedule-grid"></div>
+        
+        <!-- ALERTE DES SEUILS LÉGAUX -->
+        <div id="st-legal-alert" class="legal-alert-box" style="display:none;">
+          <h4>⚠️ Dépassement des plafonds légaux</h4>
+          <div id="st-alert-text"></div>
+          <div style="margin-top:0.4rem; font-weight:600;">Solutions recommandées :</div>
+          <ul>
+            <li>Réduire le nombre de semaines d'accueil (ex: passer en <i>Année Incomplète</i> à 45 ou 46 semaines) pour respecter la limite de 2 250h/an.</li>
+            <li>Ajuster les horaires quotidiens pour lisser la moyenne hebdomadaire sous les 48h.</li>
+          </ul>
+          <div style="font-size:0.75rem; opacity:0.85;"><i>Note : Si le volume est maintenu, un accord écrit explicite de l'assistante maternelle est obligatoirement requis.</i></div>
+        </div>
+
         <div id="st-alert-45h" style="display:none; margin-top:0.75rem; padding:0.6rem; background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--radius-sm); font-size:0.78rem; color:var(--warning);">
-          ⚠️ <b>Semaine de plus de 45h détectée :</b> Le contrat est automatiquement configuré au réel hebdomadaire (option « Mois lissé » décochée).
+          ℹ️ <b>Semaine > 45h :</b> Le contrat est automatiquement passé au réel (option « Mois lissé » décochée).
         </div>
         <br>
         <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType()">Sauvegarder la semaine type</button>
@@ -890,7 +930,7 @@
         </div>
         <div class="form-group">
           <label>H. Hebdo Contrat</label>
-          <input type="number" id="cfg-h-hebdo">
+          <input type="number" id="cfg-h-hebdo" oninput="mettreAJourCalculsSemaineTypeUI()">
         </div>
         <div class="form-group">
           <label>Jours / semaine</label>
@@ -898,7 +938,7 @@
         </div>
         <div class="form-group">
           <label>Semaines / an</label>
-          <input type="number" id="cfg-semaines-an" placeholder="52 ou 46...">
+          <input type="number" id="cfg-semaines-an" placeholder="52 ou 46..." oninput="mettreAJourCalculsSemaineTypeUI()">
         </div>
       </div>
       <br>
@@ -1349,7 +1389,7 @@
               <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-              <span class="badge ${c.hHebdo > 45 ? 'badge-warning' : 'badge-primary'}">${c.hHebdo || 0}h / sem</span>
+              <span class="badge ${c.hHebdo > 48 ? 'badge-danger' : (c.hHebdo > 45 ? 'badge-warning' : 'badge-primary')}">${c.hHebdo || 0}h / sem</span>
             </div>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
@@ -1557,7 +1597,7 @@
       alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
     }
 
-    // CALCULE LE TOTAL D'HEURES DE LA SEMAINE TYPE ET DÉTECTE SI > 45H
+    // CALCULE LE TOTAL D'HEURES DE LA SEMAINE TYPE ET DÉTECTE LES DÉPASSEMENTS LÉGAUX
     function calculerTotalHeuresSemaineType() {
       let total = 0;
       let nbJoursActifs = 0;
@@ -1584,15 +1624,45 @@
       const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
       
       const badge = document.getElementById('st-total-badge');
-      const alertBox = document.getElementById('st-alert-45h');
+      const alertBox45 = document.getElementById('st-alert-45h');
+      const legalAlertBox = document.getElementById('st-legal-alert');
+      const legalAlertText = document.getElementById('st-alert-text');
+
+      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an')?.value) || (enfants[activeEnfantId]?.contrat?.semainesAn || 52);
+      const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
 
       if (badge) {
         badge.innerText = `${total.toFixed(1)}h / sem`;
-        badge.className = `badge ${total > 45 ? 'badge-warning' : 'badge-primary'}`;
+        if (total > 48) {
+          badge.className = 'badge badge-danger';
+        } else if (total > 45) {
+          badge.className = 'badge badge-warning';
+        } else {
+          badge.className = 'badge badge-primary';
+        }
       }
 
+      // VÉRIFICATION DÉPASSEMENTS LÉGAUX (48h/semaine ou 2250h/an)
+      let motifsAlerte = [];
+      if (total > 48) {
+        motifsAlerte.push(`Durée hebdomadaire de <b>${total.toFixed(2)}h</b> (supérieure à la limite de 48h/sem en moyenne).`);
+      }
+      if (hAnnuelles > 2250) {
+        motifsAlerte.push(`Volume annuel estimé à <b>${hAnnuelles}h</b> sur ${semainesAn} semaines (supérieur au plafond légal de 2 250h/an).`);
+      }
+
+      if (motifsAlerte.length > 0) {
+        if (legalAlertBox && legalAlertText) {
+          legalAlertText.innerHTML = motifsAlerte.map(m => `• ${m}`).join('<br>');
+          legalAlertBox.style.display = 'block';
+        }
+      } else {
+        if (legalAlertBox) legalAlertBox.style.display = 'none';
+      }
+
+      // Alerte sur-heures > 45h (passage au réel)
       if (total > 45) {
-        if (alertBox) alertBox.style.display = 'block';
+        if (alertBox45) alertBox45.style.display = 'block';
         
         // Auto-décocher mois lissé car > 45h
         const chkLisse = document.getElementById('cfg-mois-lisse');
@@ -1600,15 +1670,13 @@
           chkLisse.checked = false;
         }
       } else {
-        if (alertBox) alertBox.style.display = 'none';
+        if (alertBox45) alertBox45.style.display = 'none';
       }
 
       // Mise à jour synchrone des champs du contrat si ouverts
-      document.getElementById('cfg-h-hebdo').value = total.toFixed(1);
-      document.getElementById('cfg-j-hebdo').value = nbJoursActifs;
-
-      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an').value) || 52;
-      document.getElementById('cfg-h-mensuel').value = Math.round((total * semainesAn) / 12);
+      if (document.getElementById('cfg-h-hebdo')) document.getElementById('cfg-h-hebdo').value = total.toFixed(1);
+      if (document.getElementById('cfg-j-hebdo')) document.getElementById('cfg-j-hebdo').value = nbJoursActifs;
+      if (document.getElementById('cfg-h-mensuel')) document.getElementById('cfg-h-mensuel').value = Math.round((total * semainesAn) / 12);
     }
 
     function chargerSemaineTypeInterface() {
@@ -1645,6 +1713,18 @@
     }
 
     function sauvegarderSemaineType() {
+      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
+      const semainesAn = enfants[activeEnfantId]?.contrat?.semainesAn || 52;
+      const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
+
+      if (total > 48 || hAnnuelles > 2250) {
+        const confirmSave = confirm(
+          `⚠️ ATTENTION : Le planning configuré (${total.toFixed(2)}h/sem, ~${hAnnuelles}h/an) dépasse les plafonds légaux (48h/sem et 2250h/an).\n\n` +
+          `Assurez-vous de disposer d'un accord écrit explicite du salarié et de respecter le repos légal.\n\nVoulez-vous tout de même enregistrer ?`
+        );
+        if (!confirmSave) return;
+      }
+
       const st = {};
       JOURS.forEach((_, idx) => {
         st[idx] = {
@@ -1655,7 +1735,6 @@
       });
       enfants[activeEnfantId].semaineType = st;
 
-      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
       enfants[activeEnfantId].contrat.hHebdo = total;
       enfants[activeEnfantId].contrat.jHebdo = nbJoursActifs;
       
@@ -1665,7 +1744,7 @@
 
       sauvegarderGlobal();
       rendreSlider();
-      alert("Semaine type enregistrée !");
+      alert("Semaine type enregistrée avec succès !");
     }
 
     function toggleLissageState() {
@@ -1803,7 +1882,18 @@
 
     function sauvegarderContrat() {
       const hHebdo = parseFloat(document.getElementById('cfg-h-hebdo').value) || 0;
+      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an').value) || 52;
       let moisLisse = document.getElementById('cfg-mois-lisse').checked;
+
+      const hAnnuelles = Math.round(hHebdo * (semainesAn === 52 ? 47 : semainesAn));
+
+      if (hHebdo > 48 || hAnnuelles > 2250) {
+        const confirmSave = confirm(
+          `⚠️ ATTENTION : Ce contrat (${hHebdo}h/sem, ~${hAnnuelles}h/an) dépasse le cadre légal (48h/sem et 2250h/an).\n\n` +
+          `Vérifiez que vous possédez bien l'accord écrit du salarié.\n\nEnregistrer malgré tout ?`
+        );
+        if (!confirmSave) return;
+      }
 
       if (hHebdo > 45) {
         moisLisse = false;
@@ -1840,7 +1930,7 @@
         hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
         hHebdo: hHebdo,
         jHebdo: parseFloat(document.getElementById('cfg-j-hebdo').value) || 4,
-        semainesAn: parseFloat(document.getElementById('cfg-semaines-an').value) || 52
+        semainesAn: semainesAn
       };
       
       sauvegarderGlobal();
