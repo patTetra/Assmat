@@ -23,9 +23,7 @@
       --text-muted: #94a3b8;
       
       --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.15);
       --danger: #f43f5e;
-      --danger-bg: rgba(244, 63, 94, 0.15);
       --warning: #f59e0b;
       
       --radius-lg: 16px;
@@ -41,10 +39,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     
-    html, body {
-      max-width: 100vw;
-      overflow-x: hidden;
-    }
+    html, body { max-width: 100vw; overflow-x: hidden; }
 
     body {
       background-color: var(--bg);
@@ -65,7 +60,6 @@
     }
     .brand { display: flex; align-items: center; gap: 0.85rem; }
     
-    /* Bouton Paramètres à la place de l'éclair */
     .brand-icon-btn {
       width: 42px;
       height: 42px;
@@ -80,11 +74,9 @@
       border: none;
       cursor: pointer;
       color: white;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease;
     }
-    .brand-icon-btn:active {
-      transform: scale(0.92);
-    }
+    .brand-icon-btn:active { transform: scale(0.92); }
 
     header h1 { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -95,19 +87,44 @@
     }
     header p { font-size: 0.8rem; color: var(--text-muted); }
 
-    .sync-badge {
-      font-size: 0.75rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      font-weight: 600;
-      display: inline-flex;
+    /* PASTILLE DE SYNCHRONISATION (LED) */
+    .sync-status-container {
+      display: flex;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: center;
+      padding: 6px;
       cursor: pointer;
     }
-    .sync-badge.online { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
-    .sync-badge.offline { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); border: 1px solid var(--border); }
-    .sync-badge.syncing { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
+
+    .sync-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--text-muted);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      transition: all 0.3s ease;
+    }
+
+    .sync-led.online {
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .sync-led.offline {
+      background-color: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    .sync-led.syncing {
+      background-color: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+      animation: pulse-led 1s infinite alternate;
+    }
+
+    @keyframes pulse-led {
+      from { opacity: 0.3; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.2); }
+    }
 
     /* SLIDER ENFANTS */
     .slider-container {
@@ -260,7 +277,7 @@
     }
     .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px var(--accent-glow); }
     .btn-secondary { background: var(--surface-card); color: #fff; border: 1px solid var(--border); }
-    .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
     .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
 
     /* CALENDRIER VUE iOS */
@@ -344,7 +361,7 @@
       width: 100%;
     }
     .cal-day-badge.absent { 
-      background: var(--danger-bg); 
+      background: rgba(244, 63, 94, 0.15); 
       color: var(--danger); 
     }
     .cal-day-badge.off { 
@@ -415,7 +432,7 @@
 
     .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
-    .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
@@ -434,15 +451,17 @@
 
   <header class="no-print">
     <div class="brand">
-      <!-- Bouton Réglages à la place de l'éclair -->
       <button class="brand-icon-btn" onclick="ouvrirModalConfigGitHub()" title="Paramètres d'application & Synchro">⚙️</button>
       <div>
         <h1>AssMat Flow</h1>
         <p>Suivi d'assistance maternelle</p>
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:0.5rem;">
-      <span id="sync-status" class="sync-badge offline" onclick="ouvrirModalConfigGitHub()">Local</span>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <!-- POINT LUMINEUX (LED) DE STATUT DE SYNCHRONISATION -->
+      <div class="sync-status-container" onclick="ouvrirModalConfigGitHub()" title="État de la synchro GitHub">
+        <div id="sync-led" class="sync-led"></div>
+      </div>
       <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
     </div>
   </header>
@@ -623,7 +642,7 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIGURATION GITHUB (Paramètres Globaux) -->
+  <!-- MODAL CONFIGURATION GITHUB -->
   <div class="modal-overlay" id="modal-config-gh">
     <div class="modal">
       <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
@@ -654,7 +673,7 @@
     </div>
   </div>
 
-  <!-- MODAL EDITION JOURNEE (iOS Style) -->
+  <!-- MODAL EDITION JOURNEE -->
   <div class="modal-overlay" id="modal-day">
     <div class="modal">
       <h2 id="modal-date-title" style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">Modifier la journée</h2>
@@ -695,6 +714,7 @@
     let currentDateState = new Date();
     let selectedIsoDate = null;
     let githubFileSha = null;
+    let syncTimer = null; // Timer pour le debounce des commits GitHub
 
     let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
       user: '',
@@ -732,10 +752,9 @@
       document.getElementById('modal-config-gh').classList.remove('active');
     }
 
-    function majStatutSync(status, texte) {
-      const badge = document.getElementById('sync-status');
-      badge.className = `sync-badge ${status}`;
-      badge.innerText = texte;
+    function majStatutSync(status) {
+      const led = document.getElementById('sync-led');
+      led.className = `sync-led ${status}`;
     }
 
     function chargerFormulaireGitHub() {
@@ -744,7 +763,9 @@
       document.getElementById('gh-path').value = githubConfig.path || 'data.json';
       document.getElementById('gh-token').value = githubConfig.token || '';
       if(githubConfig.user && githubConfig.repo && githubConfig.token) {
-        majStatutSync('online', 'GitHub Prêt');
+        majStatutSync('online');
+      } else {
+        majStatutSync('');
       }
     }
 
@@ -756,15 +777,18 @@
         token: document.getElementById('gh-token').value.trim()
       };
       localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
-      majStatutSync('online', 'GitHub Configuré');
+      majStatutSync('online');
       fermerModalConfigGitHub();
       chargerDepuisGitHub();
     }
 
     async function chargerDepuisGitHub() {
-      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        majStatutSync('');
+        return;
+      }
       
-      majStatutSync('syncing', 'Chargement...');
+      majStatutSync('syncing');
       const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
       
       try {
@@ -785,30 +809,30 @@
             localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
             
             rafraichirTouteLInterface();
-            majStatutSync('online', 'GitHub Synchro');
+            majStatutSync('online');
           }
         } else if(res.status === 404) {
-          majStatutSync('online', 'GitHub (Nouveau)');
+          majStatutSync('online');
         } else {
-          majStatutSync('offline', 'Erreur GH');
+          majStatutSync('offline');
         }
       } catch (err) {
         console.error("Erreur chargement GitHub:", err);
-        majStatutSync('offline', 'Hors-ligne');
+        majStatutSync('offline');
       }
     }
 
     async function pousserVersGitHub() {
       if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
 
-      majStatutSync('syncing', 'Sauvegarde GH...');
+      majStatutSync('syncing');
       const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
       
       const jsonString = JSON.stringify(enfants, null, 2);
       const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
       const bodyData = {
-        message: "Mise à jour données AssMat Flow",
+        message: "Mise à jour automatique - AssMat Flow",
         content: base64Content
       };
       if (githubFileSha) bodyData.sha = githubFileSha;
@@ -826,20 +850,28 @@
         if (res.status === 200 || res.status === 201) {
           const resData = await res.json();
           githubFileSha = resData.content.sha;
-          majStatutSync('online', 'GitHub Synchro');
+          majStatutSync('online');
         } else {
-          majStatutSync('offline', 'Erreur Push');
+          majStatutSync('offline');
         }
       } catch (err) {
         console.error("Erreur push GitHub:", err);
-        majStatutSync('offline', 'Erreur Réseau');
+        majStatutSync('offline');
       }
     }
 
+    // SAUVEGARDE GLOBALE AVEC DEBOUNCE POUR EVITER LE TROP-PLEIN DE COMMITS
     function sauvegarderGlobal() {
+      // 1. Sauvegarde locale instantanée (Zéro risque de perte)
       localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       localStorage.setItem('assmat_active_id', activeEnfantId);
-      pousserVersGitHub();
+
+      // 2. Temporisation pour GitHub : attend 3 secondes d'inactivité avant de faire un commit
+      majStatutSync('syncing');
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        pousserVersGitHub();
+      }, 3000); // 3000 ms = 3s de délai
     }
 
     function rafraichirTouteLInterface() {
