@@ -196,7 +196,19 @@
       "semainesAn": 52,
       "moisLisse": true
     },
-    "presences": [],
+    "presences": [
+      {
+        "id": 1787508557291,
+        "date": "2026-08-23",
+        "arrivee": "08:30",
+        "depart": "17:45",
+        "duree": 9.25,
+        "hNorm": 9.25,
+        "hComp": 0,
+        "hSup": 0,
+        "repas": "oui"
+      }
+    ],
     "semaineType": {
       "0": {
         "actif": true,
