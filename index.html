@@ -435,6 +435,7 @@
 
     .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
@@ -776,9 +777,15 @@
     </div>
 
     <div class="card">
-      <details>
-        <summary>⚙️ Configurer la semaine type de base</summary>
+      <details open>
+        <summary style="display:flex; justify-content:space-between; align-items:center;">
+          <span>⚙️ Configurer la semaine type de base</span>
+          <span id="st-total-badge" class="badge badge-primary">0h / sem</span>
+        </summary>
         <div class="week-grid" id="week-schedule-grid"></div>
+        <div id="st-alert-45h" style="display:none; margin-top:0.75rem; padding:0.6rem; background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--radius-sm); font-size:0.78rem; color:var(--warning);">
+          ⚠️ <b>Semaine de plus de 45h détectée :</b> Le contrat est automatiquement configuré au réel hebdomadaire (option « Mois lissé » décochée).
+        </div>
         <br>
         <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType()">Sauvegarder la semaine type</button>
       </details>
@@ -851,6 +858,15 @@
       </div>
 
       <h2>Tarification & Contrat Pajemploi</h2>
+      
+      <!-- OPTION MOIS LISSÉ -->
+      <div style="margin-bottom: 1rem;">
+        <label class="checkbox-group">
+          <input type="checkbox" id="cfg-mois-lisse" onchange="toggleLissageState()">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">📊 Mois lissé (Mensualisation fixe)</span>
+        </label>
+      </div>
+
       <div class="grid-2">
         <div class="form-group">
           <label>Tarif Net (€/h)</label>
@@ -1097,6 +1113,7 @@
           nomEnfant: 'Dupont',
           naissance: '',
           sortiesVoiture: true,
+          moisLisse: true,
           mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
           pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
           urgence: { nom: '', tel: '' },
@@ -1122,6 +1139,7 @@
 
         if(!c.prenomEnfant && c.prenom) c.prenomEnfant = c.prenom;
         if(!c.nomEnfant && c.nom) c.nomEnfant = c.nom;
+        if(c.moisLisse === undefined) c.moisLisse = true;
 
         if(!c.mere) {
           c.mere = {
@@ -1331,12 +1349,12 @@
               <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-              <span class="badge badge-primary">${c.hHebdo || 0}h / sem</span>
+              <span class="badge ${c.hHebdo > 45 ? 'badge-warning' : 'badge-primary'}">${c.hHebdo || 0}h / sem</span>
             </div>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
             <span>Tarif: <b>${c.tarifNet || 0}€/h</b></span>
-            <span>Mensualisé: <b>${c.hMensuel || 0}h</b></span>
+            <span>Mode: <b>${c.moisLisse ? 'Lissé' : 'Au réel'}</b></span>
           </div>
         `;
         track.appendChild(slide);
@@ -1384,6 +1402,7 @@
           nomEnfant: '',
           naissance: '',
           sortiesVoiture: true,
+          moisLisse: true,
           mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
           pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
           urgence: { nom: '', tel: '' },
@@ -1538,6 +1557,60 @@
       alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
     }
 
+    // CALCULE LE TOTAL D'HEURES DE LA SEMAINE TYPE ET DÉTECTE SI > 45H
+    function calculerTotalHeuresSemaineType() {
+      let total = 0;
+      let nbJoursActifs = 0;
+
+      JOURS.forEach((_, idx) => {
+        const check = document.getElementById(`st-check-${idx}`);
+        const arrVal = document.getElementById(`st-arr-${idx}`)?.value;
+        const depVal = document.getElementById(`st-dep-${idx}`)?.value;
+
+        if (check && check.checked && arrVal && depVal) {
+          const [hA, mA] = arrVal.split(':').map(Number);
+          const [hD, mD] = depVal.split(':').map(Number);
+          let duree = (hD + mD / 60) - (hA + mA / 60);
+          if (duree < 0) duree += 24;
+          total += duree;
+          nbJoursActifs++;
+        }
+      });
+
+      return { total, nbJoursActifs };
+    }
+
+    function mettreAJourCalculsSemaineTypeUI() {
+      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
+      
+      const badge = document.getElementById('st-total-badge');
+      const alertBox = document.getElementById('st-alert-45h');
+
+      if (badge) {
+        badge.innerText = `${total.toFixed(1)}h / sem`;
+        badge.className = `badge ${total > 45 ? 'badge-warning' : 'badge-primary'}`;
+      }
+
+      if (total > 45) {
+        if (alertBox) alertBox.style.display = 'block';
+        
+        // Auto-décocher mois lissé car > 45h
+        const chkLisse = document.getElementById('cfg-mois-lisse');
+        if (chkLisse && chkLisse.checked) {
+          chkLisse.checked = false;
+        }
+      } else {
+        if (alertBox) alertBox.style.display = 'none';
+      }
+
+      // Mise à jour synchrone des champs du contrat si ouverts
+      document.getElementById('cfg-h-hebdo').value = total.toFixed(1);
+      document.getElementById('cfg-j-hebdo').value = nbJoursActifs;
+
+      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an').value) || 52;
+      document.getElementById('cfg-h-mensuel').value = Math.round((total * semainesAn) / 12);
+    }
+
     function chargerSemaineTypeInterface() {
       const grid = document.getElementById('week-schedule-grid');
       grid.innerHTML = '';
@@ -1549,7 +1622,7 @@
         grid.innerHTML += `
           <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
             <div style="display:flex; align-items:center; gap:0.5rem;">
-              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''}>
+              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx})">
               <label for="st-check-${idx}">${jour}</label>
             </div>
             <div style="display:flex; gap:0.3rem;">
@@ -1559,13 +1632,16 @@
           </div>
         `;
       });
+
+      mettreAJourCalculsSemaineTypeUI();
     }
 
     function autoCheckSemaineType(idx) {
       const check = document.getElementById(`st-check-${idx}`);
-      if (check && !check.checked) {
+      if (check && !check.checked && event.type === 'input') {
         check.checked = true;
       }
+      mettreAJourCalculsSemaineTypeUI();
     }
 
     function sauvegarderSemaineType() {
@@ -1578,8 +1654,28 @@
         };
       });
       enfants[activeEnfantId].semaineType = st;
+
+      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
+      enfants[activeEnfantId].contrat.hHebdo = total;
+      enfants[activeEnfantId].contrat.jHebdo = nbJoursActifs;
+      
+      if (total > 45) {
+        enfants[activeEnfantId].contrat.moisLisse = false;
+      }
+
       sauvegarderGlobal();
+      rendreSlider();
       alert("Semaine type enregistrée !");
+    }
+
+    function toggleLissageState() {
+      const totalH = parseFloat(document.getElementById('cfg-h-hebdo').value) || 0;
+      const chkLisse = document.getElementById('cfg-mois-lisse');
+
+      if (totalH > 45 && chkLisse.checked) {
+        alert("Attention : Un contrat de plus de 45 heures par semaine ne peut pas être lissé. Le calcul s'effectuera au réel par semaine.");
+        chkLisse.checked = false;
+      }
     }
 
     function chargerHorairePrevuPourDate() {
@@ -1626,10 +1722,10 @@
       let duree = (hD + mD/60) - (hA + mA/60);
       if (duree < 0) duree += 24;
 
-      let hNorm = Math.min(duree, contrat.hHebdo / (contrat.jHebdo || 5));
+      let maxJourNorm = 45 / (contrat.jHebdo || 5);
+      let hNorm = Math.min(duree, maxJourNorm);
       let hComp = 0, hSup = 0;
 
-      let maxJourNorm = contrat.hHebdo / (contrat.jHebdo || 5);
       if (duree > maxJourNorm) {
         if (duree > 9) {
           hComp = Math.max(0, 9 - maxJourNorm);
@@ -1678,6 +1774,7 @@
       document.getElementById('cfg-nom-enfant').value = c.nomEnfant || c.nom || '';
       document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
       document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
+      document.getElementById('cfg-mois-lisse').checked = c.moisLisse !== false;
 
       document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
       document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
@@ -1705,11 +1802,19 @@
     }
 
     function sauvegarderContrat() {
+      const hHebdo = parseFloat(document.getElementById('cfg-h-hebdo').value) || 0;
+      let moisLisse = document.getElementById('cfg-mois-lisse').checked;
+
+      if (hHebdo > 45) {
+        moisLisse = false;
+      }
+
       enfants[activeEnfantId].contrat = {
         prenomEnfant: document.getElementById('cfg-prenom-enfant').value,
         nomEnfant: document.getElementById('cfg-nom-enfant').value,
         naissance: document.getElementById('cfg-naissance-enfant').value,
         sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
+        moisLisse: moisLisse,
         mere: {
           nom: document.getElementById('cfg-mere-nom').value,
           prenom: document.getElementById('cfg-mere-prenom').value,
@@ -1733,7 +1838,7 @@
         ie: parseFloat(document.getElementById('cfg-ie').value) || 0,
         ir: parseFloat(document.getElementById('cfg-ir').value) || 0,
         hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
-        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value) || 0,
+        hHebdo: hHebdo,
         jHebdo: parseFloat(document.getElementById('cfg-j-hebdo').value) || 4,
         semainesAn: parseFloat(document.getElementById('cfg-semaines-an').value) || 52
       };
@@ -1779,13 +1884,25 @@
       document.getElementById('fp-parent').innerText = parentLabel;
       document.getElementById('fp-print-parents').innerText = parentLabel;
 
+      let totHNormReelles = presencesDuMois.reduce((acc, p) => acc + (p.hNorm || 0), 0);
       let totHComp = presencesDuMois.reduce((acc, p) => acc + (p.hComp || 0), 0);
       let totHSup = presencesDuMois.reduce((acc, p) => acc + (p.hSup || 0), 0);
       let totHSuppTotal = totHComp + totHSup;
       let nbJoursPresents = presencesDuMois.length;
       let nbRepas = presencesDuMois.filter(p => p.repas === 'oui').length;
 
-      let salaireBase = contrat.hMensuel * contrat.tarifNet;
+      // Calcul du salaire de base (Lissé vs Au réel)
+      let salaireBase = 0;
+      let volumeBaseAffiche = 0;
+
+      if (contrat.moisLisse) {
+        volumeBaseAffiche = contrat.hMensuel;
+        salaireBase = contrat.hMensuel * contrat.tarifNet;
+      } else {
+        volumeBaseAffiche = totHNormReelles;
+        salaireBase = totHNormReelles * contrat.tarifNet;
+      }
+
       let montantHComp = totHComp * contrat.tarifNet;
       let tarifHSup = contrat.tarifNet * (1 + contrat.majoration / 100);
       let montantHSup = totHSup * tarifHSup;
@@ -1800,7 +1917,7 @@
       // Table classique
       const body = document.getElementById('fp-body');
       body.innerHTML = `
-        <tr><td style="text-align:left;">Salaire de base mensualisé</td><td>${contrat.hMensuel} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Salaire de base ${contrat.moisLisse ? '(Mensualisé lissé)' : '(Au réel)'}</td><td>${volumeBaseAffiche.toFixed(2)} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Heures complémentaires</td><td>${totHComp.toFixed(2)} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHComp.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Heures supplémentaires (+${contrat.majoration}%)</td><td>${totHSup.toFixed(2)} h</td><td>${tarifHSup.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHSup.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Indemnités d'entretien</td><td>${nbJoursPresents} j</td><td>${contrat.ie.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIE.toFixed(2)} €</strong></td></tr>
@@ -1815,9 +1932,9 @@
       // --- CALCULS & ASSIGNATION PAJEMPLOI ---
       let jHebdo = contrat.jHebdo || 4;
       let semainesAn = contrat.semainesAn || 52;
-      let joursActiviteArrondis = Math.ceil((jHebdo * semainesAn) / 12);
+      let joursActiviteArrondis = contrat.moisLisse ? Math.ceil((jHebdo * semainesAn) / 12) : nbJoursPresents;
 
-      document.getElementById('paje-h-normales').innerText = `${contrat.hMensuel} h`;
+      document.getElementById('paje-h-normales').innerText = `${volumeBaseAffiche.toFixed(0)} h`;
       document.getElementById('paje-j-activite').innerText = `${joursActiviteArrondis} j`;
       document.getElementById('paje-h-supp').innerText = `${totHSuppTotal.toFixed(2)} h`;
       document.getElementById('paje-cp').innerText = `0 j`;
