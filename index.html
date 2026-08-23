@@ -9,11 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Palette adoucie - Bleu Slate Moderne */
       --bg: #0f172a;
       --surface: #1e293b;
       --surface-card: #334155;
-      --surface-hover: #475569;
       --border: rgba(255, 255, 255, 0.1);
       
       --accent: #6366f1;
@@ -50,7 +48,6 @@
     body {
       background-color: var(--bg);
       color: var(--text-main);
-      /* Prise en compte de la Safe Area de l'iPhone */
       padding: calc(1rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
       max-width: 900px;
       margin: 0 auto;
@@ -61,10 +58,11 @@
     /* Header */
     header { 
       display: flex; 
+      justify-content: space-between;
       align-items: center; 
-      gap: 0.85rem; 
       margin-bottom: 1.25rem; 
     }
+    .brand { display: flex; align-items: center; gap: 0.85rem; }
     .brand-icon {
       width: 42px;
       height: 42px;
@@ -86,45 +84,66 @@
     }
     header p { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* Child Selector Bar */
-    .child-selector-bar {
+    /* SLIDER ENFANTS */
+    .slider-container {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+    .slider-track {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slider-track::-webkit-scrollbar { display: none; }
+
+    .child-slide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .slide-header {
+      display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--surface);
-      padding: 0.85rem 1rem;
-      border-radius: var(--radius-lg);
-      margin-bottom: 1.25rem;
-      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
     }
-    .child-selector-wrapper { 
-      display: flex; 
-      align-items: center; 
-      gap: 0.6rem; 
-      flex: 1;
-      min-width: 200px;
-    }
-    .child-selector-bar label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-    .child-selector-bar select {
-      flex: 1;
-      background: var(--surface-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      padding: 0.55rem 0.75rem;
+    .slide-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
       color: #fff;
-      outline: none;
-      font-size: 0.9rem;
     }
 
-    /* Navigation / Tabs */
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--surface-card);
+      transition: all 0.2s ease;
+    }
+    .dot.active {
+      background: var(--accent-light);
+      width: 20px;
+      border-radius: 10px;
+    }
+
+    /* Tabs */
     .nav-tabs {
       display: flex;
       gap: 0.35rem;
@@ -134,7 +153,6 @@
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
     }
     .nav-tabs::-webkit-scrollbar { display: none; }
     
@@ -164,7 +182,7 @@
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Cards */
+    /* Cards & Forms */
     .card {
       background: var(--surface);
       border-radius: var(--radius-lg);
@@ -172,7 +190,6 @@
       padding: 1.15rem;
       margin-bottom: 1.25rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      width: 100%;
     }
     .card h2 {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -180,30 +197,15 @@
       font-weight: 700;
       margin-bottom: 1rem;
       color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
     }
 
-    /* Form Grids */
     .grid-2 { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
       gap: 0.85rem; 
     }
-    .form-group { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 0.35rem; 
-      min-width: 0; /* Empêche le débordement des flex items */
-    }
-    label { 
-      font-size: 0.7rem; 
-      font-weight: 700; 
-      color: var(--text-muted); 
-      text-transform: uppercase; 
-      letter-spacing: 0.04em; 
-    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
     
     input, select {
       width: 100%;
@@ -215,10 +217,6 @@
       color: #fff;
       background: var(--surface-card);
       outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus, select:focus {
-      border-color: var(--accent-light);
     }
 
     /* Buttons */
@@ -235,115 +233,37 @@
       justify-content: center;
       gap: 0.4rem;
     }
-    .btn-primary {
-      background: var(--accent-gradient);
-      color: white;
-      box-shadow: 0 4px 14px var(--accent-glow);
-    }
-    .btn-primary:active {
-      transform: scale(0.98);
-    }
-    .btn-danger {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-    }
+    .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px var(--accent-glow); }
+    .btn-secondary { background: var(--surface-card); color: #fff; border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
     .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
 
-    /* Tables (Responsive & Mobile-safe) */
+    /* Tables */
     .table-container { 
       width: 100%;
       overflow-x: auto; 
-      -webkit-overflow-scrolling: touch;
       border-radius: var(--radius-md); 
       border: 1px solid var(--border); 
       margin-top: 0.5rem;
     }
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      font-size: 0.82rem; 
-      background: var(--surface-card); 
-      white-space: nowrap;
-    }
-    th {
-      background: rgba(0, 0, 0, 0.2);
-      color: var(--text-muted);
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.68rem;
-      letter-spacing: 0.05em;
-      padding: 0.75rem 0.6rem;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
-    td { 
-      padding: 0.75rem 0.6rem; 
-      border-bottom: 1px solid var(--border); 
-      text-align: center; 
-      color: var(--text-main); 
-      font-weight: 500; 
-    }
-    tr:last-child td { border-bottom: none; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--surface-card); white-space: nowrap; }
+    th { background: rgba(0, 0, 0, 0.2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; }
+    td { padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
 
-    /* Badges */
     .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
     .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
     /* Summary Card */
-    .summary-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    .summary-line { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      margin-bottom: 0.6rem; 
-      font-size: 0.85rem; 
-      color: var(--text-muted); 
-      gap: 0.5rem;
-    }
-    .summary-line span:last-child {
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .summary-line.total {
-      border-top: 1px solid var(--border);
-      padding-top: 0.85rem;
-      margin-top: 0.85rem;
-      margin-bottom: 0;
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #fff;
-    }
+    .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
+    .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
+    .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
 
-    .pajemploi-box {
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    .pajemploi-box h3 { 
-      font-size: 0.75rem; 
-      text-transform: uppercase; 
-      letter-spacing: 0.05em; 
-      color: var(--success); 
-      margin-bottom: 0.6rem; 
-      font-weight: 800; 
-    }
-    .pajemploi-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 0.6rem; 
-      font-size: 0.82rem; 
-      color: #a7f3d0; 
-    }
+    /* Semaine Type Grid */
+    .week-grid { display: grid; gap: 0.5rem; margin-bottom: 1rem; }
+    .week-day-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
+    .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
 
     @media print {
       body { background: white; color: black; padding: 0; }
@@ -357,45 +277,47 @@
 <body>
 
   <header class="no-print">
-    <div class="brand-icon">⚡</div>
-    <div>
-      <h1>AssMat Flow</h1>
-      <p>Suivi d'assistance maternelle</p>
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1>AssMat Flow</h1>
+        <p>Suivi d'assistance maternelle</p>
+      </div>
     </div>
+    <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
   </header>
 
-  <!-- BARRE DE SÉLECTION D'ENFANT -->
-  <div class="child-selector-bar no-print">
-    <div class="child-selector-wrapper">
-      <label>Enfant :</label>
-      <select id="select-enfant" onchange="changerEnfantActif()"></select>
+  <!-- SLIDER DES ENFANTS -->
+  <div class="slider-container no-print">
+    <div class="slider-track" id="slider-track" onscroll="handleSliderScroll()">
+      <!-- Généré dynamiquement -->
     </div>
-    <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Profil</button>
+    <div class="slider-dots" id="slider-dots"></div>
   </div>
 
   <nav class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="switchTab('presence')">📅 Présences</button>
+    <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
+    <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning Mois</button>
     <button class="tab-btn" onclick="switchTab('contrat')">⚙️ Contrat</button>
     <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
-    <button class="tab-btn" onclick="switchTab('impots')">🏛️ Impôts</button>
   </nav>
 
-  <!-- TAB 1 : PRÉSENCES -->
+  <!-- TAB 1 : VALIDATION DU JOUR -->
   <div id="presence" class="tab-content active">
     <div class="card no-print">
-      <h2>Saisie de journée</h2>
+      <h2>Saisie / Validation rapide du jour</h2>
       <div class="grid-2">
         <div class="form-group">
           <label>Date</label>
-          <input type="date" id="input-date">
+          <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
         </div>
         <div class="form-group">
-          <label>Arrivée</label>
-          <input type="time" id="input-arrivee" value="08:00">
+          <label>Arrivée réelle</label>
+          <input type="time" id="input-arrivee">
         </div>
         <div class="form-group">
-          <label>Départ</label>
-          <input type="time" id="input-depart" value="17:00">
+          <label>Départ réel</label>
+          <input type="time" id="input-depart">
         </div>
         <div class="form-group">
           <label>Repas fourni ?</label>
@@ -406,11 +328,11 @@
         </div>
       </div>
       <br>
-      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Enregistrer la journée</button>
+      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Valider la journée</button>
     </div>
 
     <div class="card">
-      <h2>Historique du mois</h2>
+      <h2>Historique des présences</h2>
       <div class="table-container">
         <table id="table-presences">
           <thead>
@@ -430,7 +352,32 @@
     </div>
   </div>
 
-  <!-- TAB 2 : CONTRAT -->
+  <!-- TAB 2 : PLANNING PREVISIONNEL DU MOIS SUIVANT -->
+  <div id="planning" class="tab-content">
+    <div class="card">
+      <h2>1. Modèle de semaine type</h2>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Configure les horaires habituels pour cet enfant :</p>
+      
+      <div class="week-grid" id="week-schedule-grid">
+        <!-- Rempli par JS pour chaque jour -->
+      </div>
+      <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType()">Enregistrer la semaine type</button>
+    </div>
+
+    <div class="card">
+      <h2>2. Générer le planning du mois prochain</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Mois cible</label>
+          <input type="month" id="planning-mois-cible">
+        </div>
+      </div>
+      <br>
+      <button class="btn btn-primary" style="width:100%;" onclick="genererPlanningMois()">Générer automatiquement les prévisions</button>
+    </div>
+  </div>
+
+  <!-- TAB 3 : CONTRAT -->
   <div id="contrat" class="tab-content">
     <div class="card">
       <h2>Paramètres du contrat</h2>
@@ -476,7 +423,7 @@
     </div>
   </div>
 
-  <!-- TAB 3 : FICHE DE PAIE -->
+  <!-- TAB 4 : FICHE DE PAIE -->
   <div id="paie" class="tab-content">
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;" class="no-print">
@@ -510,68 +457,93 @@
           <div class="summary-line"><span>Indemnités (IE + IR) :</span><span id="fp-total-indemnites">0.00 €</span></div>
           <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent-light);">0.00 €</span></div>
         </div>
-
-        <div class="pajemploi-box no-print">
-          <h3>📌 Déclaration Pajemploi</h3>
-          <div class="pajemploi-grid">
-            <div>H. normales : <b id="pj-hn">0</b> h</div>
-            <div>H. sup/compl : <b id="pj-hs">0</b> h</div>
-            <div>Jours d'activité : <b id="pj-jours">0</b> j</div>
-            <div>Indemnités : <b id="pj-indem">0.00</b> €</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 4 : IMPÔTS -->
-  <div id="impots" class="tab-content">
-    <div class="card">
-      <h2>Abattement ASSMAT (Impôts)</h2>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-        Estimation cumulée avec abattement forfaitaire spécifique.
-      </p>
-
-      <div class="form-group">
-        <label>SMIC Horaire Brut (€)</label>
-        <input type="number" step="0.01" id="cfg-smic" value="11.65" onchange="calculerImpots()">
-      </div>
-
-      <div class="summary-card">
-        <div class="summary-line"><span>Revenu Brut Estimé :</span><span id="imp-brut">0.00 €</span></div>
-        <div class="summary-line"><span>Abattement Cumulé :</span><span id="imp-abattement" style="color: var(--danger); font-weight:700;">- 0.00 €</span></div>
-        <div class="summary-line total"><span>NET IMPOSABLE :</span><span id="imp-net-imposable" style="color:var(--success);">0.00 €</span></div>
       </div>
     </div>
   </div>
 
   <script>
+    const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
     let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
       "leo": {
         contrat: { enfant: 'Léo', parent: 'M. Dupont', tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        semaineType: {
+          0: { actif: true, arrivee: '08:30', depart: '17:30' },
+          1: { actif: true, arrivee: '08:30', depart: '17:30' },
+          2: { actif: false, arrivee: '08:30', depart: '17:30' },
+          3: { actif: true, arrivee: '08:30', depart: '17:30' },
+          4: { actif: true, arrivee: '08:30', depart: '17:30' },
+          5: { actif: false, arrivee: '', depart: '' },
+          6: { actif: false, arrivee: '', depart: '' }
+        },
+        planningPrevu: {}, // ex: {"2026-09-01": {arrivee: "08:30", depart: "17:30"}}
         presences: []
       }
     };
     
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
 
-    function rafraichirSelecteurEnfants() {
-      const select = document.getElementById('select-enfant');
-      select.innerHTML = '';
-      Object.keys(enfants).forEach(id => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.innerText = enfants[id].contrat.enfant || id;
-        if (id === activeEnfantId) option.selected = true;
-        select.appendChild(option);
+    function rendreSlider() {
+      const track = document.getElementById('slider-track');
+      const dots = document.getElementById('slider-dots');
+      track.innerHTML = '';
+      dots.innerHTML = '';
+
+      const keys = Object.keys(enfants);
+      keys.forEach((id, index) => {
+        const enf = enfants[id];
+        
+        // Slide
+        const slide = document.createElement('div');
+        slide.className = 'child-slide';
+        slide.dataset.id = id;
+        slide.innerHTML = `
+          <div class="slide-header">
+            <div>
+              <div class="slide-title">👶 ${enf.contrat.enfant}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${enf.contrat.parent}</div>
+            </div>
+            <span class="badge badge-primary">${enf.contrat.hHebdo}h / sem</span>
+          </div>
+          <div style="display:flex; justify-size:space-between; font-size:0.8rem; color:var(--text-muted);">
+            <span>Tarif: <b>${enf.contrat.tarifNet}€/h</b></span>
+            <span>IE: <b>${enf.contrat.ie}€</b> | IR: <b>${enf.contrat.ir}€</b></span>
+          </div>
+        `;
+        track.appendChild(slide);
+
+        // Dot
+        const dot = document.createElement('div');
+        dot.className = `dot ${id === activeEnfantId ? 'active' : ''}`;
+        dots.appendChild(dot);
       });
+
+      // Scroll vers l'enfant actif
+      const activeIndex = keys.indexOf(activeEnfantId);
+      if(activeIndex >= 0) {
+        setTimeout(() => {
+          track.scrollLeft = activeIndex * track.offsetWidth;
+        }, 50);
+      }
     }
 
-    function changerEnfantActif() {
-      activeEnfantId = document.getElementById('select-enfant').value;
-      localStorage.setItem('assmat_active_id', activeEnfantId);
-      chargerFormulaireContrat();
-      afficherPresences();
+    function handleSliderScroll() {
+      const track = document.getElementById('slider-track');
+      const index = Math.round(track.scrollLeft / track.offsetWidth);
+      const keys = Object.keys(enfants);
+      if (keys[index] && keys[index] !== activeEnfantId) {
+        activeEnfantId = keys[index];
+        localStorage.setItem('assmat_active_id', activeEnfantId);
+        
+        // Update dots
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        
+        // Mettre à jour la vue globale
+        chargerFormulaireContrat();
+        afficherPresences();
+        chargerSemaineTypeInterface();
+        chargerHorairePrevuPourDate();
+      }
     }
 
     function ajouterNouvelEnfant() {
@@ -580,13 +552,16 @@
       const id = 'enf_' + Date.now();
       enfants[id] = {
         contrat: { enfant: prenom, parent: 'Parents de ' + prenom, tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        semaineType: { 0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 2: {actif:false}, 3: {actif:true, arrivee:'08:00', depart:'17:00'}, 4: {actif:true, arrivee:'08:00', depart:'17:00'}, 5: {actif:false}, 6: {actif:false} },
+        planningPrevu: {},
         presences: []
       };
       activeEnfantId = id;
       sauvegarderGlobal();
-      rafraichirSelecteurEnfants();
+      rendreSlider();
       chargerFormulaireContrat();
       afficherPresences();
+      chargerSemaineTypeInterface();
     }
 
     function supprimerEnfantActif() {
@@ -595,12 +570,101 @@
         delete enfants[activeEnfantId];
         activeEnfantId = Object.keys(enfants)[0];
         sauvegarderGlobal();
-        rafraichirSelecteurEnfants();
+        rendreSlider();
         chargerFormulaireContrat();
         afficherPresences();
+        chargerSemaineTypeInterface();
       }
     }
 
+    // GESTION DES PREVISIONS DE PLANNING
+    function chargerSemaineTypeInterface() {
+      const grid = document.getElementById('week-schedule-grid');
+      grid.innerHTML = '';
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      JOURS.forEach((jour, idx) => {
+        const item = st[idx] || { actif: false, arrivee: '08:00', depart: '17:00' };
+        grid.innerHTML += `
+          <div class="week-day-row">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''}>
+              <label for="st-check-${idx}">${jour}</label>
+            </div>
+            <div style="display:flex; gap:0.3rem;">
+              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:00'}">
+              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:00'}">
+            </div>
+          </div>
+        `;
+      });
+
+      // Config mois par défaut sur mois prochain
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      document.getElementById('planning-mois-cible').value = nextMonth.toISOString().slice(0,7);
+    }
+
+    function sauvegarderSemaineType() {
+      const st = {};
+      JOURS.forEach((_, idx) => {
+        st[idx] = {
+          actif: document.getElementById(`st-check-${idx}`).checked,
+          arrivee: document.getElementById(`st-arr-${idx}`).value,
+          depart: document.getElementById(`st-dep-${idx}`).value
+        };
+      });
+      enfants[activeEnfantId].semaineType = st;
+      sauvegarderGlobal();
+      alert("Semaine type mise à jour !");
+    }
+
+    function genererPlanningMois() {
+      const moisCible = document.getElementById('planning-mois-cible').value; // YYYY-MM
+      if(!moisCible) return alert("Sélectionnez un mois.");
+
+      const [year, month] = moisCible.split('-').map(Number);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      if(!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+
+      for(let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month - 1, day);
+        // Ajustement jour index (0=Lundi, 6=Dimanche)
+        let dayIdx = dateObj.getDay() - 1;
+        if(dayIdx === -1) dayIdx = 6;
+
+        const isoDate = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const configJour = st[dayIdx];
+
+        if(configJour && configJour.actif) {
+          enfants[activeEnfantId].planningPrevu[isoDate] = {
+            arrivee: configJour.arrivee,
+            depart: configJour.depart
+          };
+        }
+      }
+
+      sauvegarderGlobal();
+      alert(`Planning prévisionnel généré pour ${moisCible} !`);
+      chargerHorairePrevuPourDate();
+    }
+
+    function chargerHorairePrevuPourDate() {
+      const date = document.getElementById('input-date').value;
+      const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
+
+      if(prev) {
+        document.getElementById('input-arrivee').value = prev.arrivee;
+        document.getElementById('input-depart').value = prev.depart;
+      } else {
+        document.getElementById('input-arrivee').value = "08:00";
+        document.getElementById('input-depart').value = "17:00";
+      }
+    }
+
+    // TAB MANAGEMENT
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -608,7 +672,7 @@
       event.target.classList.add('active');
 
       if(tabId === 'paie') calculerFicheDePaie();
-      if(tabId === 'impots') calculerImpots();
+      if(tabId === 'planning') chargerSemaineTypeInterface();
     }
 
     document.getElementById('input-date').valueAsDate = new Date();
@@ -620,7 +684,7 @@
       const repas = document.getElementById('input-repas').value;
       const contrat = enfants[activeEnfantId].contrat;
 
-      if (!date || !arrivee || !depart) return alert("Remplissez la date et les heures.");
+      if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
 
       const [hA, mA] = arrivee.split(':').map(Number);
       const [hD, mD] = depart.split(':').map(Number);
@@ -639,9 +703,13 @@
         }
       }
 
+      // Remplacer si existe déjà pour la même date
+      enfants[activeEnfantId].presences = enfants[activeEnfantId].presences.filter(p => p.date !== date);
+
       enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
       sauvegarderGlobal();
       afficherPresences();
+      alert("Journée validée !");
     }
 
     function supprimerPresence(id) {
@@ -653,8 +721,8 @@
     function afficherPresences() {
       const tbody = document.querySelector('#table-presences tbody');
       tbody.innerHTML = '';
-      const list = enfants[activeEnfantId].presences;
-      list.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(p => {
+      const list = enfants[activeEnfantId].presences || [];
+      list.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(p => {
         tbody.innerHTML += `
           <tr>
             <td><strong>${p.date}</strong></td>
@@ -693,14 +761,14 @@
         hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value)
       };
       sauvegarderGlobal();
-      rafraichirSelecteurEnfants();
+      rendreSlider();
       alert("Contrat enregistré !");
     }
 
     function calculerFicheDePaie() {
       const data = enfants[activeEnfantId];
       const contrat = data.contrat;
-      const presences = data.presences;
+      const presences = data.presences || [];
 
       document.getElementById('fp-enfant').innerText = contrat.enfant;
       document.getElementById('fp-parent').innerText = contrat.parent;
@@ -734,39 +802,6 @@
       document.getElementById('fp-total-hs').innerText = (montantHComp + montantHSup).toFixed(2) + ' €';
       document.getElementById('fp-total-indemnites').innerText = totalIndem.toFixed(2) + ' €';
       document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
-
-      document.getElementById('pj-hn').innerText = contrat.hMensuel;
-      document.getElementById('pj-hs').innerText = (totHComp + totHSup).toFixed(0);
-      document.getElementById('pj-jours').innerText = nbJours;
-      document.getElementById('pj-indem').innerText = totalIndem.toFixed(2);
-    }
-
-    function calculerImpots() {
-      const smic = parseFloat(document.getElementById('cfg-smic').value) || 11.65;
-      let totalBrutEstime = 0;
-      let totalAbattement = 0;
-      const ratioNetToBrut = 1.28;
-
-      Object.keys(enfants).forEach(id => {
-        const item = enfants[id];
-        item.presences.forEach(p => {
-          let paieJourNet = (p.duree * item.contrat.tarifNet) + item.contrat.ie + (p.repas === 'oui' ? item.contrat.ir : 0);
-          totalBrutEstime += paieJourNet * ratioNetToBrut;
-
-          let baseAbattement = 3 * smic;
-          if (p.duree < 8) {
-            totalAbattement += baseAbattement * (p.duree / 8);
-          } else {
-            totalAbattement += baseAbattement;
-          }
-        });
-      });
-
-      let netImposable = Math.max(0, totalBrutEstime - totalAbattement);
-
-      document.getElementById('imp-brut').innerText = totalBrutEstime.toFixed(2) + ' €';
-      document.getElementById('imp-abattement').innerText = '- ' + totalAbattement.toFixed(2) + ' €';
-      document.getElementById('imp-net-imposable').innerText = netImposable.toFixed(2) + ' €';
     }
 
     function sauvegarderGlobal() {
@@ -774,9 +809,11 @@
       localStorage.setItem('assmat_active_id', activeEnfantId);
     }
 
-    rafraichirSelecteurEnfants();
+    // INITIALISATION
+    rendreSlider();
     chargerFormulaireContrat();
     afficherPresences();
+    chargerHorairePrevuPourDate();
   </script>
 </body>
 </html>
