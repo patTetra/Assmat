@@ -246,6 +246,12 @@
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
       gap: 0.85rem; 
     }
+    .grid-3 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+      gap: 0.85rem; 
+    }
+    
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
     
@@ -259,6 +265,23 @@
       color: #fff;
       background: var(--surface-card);
       outline: none;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface-card);
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
 
     /* Buttons */
@@ -388,9 +411,11 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       padding: 1.25rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     /* Semaine Type Accordion */
@@ -430,13 +455,31 @@
     th { background: rgba(0, 0, 0, 0.2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; }
     td { padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
 
-    .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; }
+    .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
     .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
     .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
+
+    /* Info Card Contacts */
+    .info-group {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      border: 1px solid var(--border);
+      margin-bottom: 0.85rem;
+    }
+    .info-group h3 {
+      font-size: 0.85rem;
+      color: var(--accent-light);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
     @media print {
       body { background: white; color: black; padding: 0; }
@@ -458,7 +501,6 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:0.75rem;">
-      <!-- POINT LUMINEUX (LED) DE STATUT DE SYNCHRONISATION -->
       <div class="sync-status-container" onclick="ouvrirModalConfigGitHub()" title="État de la synchro GitHub">
         <div id="sync-led" class="sync-led"></div>
       </div>
@@ -561,16 +603,70 @@
   <!-- TAB 3 : CONTRAT ENFANT ACTIF -->
   <div id="contrat" class="tab-content">
     <div class="card">
-      <h2>Paramètres du contrat</h2>
+      <h2>Informations de l'enfant</h2>
+      <div class="grid-2" style="margin-bottom: 1rem;">
+        <div class="form-group">
+          <label>Prénom de l'enfant</label>
+          <input type="text" id="cfg-prenom-enfant">
+        </div>
+        <div class="form-group">
+          <label>Nom de l'enfant</label>
+          <input type="text" id="cfg-nom-enfant">
+        </div>
+        <div class="form-group">
+          <label>Date de naissance</label>
+          <input type="date" id="cfg-naissance-enfant">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label class="checkbox-group">
+          <input type="checkbox" id="cfg-sorties-voiture">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">🚗 Sorties autorisées en voiture</span>
+        </label>
+      </div>
+
+      <h2>Coordonnées des Parents</h2>
+      
+      <!-- MÈRE -->
+      <div class="info-group">
+        <h3>👩 Coordonnées Mère</h3>
+        <div class="grid-2" style="margin-bottom: 0.6rem;">
+          <div class="form-group"><label>Nom</label><input type="text" id="cfg-mere-nom"></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="cfg-mere-prenom"></div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group"><label>Portable</label><input type="tel" id="cfg-mere-port"></div>
+          <div class="form-group"><label>Maison</label><input type="tel" id="cfg-mere-maison"></div>
+          <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-mere-bureau"></div>
+        </div>
+      </div>
+
+      <!-- PÈRE -->
+      <div class="info-group">
+        <h3>👨 Coordonnées Père</h3>
+        <div class="grid-2" style="margin-bottom: 0.6rem;">
+          <div class="form-group"><label>Nom</label><input type="text" id="cfg-pere-nom"></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="cfg-pere-prenom"></div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group"><label>Portable</label><input type="tel" id="cfg-pere-port"></div>
+          <div class="form-group"><label>Maison</label><input type="tel" id="cfg-pere-maison"></div>
+          <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-pere-bureau"></div>
+        </div>
+      </div>
+
+      <!-- URGENCE -->
+      <div class="info-group" style="border-color: rgba(244, 63, 94, 0.4);">
+        <h3 style="color: var(--danger);">🚨 Contact d'Urgence</h3>
+        <div class="grid-2">
+          <div class="form-group"><label>Nom & Prénom</label><input type="text" id="cfg-urgence-nom"></div>
+          <div class="form-group"><label>Téléphone Urgence</label><input type="tel" id="cfg-urgence-tel"></div>
+        </div>
+      </div>
+
+      <h2>Tarification & Contrat</h2>
       <div class="grid-2">
-        <div class="form-group">
-          <label>Prénom enfant</label>
-          <input type="text" id="cfg-enfant">
-        </div>
-        <div class="form-group">
-          <label>Employeur</label>
-          <input type="text" id="cfg-parent">
-        </div>
         <div class="form-group">
           <label>Tarif Net (€/h)</label>
           <input type="number" step="0.01" id="cfg-tarif-net">
@@ -598,7 +694,7 @@
       </div>
       <br>
       <div style="display:flex; flex-direction: column; gap: 0.75rem;">
-        <button class="btn btn-primary" onclick="sauvegarderContrat()">Sauvegarder le contrat</button>
+        <button class="btn btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
         <button class="btn btn-danger btn-sm" onclick="supprimerEnfantActif()">Supprimer ce profil</button>
       </div>
     </div>
@@ -615,7 +711,7 @@
       <div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
           <div><span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant</span><br><strong id="fp-enfant" style="font-size:0.95rem; color:#fff;"></strong></div>
-          <div><span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Employeur</span><br><strong id="fp-parent" style="font-size:0.95rem; color:#fff;"></strong></div>
+          <div><span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Parents</span><br><strong id="fp-parent" style="font-size:0.95rem; color:#fff;"></strong></div>
         </div>
 
         <div class="table-container">
@@ -714,7 +810,7 @@
     let currentDateState = new Date();
     let selectedIsoDate = null;
     let githubFileSha = null;
-    let syncTimer = null; // Timer pour le debounce des commits GitHub
+    let syncTimer = null;
 
     let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
       user: '',
@@ -725,7 +821,16 @@
 
     let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
       "leo": {
-        contrat: { enfant: 'Léo', parent: 'M. Dupont', tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        contrat: { 
+          prenomEnfant: 'Léo', 
+          nomEnfant: 'Dupont',
+          naissance: '2023-05-14',
+          sortiesVoiture: true,
+          mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
+          pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
+          urgence: { nom: 'Grand-Mère (Jeanne)', tel: '0699887766' },
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+        },
         semaineType: {
           0: { actif: true, arrivee: '08:30', depart: '17:30' },
           1: { actif: true, arrivee: '08:30', depart: '17:30' },
@@ -860,18 +965,15 @@
       }
     }
 
-    // SAUVEGARDE GLOBALE AVEC DEBOUNCE POUR EVITER LE TROP-PLEIN DE COMMITS
     function sauvegarderGlobal() {
-      // 1. Sauvegarde locale instantanée (Zéro risque de perte)
       localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       localStorage.setItem('assmat_active_id', activeEnfantId);
 
-      // 2. Temporisation pour GitHub : attend 3 secondes d'inactivité avant de faire un commit
       majStatutSync('syncing');
       clearTimeout(syncTimer);
       syncTimer = setTimeout(() => {
         pousserVersGitHub();
-      }, 3000); // 3000 ms = 3s de délai
+      }, 3000);
     }
 
     function rafraichirTouteLInterface() {
@@ -893,21 +995,28 @@
       const keys = Object.keys(enfants);
       keys.forEach((id, index) => {
         const enf = enfants[id];
+        const c = enf.contrat;
         
+        let subParent = `${c.mere?.prenom || ''} & ${c.pere?.prenom || ''} ${c.mere?.nom || c.nomEnfant || ''}`.trim();
+        let ageText = c.naissance ? ` (${calculerAge(c.naissance)})` : '';
+
         const slide = document.createElement('div');
         slide.className = 'child-slide';
         slide.dataset.id = id;
         slide.innerHTML = `
           <div class="slide-header">
             <div>
-              <div class="slide-title">👶 ${enf.contrat.enfant}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${enf.contrat.parent}</div>
+              <div class="slide-title">👶 ${c.prenomEnfant || 'Enfant'} ${c.nomEnfant || ''} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${subParent || 'Parents non renseignés'}</div>
             </div>
-            <span class="badge badge-primary">${enf.contrat.hHebdo}h / sem</span>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+              <span class="badge badge-primary">${c.hHebdo || 0}h / sem</span>
+              ${c.sortiesVoiture ? '<span class="badge badge-success">🚗 Voix autorisée</span>' : '<span class="badge badge-warning">🚫 Voix non aut.</span>'}
+            </div>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
-            <span>Tarif: <b>${enf.contrat.tarifNet}€/h</b></span>
-            <span>IE: <b>${enf.contrat.ie}€</b> | IR: <b>${enf.contrat.ir}€</b></span>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); flex-wrap:wrap; gap:0.5rem;">
+            <span>Tarif: <b>${c.tarifNet || 0}€/h</b></span>
+            <span>Urgence: <b style="color:var(--danger);">${c.urgence?.tel || 'Non renseigné'}</b></span>
           </div>
         `;
         track.appendChild(slide);
@@ -921,6 +1030,15 @@
       if(activeIndex >= 0) {
         setTimeout(() => { track.scrollLeft = activeIndex * track.offsetWidth; }, 50);
       }
+    }
+
+    function calculerAge(dateNaissance) {
+      if (!dateNaissance) return '';
+      const today = new Date();
+      const birth = new Date(dateNaissance);
+      let months = (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
+      if (months < 24) return `${months} mois`;
+      return `${Math.floor(months / 12)} ans`;
     }
 
     function handleSliderScroll() {
@@ -941,7 +1059,16 @@
       if (!prenom) return;
       const id = 'enf_' + Date.now();
       enfants[id] = {
-        contrat: { enfant: prenom, parent: 'Parents de ' + prenom, tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
+        contrat: { 
+          prenomEnfant: prenom, 
+          nomEnfant: '',
+          naissance: '',
+          sortiesVoiture: true,
+          mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          urgence: { nom: '', tel: '' },
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+        },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 
           1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -961,7 +1088,7 @@
 
     function supprimerEnfantActif() {
       if (Object.keys(enfants).length <= 1) return alert("Conservez au moins un profil.");
-      if (confirm(`Supprimer le profil de ${enfants[activeEnfantId].contrat.enfant} ?`)) {
+      if (confirm(`Supprimer le profil de ${enfants[activeEnfantId].contrat.prenomEnfant} ?`)) {
         delete enfants[activeEnfantId];
         activeEnfantId = Object.keys(enfants)[0];
         sauvegarderGlobal();
@@ -1231,31 +1358,75 @@
     }
 
     function chargerFormulaireContrat() {
-      const contrat = enfants[activeEnfantId].contrat;
-      document.getElementById('cfg-enfant').value = contrat.enfant;
-      document.getElementById('cfg-parent').value = contrat.parent;
-      document.getElementById('cfg-tarif-net').value = contrat.tarifNet;
-      document.getElementById('cfg-majoration').value = contrat.majoration;
-      document.getElementById('cfg-ie').value = contrat.ie;
-      document.getElementById('cfg-ir').value = contrat.ir;
-      document.getElementById('cfg-h-mensuel').value = contrat.hMensuel;
-      document.getElementById('cfg-h-hebdo').value = contrat.hHebdo;
+      const c = enfants[activeEnfantId].contrat || {};
+      
+      document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || '';
+      document.getElementById('cfg-nom-enfant').value = c.nomEnfant || '';
+      document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
+      document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
+
+      // Mère
+      document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
+      document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
+      document.getElementById('cfg-mere-port').value = c.mere?.port || '';
+      document.getElementById('cfg-mere-maison').value = c.mere?.maison || '';
+      document.getElementById('cfg-mere-bureau').value = c.mere?.bureau || '';
+
+      // Père
+      document.getElementById('cfg-pere-nom').value = c.pere?.nom || '';
+      document.getElementById('cfg-pere-prenom').value = c.pere?.prenom || '';
+      document.getElementById('cfg-pere-port').value = c.pere?.port || '';
+      document.getElementById('cfg-pere-maison').value = c.pere?.maison || '';
+      document.getElementById('cfg-pere-bureau').value = c.pere?.bureau || '';
+
+      // Urgence
+      document.getElementById('cfg-urgence-nom').value = c.urgence?.nom || '';
+      document.getElementById('cfg-urgence-tel').value = c.urgence?.tel || '';
+
+      // Tarifs
+      document.getElementById('cfg-tarif-net').value = c.tarifNet || 4.00;
+      document.getElementById('cfg-majoration').value = c.majoration || 10;
+      document.getElementById('cfg-ie').value = c.ie || 3.50;
+      document.getElementById('cfg-ir').value = c.ir || 4.00;
+      document.getElementById('cfg-h-mensuel').value = c.hMensuel || 120;
+      document.getElementById('cfg-h-hebdo').value = c.hHebdo || 35;
     }
 
     function sauvegarderContrat() {
       enfants[activeEnfantId].contrat = {
-        enfant: document.getElementById('cfg-enfant').value,
-        parent: document.getElementById('cfg-parent').value,
-        tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value),
-        majoration: parseFloat(document.getElementById('cfg-majoration').value),
-        ie: parseFloat(document.getElementById('cfg-ie').value),
-        ir: parseFloat(document.getElementById('cfg-ir').value),
-        hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value),
-        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value)
+        prenomEnfant: document.getElementById('cfg-prenom-enfant').value,
+        nomEnfant: document.getElementById('cfg-nom-enfant').value,
+        naissance: document.getElementById('cfg-naissance-enfant').value,
+        sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
+        mere: {
+          nom: document.getElementById('cfg-mere-nom').value,
+          prenom: document.getElementById('cfg-mere-prenom').value,
+          port: document.getElementById('cfg-mere-port').value,
+          maison: document.getElementById('cfg-mere-maison').value,
+          bureau: document.getElementById('cfg-mere-bureau').value
+        },
+        pere: {
+          nom: document.getElementById('cfg-pere-nom').value,
+          prenom: document.getElementById('cfg-pere-prenom').value,
+          port: document.getElementById('cfg-pere-port').value,
+          maison: document.getElementById('cfg-pere-maison').value,
+          bureau: document.getElementById('cfg-pere-bureau').value
+        },
+        urgence: {
+          nom: document.getElementById('cfg-urgence-nom').value,
+          tel: document.getElementById('cfg-urgence-tel').value
+        },
+        tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value) || 0,
+        majoration: parseFloat(document.getElementById('cfg-majoration').value) || 0,
+        ie: parseFloat(document.getElementById('cfg-ie').value) || 0,
+        ir: parseFloat(document.getElementById('cfg-ir').value) || 0,
+        hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
+        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value) || 0
       };
+      
       sauvegarderGlobal();
       rendreSlider();
-      alert("Contrat enregistré !");
+      alert("Contrat mis à jour avec succès !");
     }
 
     function calculerFicheDePaie() {
@@ -1263,8 +1434,12 @@
       const contrat = data.contrat;
       const presences = data.presences || [];
 
-      document.getElementById('fp-enfant').innerText = contrat.enfant;
-      document.getElementById('fp-parent').innerText = contrat.parent;
+      document.getElementById('fp-enfant').innerText = `${contrat.prenomEnfant || ''} ${contrat.nomEnfant || ''}`;
+      
+      let parentsStr = [];
+      if(contrat.mere?.prenom) parentsStr.push(`Mme ${contrat.mere.prenom} ${contrat.mere.nom}`);
+      if(contrat.pere?.prenom) parentsStr.push(`M. ${contrat.pere.prenom} ${contrat.pere.nom}`);
+      document.getElementById('fp-parent').innerText = parentsStr.join(' / ') || 'Parents';
 
       let totHComp = presences.reduce((acc, p) => acc + p.hComp, 0);
       let totHSup = presences.reduce((acc, p) => acc + p.hSup, 0);
