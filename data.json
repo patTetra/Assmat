@@ -8,7 +8,25 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 120,
-      "hHebdo": 35
+      "hHebdo": 35,
+      "mere": {
+        "nom": "",
+        "prenom": "M. et Mme Dupont",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "pere": {
+        "nom": "",
+        "prenom": "",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "urgence": {
+        "nom": "",
+        "tel": ""
+      }
     },
     "presences": [
       {
@@ -148,7 +166,25 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 120,
-      "hHebdo": 35
+      "hHebdo": 35,
+      "mere": {
+        "nom": "",
+        "prenom": "Parents de Lou",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "pere": {
+        "nom": "",
+        "prenom": "",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "urgence": {
+        "nom": "",
+        "tel": ""
+      }
     },
     "presences": [],
     "semaineType": {
@@ -203,8 +239,28 @@
   },
   "enf_1787461779180": {
     "contrat": {
-      "enfant": "Youenn",
-      "parent": "Parents de Youenn",
+      "prenomEnfant": "Youenn",
+      "nomEnfant": "Segalen",
+      "naissance": "",
+      "sortiesVoiture": true,
+      "mere": {
+        "nom": "",
+        "prenom": "Parents de Youenn",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "pere": {
+        "nom": "",
+        "prenom": "",
+        "port": "",
+        "maison": "",
+        "bureau": ""
+      },
+      "urgence": {
+        "nom": "",
+        "tel": ""
+      },
       "tarifNet": 4,
       "majoration": 10,
       "ie": 3.5,
