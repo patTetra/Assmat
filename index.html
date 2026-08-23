@@ -258,60 +258,79 @@
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 4px;
     }
     
-    /* CASE CALENDRIER */
+    /* CASE CALENDRIER & RÈGLES LARGEUR ÉGALE */
     .cal-day {
       background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      min-height: 64px;
+      min-height: 70px;
       padding: 4px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      align-items: center;
       cursor: pointer;
       transition: all 0.15s ease;
+      width: 100%;
     }
     .cal-day:active { transform: scale(0.95); }
     .cal-day.empty { background: transparent; border: none; cursor: default; }
+    
+    /* WEEKEND GRISE */
+    .cal-day.is-weekend {
+      background: rgba(15, 23, 42, 0.45);
+      border-color: rgba(255, 255, 255, 0.04);
+      opacity: 0.75;
+    }
     
     /* VARIANTES DE COULEURS DE CASE */
     .cal-day.has-presence {
       background: rgba(99, 102, 241, 0.18);
       border: 1px solid rgba(129, 140, 248, 0.4);
+      opacity: 1;
     }
     .cal-day.has-absence {
       background: rgba(244, 63, 94, 0.12);
       border: 1px solid rgba(244, 63, 94, 0.3);
+      opacity: 1;
     }
 
-    .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; }
+    .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
     
+    /* HEURES L'UNE AU-DESSUS DE L'AUTRE */
+    .cal-day-badge-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      width: 100%;
+      margin-top: 2px;
+    }
+    .cal-day-badge-stack .time-line {
+      font-size: 0.62rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--accent-light);
+    }
     .cal-day-badge {
       font-size: 0.58rem;
       font-weight: 600;
       padding: 2px 3px;
       border-radius: 4px;
       text-align: center;
-      line-height: 1.1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .cal-day-badge.planned { 
-      background: rgba(99, 102, 241, 0.35); 
-      color: #ffffff; 
-      border: 1px solid rgba(129, 140, 248, 0.5); 
+      width: 100%;
     }
     .cal-day-badge.absent { 
       background: var(--danger-bg); 
       color: var(--danger); 
     }
     .cal-day-badge.off { 
-      background: rgba(255,255,255,0.05); 
-      color: var(--text-muted); 
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      opacity: 0.4;
     }
 
     /* Modal / Popup iOS */
@@ -337,7 +356,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* Semaine Type Accordion */
+    /* Semaine Type Accordion & Styles Week-end */
     details summary {
       cursor: pointer;
       font-weight: 700;
@@ -346,7 +365,19 @@
       padding: 0.5rem 0;
     }
     .week-grid { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
-    .week-day-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .week-day-row { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background: var(--surface-card); 
+      padding: 0.5rem 0.75rem; 
+      border-radius: var(--radius-sm); 
+      border: 1px solid var(--border); 
+    }
+    .week-day-row.weekend-row {
+      background: rgba(15, 23, 42, 0.4);
+      opacity: 0.7;
+    }
     .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
     .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
 
@@ -455,7 +486,7 @@
     </div>
   </div>
 
-  <!-- TAB 2 : PLANNING TYES iOS DU MOIS -->
+  <!-- TAB 2 : PLANNING TYPES iOS DU MOIS -->
   <div id="planning" class="tab-content">
     
     <div class="card">
@@ -619,7 +650,8 @@
           2: { actif: false, arrivee: '', depart: '' },
           3: { actif: true, arrivee: '08:30', depart: '17:30' },
           4: { actif: true, arrivee: '08:30', depart: '17:30' },
-          5: { actif: false }, 6: { actif: false }
+          5: { actif: false, arrivee: '', depart: '' }, 
+          6: { actif: false, arrivee: '', depart: '' }
         },
         planningPrevu: {},
         presences: []
@@ -691,7 +723,15 @@
       const id = 'enf_' + Date.now();
       enfants[id] = {
         contrat: { enfant: prenom, parent: 'Parents de ' + prenom, tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 },
-        semaineType: { 0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 2: {actif:false}, 3: {actif:true, arrivee:'08:00', depart:'17:00'}, 4: {actif:true, arrivee:'08:00', depart:'17:00'}, 5: {actif:false}, 6: {actif:false} },
+        semaineType: { 
+          0: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          2: {actif:false, arrivee:'', depart:''}, 
+          3: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          4: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          5: {actif:false, arrivee:'', depart:''}, 
+          6: {actif:false, arrivee:'', depart:''} 
+        },
         planningPrevu: {},
         presences: []
       };
@@ -748,19 +788,32 @@
       const planning = enfants[activeEnfantId].planningPrevu || {};
 
       for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dateObj = new Date(year, month, day);
+        let dayOfWeek = dateObj.getDay() - 1;
+        if (dayOfWeek === -1) dayOfWeek = 6; // 5 = Samedi, 6 = Dimanche
+
         const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const prevu = planning[isoDate];
 
         let badgeHtml = `<div class="cal-day-badge off">-</div>`;
         let dayClass = "cal-day";
 
+        if (dayOfWeek === 5 || dayOfWeek === 6) {
+          dayClass += " is-weekend";
+        }
+
         if (prevu) {
           if (prevu.status === 'absent') {
             badgeHtml = `<div class="cal-day-badge absent">Absent</div>`;
             dayClass += " has-absence";
           } else if (prevu.arrivee && prevu.depart) {
-            // Affichage de l'arrivée ET du départ
-            badgeHtml = `<div class="cal-day-badge planned">${prevu.arrivee}-${prevu.depart}</div>`;
+            // Affichage vertical des heures : Arrivée en haut, Départ en bas
+            badgeHtml = `
+              <div class="cal-day-badge-stack">
+                <span class="time-line">${prevu.arrivee}</span>
+                <span class="time-line">${prevu.depart}</span>
+              </div>
+            `;
             dayClass += " has-presence";
           }
         }
@@ -826,9 +879,10 @@
       if(!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
 
       for(let day = 1; day <= daysInMonth; day++) {
+        // Mois JS basé sur index 0 (janvier = 0)
         const dateObj = new Date(year, month, day);
         let dayIdx = dateObj.getDay() - 1;
-        if(dayIdx === -1) dayIdx = 6;
+        if(dayIdx === -1) dayIdx = 6; // Lundi = 0, ..., Dimanche = 6
 
         const isoDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         const configJour = st[dayIdx];
@@ -844,7 +898,7 @@
 
       sauvegarderGlobal();
       rendreCalendrier();
-      alert(`Semaine type appliquée à tout le mois de ${MOIS[month]} !`);
+      alert(`Semaine type appliquée à tout le mois de ${MOIS[month]} ${year} !`);
     }
 
     function chargerSemaineTypeInterface() {
@@ -853,9 +907,10 @@
       const st = enfants[activeEnfantId].semaineType || {};
 
       JOURS.forEach((jour, idx) => {
-        const item = st[idx] || { actif: false, arrivee: '08:30', depart: '17:30' };
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
+        const isWeekend = (idx === 5 || idx === 6);
         grid.innerHTML += `
-          <div class="week-day-row">
+          <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
             <div style="display:flex; align-items:center; gap:0.5rem;">
               <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''}>
               <label for="st-check-${idx}">${jour}</label>
