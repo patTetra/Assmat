@@ -1,14 +1,11 @@
 {
   "leo": {
     "contrat": {
-      "enfant": "Raphaël ",
-      "parent": "M. et Mme Dupont",
-      "tarifNet": 4,
-      "majoration": 10,
-      "ie": 3.5,
-      "ir": 4,
-      "hMensuel": 120,
-      "hHebdo": 35,
+      "prenomEnfant": "",
+      "nomEnfant": "",
+      "naissance": "",
+      "sortiesVoiture": false,
+      "moisLisse": false,
       "mere": {
         "nom": "",
         "prenom": "M. et Mme Dupont",
@@ -27,7 +24,13 @@
         "nom": "",
         "tel": ""
       },
-      "jHebdo": 4,
+      "tarifNet": 4,
+      "majoration": 10,
+      "ie": 3.5,
+      "ir": 4,
+      "hMensuel": 117,
+      "hHebdo": 27,
+      "jHebdo": 3,
       "semainesAn": 52
     },
     "presences": [
@@ -190,7 +193,8 @@
       "hMensuel": 120,
       "hHebdo": 35,
       "jHebdo": 4,
-      "semainesAn": 52
+      "semainesAn": 52,
+      "moisLisse": true
     },
     "presences": [],
     "semaineType": {
@@ -439,7 +443,8 @@
       "hMensuel": 120,
       "hHebdo": 35,
       "jHebdo": 4,
-      "semainesAn": 52
+      "semainesAn": 52,
+      "moisLisse": true
     },
     "semaineType": {
       "0": {
