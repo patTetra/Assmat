@@ -2,270 +2,1486 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestion Planning & Semaine Type</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AssMat Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-card: #334155;
+      --border: rgba(255, 255, 255, 0.1);
+      
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --success: #10b981;
+      --danger: #f43f5e;
+      --warning: #f59e0b;
+      
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
     }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html, body { max-width: 100vw; overflow-x: hidden; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 16px;
+      color: var(--text-main);
+      padding: calc(1rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+    header { 
+      display: flex; 
+      justify-content: space-between;
+      align-items: center; 
+      margin-bottom: 1.25rem; 
     }
+    .brand { display: flex; align-items: center; gap: 0.85rem; }
+    
+    .brand-icon-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px var(--accent-glow);
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.2s ease;
+    }
+    .brand-icon-btn:active { transform: scale(0.92); }
+
+    header h1 { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      font-size: 1.35rem; 
+      font-weight: 800; 
+      color: #fff; 
+      line-height: 1.1;
+    }
+    header p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .sync-status-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    .sync-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--text-muted);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      transition: all 0.3s ease;
+    }
+
+    .sync-led.online {
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .sync-led.offline {
+      background-color: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    .sync-led.syncing {
+      background-color: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+      animation: pulse-led 1s infinite alternate;
+    }
+
+    @keyframes pulse-led {
+      from { opacity: 0.3; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.2); }
+    }
+
+    .slider-container {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+    .slider-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slider-track::-webkit-scrollbar { display: none; }
+
+    .child-slide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slide-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--surface-card);
+      transition: all 0.2s ease;
+    }
+    .dot.active {
+      background: var(--accent-light);
+      width: 20px;
+      border-radius: 10px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+      background: var(--surface);
+      padding: 5px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    
+    .tab-btn {
+      flex: 1;
+      min-width: 75px;
+      background: transparent;
+      border: none;
+      padding: 0.65rem 0.5rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--accent-gradient);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
+      padding: 1.15rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .card h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
     }
 
-    h2 {
-      margin-top: 0;
-      color: var(--primary);
+    .grid-2 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+      gap: 0.85rem; 
     }
-
-    /* Semaine Type */
-    .row-jour {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
+    .grid-3 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+      gap: 0.85rem; 
     }
-
-    .row-jour:last-child {
-      border-bottom: none;
-    }
-
-    .jour-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 140px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .horaires-inputs {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    input[type="time"] {
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    button.btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 16px;
+    
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    
+    input, select {
       width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--surface-card);
+      outline: none;
     }
 
-    /* Calendrier */
-    .grid-calendrier {
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface-card);
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .btn {
+      border: none;
+      padding: 0.75rem 1.2rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px var(--accent-glow); }
+    .btn-secondary { background: var(--surface-card); color: #fff; border: 1px solid var(--border); }
+    .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .calendar-days-header {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-top: 12px;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
     }
-
-    .jour-cal {
-      background: #f1f5f9;
-      border-radius: 8px;
-      padding: 10px;
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    
+    .cal-day {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       min-height: 70px;
+      padding: 4px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      border: 1px solid transparent;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+    .cal-day:active { transform: scale(0.95); }
+    .cal-day.empty { background: transparent; border: none; cursor: default; }
+    
+    .cal-day.is-weekend {
+      background: rgba(15, 23, 42, 0.45);
+      border-color: rgba(255, 255, 255, 0.04);
+      opacity: 0.75;
+    }
+    
+    .cal-day.has-presence {
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      opacity: 1;
     }
 
-    .jour-cal.present {
-      background: #dcfce7;
-      border-color: #86efac;
+    .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
+    
+    .cal-day-badge-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      width: 100%;
+      margin-top: 2px;
+    }
+    .cal-day-badge-stack .time-line {
+      font-size: 0.62rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--accent-light);
+    }
+    .cal-day-badge {
+      font-size: 0.58rem;
+      font-weight: 600;
+      padding: 2px 3px;
+      border-radius: 4px;
+      text-align: center;
+      width: 100%;
+    }
+    .cal-day-badge.off { 
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      opacity: 0.4;
     }
 
-    .jour-cal .num-jour {
-      font-weight: bold;
-      font-size: 14px;
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .jour-cal .heures {
-      font-size: 11px;
-      color: #475569;
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent-light);
+      padding: 0.5rem 0;
+    }
+    .week-grid { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+    .week-day-row { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background: var(--surface-card); 
+      padding: 0.5rem 0.75rem; 
+      border-radius: var(--radius-sm); 
+      border: 1px solid var(--border); 
+    }
+    .week-day-row.weekend-row {
+      background: rgba(15, 23, 42, 0.4);
+      opacity: 0.7;
+    }
+    .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
+    .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
+
+    .table-container { 
+      width: 100%;
+      overflow-x: auto; 
+      border-radius: var(--radius-md); 
+      border: 1px solid var(--border); 
+      margin-top: 0.5rem;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--surface-card); white-space: nowrap; }
+    th { background: rgba(0, 0, 0, 0.2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; }
+    td { padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
+
+    .badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
+    .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
+    .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
+    .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
+
+    .info-group {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      border: 1px solid var(--border);
+      margin-bottom: 0.85rem;
+    }
+    .info-group h3 {
+      font-size: 0.85rem;
+      color: var(--accent-light);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    @media print {
+      body { background: white; color: black; padding: 0; }
+      .no-print { display: none !important; }
+      .card { border: none; box-shadow: none; padding: 0; background: white; }
+      .tab-content { display: block !important; }
+      td, th { color: black !important; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-
-  <!-- SEMAINE TYPE -->
-  <div class="card">
-    <h2>Configuration de la Semaine Type</h2>
-    <div id="semaine-type-container">
-      <!-- Généré par JS -->
+  <header class="no-print">
+    <div class="brand">
+      <button class="brand-icon-btn" onclick="ouvrirModalConfigGitHub()" title="Paramètres d'application & Synchro">⚙️</button>
+      <div>
+        <h1>AssMat Flow</h1>
+        <p>Suivi d'assistance maternelle</p>
+      </div>
     </div>
-    <button class="btn-primary" onclick="sauvegarderSemaineType()">Enregistrer la semaine type</button>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <div class="sync-status-container" onclick="ouvrirModalConfigGitHub()" title="État de la synchro GitHub">
+        <div id="sync-led" class="sync-led"></div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="ajouterNouvelEnfant()">＋ Enfant</button>
+    </div>
+  </header>
+
+  <!-- SLIDER DES ENFANTS -->
+  <div class="slider-container no-print">
+    <div class="slider-track" id="slider-track" onscroll="handleSliderScroll()"></div>
+    <div class="slider-dots" id="slider-dots"></div>
   </div>
 
-  <!-- CALENDRIER -->
-  <div class="card">
-    <h2>Aperçu du Calendrier</h2>
-    <div class="grid-calendrier" id="calendrier-grid">
-      <!-- Généré par JS -->
+  <nav class="nav-tabs no-print">
+    <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
+    <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning Mois</button>
+    <button class="tab-btn" onclick="switchTab('contrat')">📜 Contrat Enfant</button>
+    <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
+  </nav>
+
+  <!-- TAB 1 : VALIDATION DU JOUR -->
+  <div id="presence" class="tab-content active">
+    <div class="card no-print">
+      <h2>Saisie / Validation rapide du jour</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
+        </div>
+        <div class="form-group">
+          <label>Arrivée réelle</label>
+          <input type="time" id="input-arrivee">
+        </div>
+        <div class="form-group">
+          <label>Départ réel</label>
+          <input type="time" id="input-depart">
+        </div>
+        <div class="form-group">
+          <label>Repas fourni ?</label>
+          <select id="input-repas">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+      </div>
+      <br>
+      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Valider la journée</button>
+    </div>
+
+    <div class="card">
+      <h2>Historique des présences</h2>
+      <div class="table-container">
+        <table id="table-presences">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Horaires</th>
+              <th>Durée</th>
+              <th>H. Norm.</th>
+              <th>H. Comp.</th>
+              <th>H. Sup.</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-</div>
+  <!-- TAB 2 : PLANNING TYPES iOS DU MOIS -->
+  <div id="planning" class="tab-content">
+    <div class="card">
+      <div class="calendar-header">
+        <button class="btn btn-secondary btn-sm" onclick="changerMoisPlanning(-1)">◀</button>
+        <h2 style="margin:0;" id="cal-month-title">Mois</h2>
+        <button class="btn btn-secondary btn-sm" onclick="changerMoisPlanning(1)">▶</button>
+      </div>
 
-<script>
-  const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-  
-  // Structure initiale de la semaine type
-  let semaineType = JSON.parse(localStorage.getItem('semaineType')) || {
-    lundi: { actif: false, debut: '08:00', fin: '17:00' },
-    mardi: { actif: false, debut: '08:00', fin: '17:00' },
-    mercredi: { actif: false, debut: '08:00', fin: '17:00' },
-    jeudi: { actif: false, debut: '08:00', fin: '17:00' },
-    vendredi: { actif: false, debut: '08:00', fin: '17:00' },
-    samedi: { actif: false, debut: '08:00', fin: '17:00' },
-    dimanche: { actif: false, debut: '08:00', fin: '17:00' }
-  };
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button class="btn btn-primary btn-sm" onclick="genererPlanningMoisComplet()">⚡ Appliquer la semaine type</button>
+      </div>
 
-  // Planning sauvegardé
-  let planning = JSON.parse(localStorage.getItem('planning')) || {};
+      <div class="calendar-days-header">
+        <div>LUN</div><div>MAR</div><div>MER</div><div>JEU</div><div>VEN</div><div>SAM</div><div>DIM</div>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
 
-  // --- 1. NETTOYAGE DES DONNÉES ET SUPPRESSION ABSENCES ---
-  function purifierDonneesEtAbsences() {
-    // Purge des résidus d'absences dans le planning existant
-    Object.keys(planning).forEach(date => {
-      if (planning[date].statut === 'absent' || planning[date].type === 'absence') {
-        delete planning[date]; // Supprime complètement la journée bloquée en rouge
-      }
-    });
-    localStorage.setItem('planning', JSON.stringify(planning));
-  }
+    <div class="card">
+      <details>
+        <summary>⚙️ Configurer la semaine type de base</summary>
+        <div class="week-grid" id="week-schedule-grid"></div>
+        <br>
+        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType()">Sauvegarder la semaine type</button>
+      </details>
+    </div>
+  </div>
 
-  // --- 2. RENDU SEMAINE TYPE ---
-  function afficherSemaineType() {
-    const container = document.getElementById('semaine-type-container');
-    container.innerHTML = '';
+  <!-- TAB 3 : CONTRAT ENFANT ACTIF -->
+  <div id="contrat" class="tab-content">
+    <div class="card">
+      <h2>Informations de l'enfant</h2>
+      <div class="grid-2" style="margin-bottom: 1rem;">
+        <div class="form-group">
+          <label>Prénom de l'enfant</label>
+          <input type="text" id="cfg-prenom-enfant">
+        </div>
+        <div class="form-group">
+          <label>Nom de l'enfant</label>
+          <input type="text" id="cfg-nom-enfant">
+        </div>
+        <div class="form-group">
+          <label>Date de naissance</label>
+          <input type="date" id="cfg-naissance-enfant">
+        </div>
+      </div>
 
-    JOURS.forEach(jour => {
-      const config = semaineType[jour];
-      const row = document.createElement('div');
-      row.className = 'row-jour';
-
-      row.innerHTML = `
-        <label class="jour-label">
-          <input type="checkbox" id="check-${jour}" ${config.actif ? 'checked' : ''}>
-          ${jour}
+      <div style="margin-bottom: 1.25rem;">
+        <label class="checkbox-group">
+          <input type="checkbox" id="cfg-sorties-voiture">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">🚗 Sorties autorisées en voiture</span>
         </label>
-        <div class="horaires-inputs">
-          <input type="time" id="debut-${jour}" value="${config.debut}">
-          <span>à</span>
-          <input type="time" id="fin-${jour}" value="${config.fin}">
+      </div>
+
+      <h2>Coordonnées des Parents</h2>
+      
+      <!-- MÈRE -->
+      <div class="info-group">
+        <h3>👩 Coordonnées Mère</h3>
+        <div class="grid-2" style="margin-bottom: 0.6rem;">
+          <div class="form-group"><label>Nom</label><input type="text" id="cfg-mere-nom"></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="cfg-mere-prenom"></div>
         </div>
-      `;
+        <div class="grid-3">
+          <div class="form-group"><label>Portable</label><input type="tel" id="cfg-mere-port"></div>
+          <div class="form-group"><label>Maison</label><input type="tel" id="cfg-mere-maison"></div>
+          <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-mere-bureau"></div>
+        </div>
+      </div>
 
-      container.appendChild(row);
+      <!-- PÈRE -->
+      <div class="info-group">
+        <h3>👨 Coordonnées Père</h3>
+        <div class="grid-2" style="margin-bottom: 0.6rem;">
+          <div class="form-group"><label>Nom</label><input type="text" id="cfg-pere-nom"></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="cfg-pere-prenom"></div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group"><label>Portable</label><input type="tel" id="cfg-pere-port"></div>
+          <div class="form-group"><label>Maison</label><input type="tel" id="cfg-pere-maison"></div>
+          <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-pere-bureau"></div>
+        </div>
+      </div>
 
-      // --- AUTO-CHECK LORS DE LA SAISIE DE L'HORAIRE ---
-      const check = row.querySelector(`#check-${jour}`);
-      const inputDebut = row.querySelector(`#debut-${jour}`);
-      const inputFin = row.querySelector(`#fin-${jour}`);
+      <!-- URGENCE -->
+      <div class="info-group" style="border-color: rgba(244, 63, 94, 0.4);">
+        <h3 style="color: var(--danger);">🚨 Contact d'Urgence</h3>
+        <div class="grid-2">
+          <div class="form-group"><label>Nom & Prénom</label><input type="text" id="cfg-urgence-nom"></div>
+          <div class="form-group"><label>Téléphone Urgence</label><input type="tel" id="cfg-urgence-tel"></div>
+        </div>
+      </div>
 
-      const autoCheckJour = () => {
-        if (!check.checked) {
-          check.checked = true;
-          semaineType[jour].actif = true;
+      <h2>Tarification & Contrat</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Tarif Net (€/h)</label>
+          <input type="number" step="0.01" id="cfg-tarif-net">
+        </div>
+        <div class="form-group">
+          <label>Majoration H.Sup (%)</label>
+          <input type="number" id="cfg-majoration">
+        </div>
+        <div class="form-group">
+          <label>Indem. Entretien (€/j)</label>
+          <input type="number" step="0.01" id="cfg-ie">
+        </div>
+        <div class="form-group">
+          <label>Indem. Repas (€/j)</label>
+          <input type="number" step="0.01" id="cfg-ir">
+        </div>
+        <div class="form-group">
+          <label>H. Mensualisées</label>
+          <input type="number" id="cfg-h-mensuel">
+        </div>
+        <div class="form-group">
+          <label>H. Hebdo Contrat</label>
+          <input type="number" id="cfg-h-hebdo">
+        </div>
+      </div>
+      <br>
+      <div style="display:flex; flex-direction: column; gap: 0.75rem;">
+        <button class="btn btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+        <button class="btn btn-danger btn-sm" onclick="supprimerEnfantActif()">Supprimer ce profil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4 : FICHE DE PAIE -->
+  <div id="paie" class="tab-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;" class="no-print">
+        <h2 style="margin:0;">Fiche de Paie</h2>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+      </div>
+
+      <div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
+          <div><span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant</span><br><strong id="fp-enfant" style="font-size:0.95rem; color:#fff;"></strong></div>
+          <div><span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Parents</span><br><strong id="fp-parent" style="font-size:0.95rem; color:#fff;"></strong></div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Élément</th>
+                <th>Vol.</th>
+                <th>Taux</th>
+                <th>Total Net</th>
+              </tr>
+            </thead>
+            <tbody id="fp-body"></tbody>
+          </table>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-line"><span>Salaire Net de base :</span><span id="fp-salaire-base">0.00 €</span></div>
+          <div class="summary-line"><span>Heures Compl. / Sup. :</span><span id="fp-total-hs">0.00 €</span></div>
+          <div class="summary-line"><span>Indemnités (IE + IR) :</span><span id="fp-total-indemnites">0.00 €</span></div>
+          <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent-light);">0.00 €</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIGURATION GITHUB -->
+  <div class="modal-overlay" id="modal-config-gh">
+    <div class="modal">
+      <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Utilisateur GitHub</label>
+          <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
+        </div>
+        <div class="form-group">
+          <label>Nom du Dépôt (Repo)</label>
+          <input type="text" id="gh-repo" placeholder="ex: assmat-flow">
+        </div>
+        <div class="form-group">
+          <label>Fichier JSON</label>
+          <input type="text" id="gh-path" placeholder="data.json" value="data.json">
+        </div>
+        <div class="form-group">
+          <label>Clé API / Token (PAT)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+      </div>
+      <br>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">Enregistrer & Synchroniser</button>
+        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
+        <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITION JOURNEE -->
+  <div class="modal-overlay" id="modal-day">
+    <div class="modal">
+      <h2 id="modal-date-title" style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">Modifier la journée</h2>
+      <div id="modal-times-container">
+        <div class="grid-2" style="margin-bottom:0.8rem;">
+          <div class="form-group">
+            <label>Arrivée prévue</label>
+            <input type="time" id="modal-arrivee">
+          </div>
+          <div class="form-group">
+            <label>Départ prévu</label>
+            <input type="time" id="modal-depart">
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1.2rem;">
+        <label>Note / Commentaire (optionnel)</label>
+        <input type="text" id="modal-note" placeholder="ex: RTT Parent, Medecin...">
+      </div>
+      <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="fermerModal()">Annuler</button>
+        <button class="btn btn-primary btn-sm" onclick="sauvegarderJourneePlanning()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+    const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    let currentDateState = new Date();
+    let selectedIsoDate = null;
+    let githubFileSha = null;
+    let syncTimer = null;
+
+    let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
+      user: '',
+      repo: '',
+      path: 'data.json',
+      token: ''
+    };
+
+    let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
+      "leo": {
+        contrat: { 
+          prenomEnfant: 'Léo', 
+          nomEnfant: 'Dupont',
+          naissance: '',
+          sortiesVoiture: true,
+          mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
+          pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
+          urgence: { nom: '', tel: '' },
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+        },
+        semaineType: {
+          0: { actif: true, arrivee: '08:30', depart: '17:30' },
+          1: { actif: true, arrivee: '08:30', depart: '17:30' },
+          2: { actif: false, arrivee: '', depart: '' },
+          3: { actif: true, arrivee: '08:30', depart: '17:30' },
+          4: { actif: true, arrivee: '08:30', depart: '17:30' },
+          5: { actif: false, arrivee: '', depart: '' }, 
+          6: { actif: false, arrivee: '', depart: '' }
+        },
+        planningPrevu: {},
+        presences: []
+      }
+    };
+    
+    // MIGRATION / NORMALISATION DES DONNÉES ET PURGE DES ANCIENNES ABSENCES
+    function normaliserEtMigrerDonnees() {
+      Object.keys(enfants).forEach(id => {
+        let c = enfants[id].contrat || {};
+
+        if(!c.prenomEnfant && c.prenom) c.prenomEnfant = c.prenom;
+        if(!c.nomEnfant && c.nom) c.nomEnfant = c.nom;
+
+        if(!c.mere) {
+          c.mere = {
+            nom: c.nomEnfant || '',
+            prenom: c.parent1 || c.parent || '',
+            port: c.tel1 || c.telephone || '',
+            maison: '', bureau: ''
+          };
         }
-      };
+        if(!c.pere) {
+          c.pere = {
+            nom: c.nomEnfant || '',
+            prenom: c.parent2 || '',
+            port: c.tel2 || '',
+            maison: '', bureau: ''
+          };
+        }
+        if(!c.urgence) c.urgence = { nom: '', tel: '' };
 
-      inputDebut.addEventListener('input', autoCheckJour);
-      inputFin.addEventListener('input', autoCheckJour);
-      
-      check.addEventListener('change', (e) => {
-        semaineType[jour].actif = e.target.checked;
+        enfants[id].contrat = c;
+
+        // NETTOYAGE ABSENCES OBSOLÈTES
+        if (enfants[id].planningPrevu) {
+          Object.keys(enfants[id].planningPrevu).forEach(date => {
+            if (enfants[id].planningPrevu[date].status === 'absent' || enfants[id].planningPrevu[date].type === 'absence') {
+              delete enfants[id].planningPrevu[date];
+            }
+          });
+        }
       });
-    });
-  }
+    }
 
-  // --- 3. SAUVEGARDE & APPLICATION ---
-  function sauvegarderSemaineType() {
-    JOURS.forEach(jour => {
-      semaineType[jour] = {
-        actif: document.getElementById(`check-${jour}`).checked,
-        debut: document.getElementById(`debut-${jour}`).value,
-        fin: document.getElementById(`fin-${jour}`).value
+    normaliserEtMigrerDonnees();
+    let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
+
+    // ----- GITHUB API & MODAL PARAMETRES -----
+    function ouvrirModalConfigGitHub() {
+      chargerFormulaireGitHub();
+      document.getElementById('modal-config-gh').classList.add('active');
+    }
+
+    function fermerModalConfigGitHub() {
+      document.getElementById('modal-config-gh').classList.remove('active');
+    }
+
+    function majStatutSync(status) {
+      const led = document.getElementById('sync-led');
+      led.className = `sync-led ${status}`;
+    }
+
+    function chargerFormulaireGitHub() {
+      document.getElementById('gh-user').value = githubConfig.user || '';
+      document.getElementById('gh-repo').value = githubConfig.repo || '';
+      document.getElementById('gh-path').value = githubConfig.path || 'data.json';
+      document.getElementById('gh-token').value = githubConfig.token || '';
+      if(githubConfig.user && githubConfig.repo && githubConfig.token) {
+        majStatutSync('online');
+      } else {
+        majStatutSync('');
+      }
+    }
+
+    function sauvegarderConfigGitHub() {
+      githubConfig = {
+        user: document.getElementById('gh-user').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        path: document.getElementById('gh-path').value.trim() || 'data.json',
+        token: document.getElementById('gh-token').value.trim()
       };
-    });
+      localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
+      majStatutSync('online');
+      fermerModalConfigGitHub();
+      chargerDepuisGitHub();
+    }
 
-    localStorage.setItem('semaineType', JSON.stringify(semaineType));
-    genererCalendrierExemple();
-    alert("Semaine type enregistrée !");
-  }
-
-  // --- 4. SEMAINE / CALENDRIER (SANS ABSENCE) ---
-  function genererCalendrierExemple() {
-    const grid = document.getElementById('calendrier-grid');
-    grid.innerHTML = '';
-
-    JOURS.forEach((jour, index) => {
-      const config = semaineType[jour];
-      const cell = document.createElement('div');
+    async function chargerDepuisGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        majStatutSync('');
+        return;
+      }
       
-      // Uniquement Présent ou Non configuré (pas d'absence)
-      cell.className = `jour-cal ${config.actif ? 'present' : ''}`;
+      majStatutSync('syncing');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
       
-      cell.innerHTML = `
-        <div class="num-jour">${jour.slice(0,3)}. ${index + 1}</div>
-        <div class="heures">
-          ${config.actif ? `${config.debut} - ${config.fin}` : '—'}
-        </div>
+      try {
+        const res = await fetch(url, {
+          headers: { 'Authorization': `token ${githubConfig.token}` }
+        });
+        
+        if (res.status === 200) {
+          const data = await res.json();
+          githubFileSha = data.sha;
+          
+          const jsonString = decodeURIComponent(escape(atob(data.content)));
+          const remoteEnfants = JSON.parse(jsonString);
+          
+          if(remoteEnfants && Object.keys(remoteEnfants).length > 0) {
+            enfants = remoteEnfants;
+            normaliserEtMigrerDonnees();
+            if(!enfants[activeEnfantId]) activeEnfantId = Object.keys(enfants)[0];
+            localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+            
+            rafraichirTouteLInterface();
+            majStatutSync('online');
+          }
+        } else if(res.status === 404) {
+          majStatutSync('online');
+        } else {
+          majStatutSync('offline');
+        }
+      } catch (err) {
+        console.error("Erreur chargement GitHub:", err);
+        majStatutSync('offline');
+      }
+    }
+
+    async function pousserVersGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+
+      majStatutSync('syncing');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
+      
+      const jsonString = JSON.stringify(enfants, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+      const bodyData = {
+        message: "Mise à jour automatique - AssMat Flow",
+        content: base64Content
+      };
+      if (githubFileSha) bodyData.sha = githubFileSha;
+
+      try {
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${githubConfig.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (res.status === 200 || res.status === 201) {
+          const resData = await res.json();
+          githubFileSha = resData.content.sha;
+          majStatutSync('online');
+        } else {
+          majStatutSync('offline');
+        }
+      } catch (err) {
+        console.error("Erreur push GitHub:", err);
+        majStatutSync('offline');
+      }
+    }
+
+    function sauvegarderGlobal() {
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+      localStorage.setItem('assmat_active_id', activeEnfantId);
+
+      majStatutSync('syncing');
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        pousserVersGitHub();
+      }, 3000);
+    }
+
+    function rafraichirTouteLInterface() {
+      rendreSlider();
+      chargerFormulaireContrat();
+      afficherPresences();
+      chargerSemaineTypeInterface();
+      rendreCalendrier();
+      chargerHorairePrevuPourDate();
+    }
+
+    // ----- UI & APPLICATION LOGIC -----
+    function rendreSlider() {
+      const track = document.getElementById('slider-track');
+      const dots = document.getElementById('slider-dots');
+      track.innerHTML = '';
+      dots.innerHTML = '';
+
+      const keys = Object.keys(enfants);
+      keys.forEach((id, index) => {
+        const enf = enfants[id];
+        const c = enf.contrat;
+        
+        let subParent = `${c.mere?.prenom || ''} ${c.mere?.prenom && c.pere?.prenom ? '&' : ''} ${c.pere?.prenom || ''}`.trim();
+        if (!subParent) subParent = 'Parents non renseignés';
+
+        let prenomAffiche = c.prenomEnfant || c.prenom || 'Enfant';
+        let nomAffiche = c.nomEnfant || c.nom || '';
+        let ageText = c.naissance ? ` (${calculerAge(c.naissance)})` : '';
+
+        const slide = document.createElement('div');
+        slide.className = 'child-slide';
+        slide.dataset.id = id;
+        slide.innerHTML = `
+          <div class="slide-header">
+            <div>
+              <div class="slide-title">👶 ${prenomAffiche} ${nomAffiche} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+              <span class="badge badge-primary">${c.hHebdo || 0}h / sem</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
+            <span>Tarif: <b>${c.tarifNet || 0}€/h</b></span>
+            <span>Mensualisé: <b>${c.hMensuel || 0}h</b></span>
+          </div>
+        `;
+        track.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = `dot ${id === activeEnfantId ? 'active' : ''}`;
+        dots.appendChild(dot);
+      });
+
+      const activeIndex = keys.indexOf(activeEnfantId);
+      if(activeIndex >= 0) {
+        setTimeout(() => { track.scrollLeft = activeIndex * track.offsetWidth; }, 50);
+      }
+    }
+
+    function calculerAge(dateNaissance) {
+      if (!dateNaissance) return '';
+      const today = new Date();
+      const birth = new Date(dateNaissance);
+      let months = (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
+      if (months < 24) return `${months} mois`;
+      return `${Math.floor(months / 12)} ans`;
+    }
+
+    function handleSliderScroll() {
+      const track = document.getElementById('slider-track');
+      const index = Math.round(track.scrollLeft / track.offsetWidth);
+      const keys = Object.keys(enfants);
+      if (keys[index] && keys[index] !== activeEnfantId) {
+        activeEnfantId = keys[index];
+        localStorage.setItem('assmat_active_id', activeEnfantId);
+        
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        rafraichirTouteLInterface();
+      }
+    }
+
+    function ajouterNouvelEnfant() {
+      const prenom = prompt("Prénom de l'enfant :");
+      if (!prenom) return;
+      const id = 'enf_' + Date.now();
+      enfants[id] = {
+        contrat: { 
+          prenomEnfant: prenom, 
+          nomEnfant: '',
+          naissance: '',
+          sortiesVoiture: true,
+          mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          urgence: { nom: '', tel: '' },
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+        },
+        semaineType: { 
+          0: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          2: {actif:false, arrivee:'', depart:''}, 
+          3: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          4: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          5: {actif:false, arrivee:'', depart:''}, 
+          6: {actif:false, arrivee:'', depart:''} 
+        },
+        planningPrevu: {},
+        presences: []
+      };
+      activeEnfantId = id;
+      sauvegarderGlobal();
+      rafraichirTouteLInterface();
+    }
+
+    function supprimerEnfantActif() {
+      if (Object.keys(enfants).length <= 1) return alert("Conservez au moins un profil.");
+      let prenom = enfants[activeEnfantId].contrat.prenomEnfant || enfants[activeEnfantId].contrat.prenom || 'cet enfant';
+      if (confirm(`Supprimer le profil de ${prenom} ?`)) {
+        delete enfants[activeEnfantId];
+        activeEnfantId = Object.keys(enfants)[0];
+        sauvegarderGlobal();
+        rafraichirTouteLInterface();
+      }
+    }
+
+    function changerMoisPlanning(delta) {
+      currentDateState.setMonth(currentDateState.getMonth() + delta);
+      rendreCalendrier();
+    }
+
+    function rendreCalendrier() {
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+
+      document.getElementById('cal-month-title').innerText = `${MOIS[month]} ${year}`;
+
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+
+      let startingDay = firstDay.getDay() - 1;
+      if (startingDay === -1) startingDay = 6;
+
+      for (let i = 0; i < startingDay; i++) {
+        grid.innerHTML += `<div class="cal-day empty"></div>`;
+      }
+
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dateObj = new Date(year, month, day);
+        let dayOfWeek = dateObj.getDay() - 1;
+        if (dayOfWeek === -1) dayOfWeek = 6;
+
+        const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const prevu = planning[isoDate];
+
+        let badgeHtml = `<div class="cal-day-badge off">-</div>`;
+        let dayClass = "cal-day";
+
+        if (dayOfWeek === 5 || dayOfWeek === 6) {
+          dayClass += " is-weekend";
+        }
+
+        if (prevu && prevu.arrivee && prevu.depart) {
+          badgeHtml = `
+            <div class="cal-day-badge-stack">
+              <span class="time-line">${prevu.arrivee}</span>
+              <span class="time-line">${prevu.depart}</span>
+            </div>
+          `;
+          dayClass += " has-presence";
+        }
+
+        grid.innerHTML += `
+          <div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')">
+            <div class="cal-day-num">${day}</div>
+            ${badgeHtml}
+          </div>
+        `;
+      }
+    }
+
+    function ouvrirModalJour(isoDate) {
+      selectedIsoDate = isoDate;
+      const prevu = (enfants[activeEnfantId].planningPrevu || {})[isoDate] || {};
+      
+      document.getElementById('modal-date-title').innerText = `Planning du ${isoDate}`;
+      document.getElementById('modal-arrivee').value = prevu.arrivee || '08:30';
+      document.getElementById('modal-depart').value = prevu.depart || '17:30';
+      document.getElementById('modal-note').value = prevu.note || '';
+
+      document.getElementById('modal-day').classList.add('active');
+    }
+
+    function fermerModal() {
+      document.getElementById('modal-day').classList.remove('active');
+    }
+
+    function sauvegarderJourneePlanning() {
+      if (!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+
+      const arrivee = document.getElementById('modal-arrivee').value;
+      const depart = document.getElementById('modal-depart').value;
+      const note = document.getElementById('modal-note').value;
+
+      enfants[activeEnfantId].planningPrevu[selectedIsoDate] = { status: 'prevu', arrivee, depart, note };
+
+      sauvegarderGlobal();
+      fermerModal();
+      rendreCalendrier();
+      chargerHorairePrevuPourDate();
+    }
+
+    function genererPlanningMoisComplet() {
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      if(!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+
+      for(let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month, day);
+        let dayIdx = dateObj.getDay() - 1;
+        if(dayIdx === -1) dayIdx = 6;
+
+        const isoDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const configJour = st[dayIdx];
+
+        if(configJour && configJour.actif) {
+          enfants[activeEnfantId].planningPrevu[isoDate] = {
+            status: 'prevu',
+            arrivee: configJour.arrivee,
+            depart: configJour.depart
+          };
+        }
+      }
+
+      sauvegarderGlobal();
+      rendreCalendrier();
+      alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
+    }
+
+    function chargerSemaineTypeInterface() {
+      const grid = document.getElementById('week-schedule-grid');
+      grid.innerHTML = '';
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      JOURS.forEach((jour, idx) => {
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
+        const isWeekend = (idx === 5 || idx === 6);
+        grid.innerHTML += `
+          <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''}>
+              <label for="st-check-${idx}">${jour}</label>
+            </div>
+            <div style="display:flex; gap:0.3rem;">
+              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="autoCheckSemaineType(${idx})">
+              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="autoCheckSemaineType(${idx})">
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // AUTO COCHE LE JOUR QUAND UN HORAIRE EST SAISI
+    function autoCheckSemaineType(idx) {
+      const check = document.getElementById(`st-check-${idx}`);
+      if (check && !check.checked) {
+        check.checked = true;
+      }
+    }
+
+    function sauvegarderSemaineType() {
+      const st = {};
+      JOURS.forEach((_, idx) => {
+        st[idx] = {
+          actif: document.getElementById(`st-check-${idx}`).checked,
+          arrivee: document.getElementById(`st-arr-${idx}`).value,
+          depart: document.getElementById(`st-dep-${idx}`).value
+        };
+      });
+      enfants[activeEnfantId].semaineType = st;
+      sauvegarderGlobal();
+      alert("Semaine type enregistrée !");
+    }
+
+    function chargerHorairePrevuPourDate() {
+      const date = document.getElementById('input-date').value;
+      const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
+
+      if(prev) {
+        document.getElementById('input-arrivee').value = prev.arrivee || "08:30";
+        document.getElementById('input-depart').value = prev.depart || "17:30";
+      } else {
+        document.getElementById('input-arrivee').value = "08:30";
+        document.getElementById('input-depart').value = "17:30";
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      if(tabId === 'paie') calculerFicheDePaie();
+      if(tabId === 'planning') {
+        chargerSemaineTypeInterface();
+        rendreCalendrier();
+      }
+    }
+
+    document.getElementById('input-date').valueAsDate = new Date();
+
+    function ajouterPresence() {
+      const date = document.getElementById('input-date').value;
+      const arrivee = document.getElementById('input-arrivee').value;
+      const depart = document.getElementById('input-depart').value;
+      const repas = document.getElementById('input-repas').value;
+      const contrat = enfants[activeEnfantId].contrat;
+
+      if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
+
+      const [hA, mA] = arrivee.split(':').map(Number);
+      const [hD, mD] = depart.split(':').map(Number);
+      let duree = (hD + mD/60) - (hA + mA/60);
+      if (duree < 0) duree += 24;
+
+      let hNorm = Math.min(duree, contrat.hHebdo / 5);
+      let hComp = 0, hSup = 0;
+
+      if (duree > contrat.hHebdo / 5) {
+        if (duree > 9) {
+          hComp = 9 - (contrat.hHebdo / 5);
+          hSup = duree - 9;
+        } else {
+          hComp = duree - (contrat.hHebdo / 5);
+        }
+      }
+
+      enfants[activeEnfantId].presences = (enfants[activeEnfantId].presences || []).filter(p => p.date !== date);
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      sauvegarderGlobal();
+      afficherPresences();
+      alert("Journée validée !");
+    }
+
+    function supprimerPresence(id) {
+      enfants[activeEnfantId].presences = enfants[activeEnfantId].presences.filter(p => p.id !== id);
+      sauvegarderGlobal();
+      afficherPresences();
+    }
+
+    function afficherPresences() {
+      const tbody = document.querySelector('#table-presences tbody');
+      tbody.innerHTML = '';
+      const list = enfants[activeEnfantId].presences || [];
+      list.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${p.date}</strong></td>
+            <td><span class="badge badge-primary">${p.arrivee}-${p.depart}</span></td>
+            <td>${p.duree.toFixed(2)}h</td>
+            <td>${p.hNorm.toFixed(2)}h</td>
+            <td>${p.hComp.toFixed(2)}h</td>
+            <td>${p.hSup > 0 ? `<span class="badge badge-success">${p.hSup.toFixed(2)}h</span>` : '0h'}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="supprimerPresence(${p.id})">🗑️</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    function chargerFormulaireContrat() {
+      const c = enfants[activeEnfantId].contrat || {};
+      
+      document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || c.prenom || '';
+      document.getElementById('cfg-nom-enfant').value = c.nomEnfant || c.nom || '';
+      document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
+      document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
+
+      // Mère
+      document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
+      document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
+      document.getElementById('cfg-mere-port').value = c.mere?.port || '';
+      document.getElementById('cfg-mere-maison').value = c.mere?.maison || '';
+      document.getElementById('cfg-mere-bureau').value = c.mere?.bureau || '';
+
+      // Père
+      document.getElementById('cfg-pere-nom').value = c.pere?.nom || '';
+      document.getElementById('cfg-pere-prenom').value = c.pere?.prenom || '';
+      document.getElementById('cfg-pere-port').value = c.pere?.port || '';
+      document.getElementById('cfg-pere-maison').value = c.pere?.maison || '';
+      document.getElementById('cfg-pere-bureau').value = c.pere?.bureau || '';
+
+      // Urgence
+      document.getElementById('cfg-urgence-nom').value = c.urgence?.nom || '';
+      document.getElementById('cfg-urgence-tel').value = c.urgence?.tel || '';
+
+      // Tarifs
+      document.getElementById('cfg-tarif-net').value = c.tarifNet || 4.00;
+      document.getElementById('cfg-majoration').value = c.majoration || 10;
+      document.getElementById('cfg-ie').value = c.ie || 3.50;
+      document.getElementById('cfg-ir').value = c.ir || 4.00;
+      document.getElementById('cfg-h-mensuel').value = c.hMensuel || 120;
+      document.getElementById('cfg-h-hebdo').value = c.hHebdo || 35;
+    }
+
+    function sauvegarderContrat() {
+      enfants[activeEnfantId].contrat = {
+        prenomEnfant: document.getElementById('cfg-prenom-enfant').value,
+        nomEnfant: document.getElementById('cfg-nom-enfant').value,
+        naissance: document.getElementById('cfg-naissance-enfant').value,
+        sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
+        mere: {
+          nom: document.getElementById('cfg-mere-nom').value,
+          prenom: document.getElementById('cfg-mere-prenom').value,
+          port: document.getElementById('cfg-mere-port').value,
+          maison: document.getElementById('cfg-mere-maison').value,
+          bureau: document.getElementById('cfg-mere-bureau').value
+        },
+        pere: {
+          nom: document.getElementById('cfg-pere-nom').value,
+          prenom: document.getElementById('cfg-pere-prenom').value,
+          port: document.getElementById('cfg-pere-port').value,
+          maison: document.getElementById('cfg-pere-maison').value,
+          bureau: document.getElementById('cfg-pere-bureau').value
+        },
+        urgence: {
+          nom: document.getElementById('cfg-urgence-nom').value,
+          tel: document.getElementById('cfg-urgence-tel').value
+        },
+        tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value) || 0,
+        majoration: parseFloat(document.getElementById('cfg-majoration').value) || 0,
+        ie: parseFloat(document.getElementById('cfg-ie').value) || 0,
+        ir: parseFloat(document.getElementById('cfg-ir').value) || 0,
+        hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
+        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value) || 0
+      };
+      
+      sauvegarderGlobal();
+      rendreSlider();
+      alert("Contrat mis à jour avec succès !");
+    }
+
+    function calculerFicheDePaie() {
+      const data = enfants[activeEnfantId];
+      const contrat = data.contrat;
+      const presences = data.presences || [];
+
+      let prenom = contrat.prenomEnfant || contrat.prenom || '';
+      let nom = contrat.nomEnfant || contrat.nom || '';
+      document.getElementById('fp-enfant').innerText = `${prenom} ${nom}`.trim();
+      
+      let parentsStr = [];
+      if(contrat.mere?.prenom) parentsStr.push(`Mme ${contrat.mere.prenom} ${contrat.mere.nom}`);
+      if(contrat.pere?.prenom) parentsStr.push(`M. ${contrat.pere.prenom} ${contrat.pere.nom}`);
+      document.getElementById('fp-parent').innerText = parentsStr.join(' / ') || 'Parents';
+
+      let totHComp = presences.reduce((acc, p) => acc + p.hComp, 0);
+      let totHSup = presences.reduce((acc, p) => acc + p.hSup, 0);
+      let nbJours = presences.length;
+      let nbRepas = presences.filter(p => p.repas === 'oui').length;
+
+      let salaireBase = contrat.hMensuel * contrat.tarifNet;
+      let montantHComp = totHComp * contrat.tarifNet;
+      let tarifHSup = contrat.tarifNet * (1 + contrat.majoration / 100);
+      let montantHSup = totHSup * tarifHSup;
+      
+      let totalIE = nbJours * contrat.ie;
+      let totalIR = nbRepas * contrat.ir;
+      let totalIndem = totalIE + totalIR;
+
+      let netAPayer = salaireBase + montantHComp + montantHSup + totalIndem;
+
+      const body = document.getElementById('fp-body');
+      body.innerHTML = `
+        <tr><td>Heures Base</td><td>${contrat.hMensuel}h</td><td>${contrat.tarifNet.toFixed(2)}€</td><td><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
+        <tr><td>H. Compl.</td><td>${totHComp.toFixed(2)}h</td><td>${contrat.tarifNet.toFixed(2)}€</td><td><strong>${montantHComp.toFixed(2)} €</strong></td></tr>
+        <tr><td>H. Sup.</td><td>${totHSup.toFixed(2)}h</td><td>${tarifHSup.toFixed(2)}€</td><td><strong>${montantHSup.toFixed(2)} €</strong></td></tr>
+        <tr><td>Indem. Entretien</td><td>${nbJours}j</td><td>${contrat.ie.toFixed(2)}€</td><td><strong>${totalIE.toFixed(2)} €</strong></td></tr>
+        <tr><td>Indem. Repas</td><td>${nbRepas}r</td><td>${contrat.ir.toFixed(2)}€</td><td><strong>${totalIR.toFixed(2)} €</strong></td></tr>
       `;
 
-      grid.appendChild(cell);
-    });
-  }
+      document.getElementById('fp-salaire-base').innerText = salaireBase.toFixed(2) + ' €';
+      document.getElementById('fp-total-hs').innerText = (montantHComp + montantHSup).toFixed(2) + ' €';
+      document.getElementById('fp-total-indemnites').innerText = totalIndem.toFixed(2) + ' €';
+      document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
+    }
 
-  // --- INITIALISATION ---
-  window.addEventListener('DOMContentLoaded', () => {
-    purifierDonneesEtAbsences();
-    afficherSemaineType();
-    genererCalendrierExemple();
-  });
-</script>
-
+    // INITIALISATION
+    chargerFormulaireGitHub();
+    chargerDepuisGitHub();
+    rafraichirTouteLInterface();
+  </script>
 </body>
 </html>
