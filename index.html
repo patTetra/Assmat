@@ -168,37 +168,45 @@
     .print-only { display: none; }
 
     @media print {
-      @page { size: A4 portrait; margin: 12mm 15mm; }
-      body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; font-family: 'Helvetica Neue', Arial, sans-serif !important; font-size: 10pt !important; }
+      @page { size: A4 portrait; margin: 10mm 12mm; }
+      body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; font-family: 'Helvetica Neue', Arial, sans-serif !important; font-size: 9.5pt !important; }
       header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #presence, #planning, #contrat, #impots { display: none !important; }
-      #paie { display: block !important; }
+      
       .print-only { display: block !important; }
       .card { background: #ffffff !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
-      .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-      .print-header-title h1 { font-size: 16pt; font-weight: bold; color: #000; text-transform: uppercase; margin-bottom: 2px; }
-      .print-grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-      .print-box { border: 1px solid #ccc; border-radius: 4px; padding: 8px 10px; background: #fafafa !important; }
-      .print-box-title { font-size: 8pt; font-weight: bold; text-transform: uppercase; color: #666; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-      .print-box-content { font-size: 9.5pt; color: #000; line-height: 1.3; }
-      .table-container { border: 1px solid #000 !important; border-radius: 0 !important; margin-bottom: 15px !important; }
+
+      /* IMPRESSION PAIE */
+      body.print-mode-paie #paie { display: block !important; }
+      body.print-mode-paie #engagement { display: none !important; }
+
+      /* IMPRESSION ENGAGEMENT */
+      body.print-mode-engagement #engagement { display: block !important; }
+      body.print-mode-engagement #paie { display: none !important; }
+
+      .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+      .print-header-title h1 { font-size: 15pt; font-weight: bold; color: #000; text-transform: uppercase; margin-bottom: 2px; }
+      .print-grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+      .print-box { border: 1px solid #ccc; border-radius: 4px; padding: 6px 8px; background: #fafafa !important; }
+      .print-box-title { font-size: 7.5pt; font-weight: bold; text-transform: uppercase; color: #555; margin-bottom: 3px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+      .print-box-content { font-size: 9pt; color: #000; line-height: 1.3; }
+      
+      .table-container { border: 1px solid #000 !important; border-radius: 0 !important; margin-bottom: 12px !important; }
       table { background: #fff !important; width: 100% !important; border-collapse: collapse !important; }
-      th { background: #f0f0f0 !important; color: #000 !important; border-bottom: 1px solid #000 !important; border-right: 1px solid #ccc !important; font-size: 8.5pt !important; padding: 6px !important; }
-      td { color: #000 !important; border-bottom: 1px solid #eee !important; border-right: 1px solid #eee !important; font-size: 9pt !important; padding: 6px !important; }
-      .pajemploi-card { background: #fff !important; border: 1px dashed #000 !important; border-radius: 4px !important; padding: 10px !important; margin-top: 15px !important; box-shadow: none !important; }
-      .pajemploi-title { color: #000 !important; font-size: 9pt !important; border-bottom: 1px solid #000 !important; padding-bottom: 4px !important; margin-bottom: 8px !important; }
-      .pajemploi-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
-      .pajemploi-item { background: #f9f9f9 !important; border: 1px solid #ddd !important; padding: 4px 6px !important; }
-      .pajemploi-item-label { color: #444 !important; font-size: 6.5pt !important; }
-      .pajemploi-item-val { color: #000 !important; font-size: 9.5pt !important; }
-      .summary-card { background: #fff !important; border: none !important; padding: 0 !important; margin-top: 10px !important; width: 50%; margin-left: auto; }
-      .summary-line { color: #000 !important; font-size: 9pt !important; margin-bottom: 4px !important; }
-      .summary-line.total { border-top: 2px solid #000 !important; padding-top: 6px !important; margin-top: 6px !important; font-size: 11pt !important; color: #000 !important; }
-      .print-signatures { margin-top: 25px; display: flex; justify-content: space-between; font-size: 8.5pt; }
-      .print-signature-box { width: 45%; border-top: 1px solid #aaa; padding-top: 4px; min-height: 50px; }
+      th { background: #f0f0f0 !important; color: #000 !important; border-bottom: 1px solid #000 !important; border-right: 1px solid #ccc !important; font-size: 8pt !important; padding: 5px !important; }
+      td { color: #000 !important; border-bottom: 1px solid #eee !important; border-right: 1px solid #eee !important; font-size: 8.5pt !important; padding: 5px !important; }
+      
+      .summary-card { background: #fff !important; border: none !important; padding: 0 !important; margin-top: 8px !important; width: 50%; margin-left: auto; }
+      .summary-line { color: #000 !important; font-size: 8.5pt !important; margin-bottom: 3px !important; }
+      .summary-line.total { border-top: 2px solid #000 !important; padding-top: 4px !important; margin-top: 4px !important; font-size: 10.5pt !important; color: #000 !important; }
+      
+      .print-signatures { margin-top: 20px; display: flex; justify-content: space-between; font-size: 8pt; page-break-inside: avoid; }
+      .print-signature-box { width: 48%; border: 1px solid #000; padding: 8px; min-height: 80px; }
+
+      .legal-print-clause { margin-top: 10px; padding: 8px; border: 1px solid #000; background: #f9f9f9; font-size: 8pt; line-height: 1.35; text-align: justify; }
     }
   </style>
 </head>
-<body>
+<body class="print-mode-paie">
 
   <header class="no-print">
     <div class="brand">
@@ -225,7 +233,8 @@
   <nav class="nav-tabs no-print">
     <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning</button>
-    <button class="tab-btn" onclick="switchTab('contrat')">📜 Contrat</button>
+    <button class="tab-btn" onclick="switchTab('engagement')">📜 Engagement</button>
+    <button class="tab-btn" onclick="switchTab('contrat')">✍️ Contrat</button>
     <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
     <button class="tab-btn" onclick="switchTab('impots')">📊 Impôts</button>
   </nav>
@@ -327,7 +336,108 @@
     </div>
   </div>
 
-  <!-- TAB 3 : CONTRAT ENFANT ACTIF -->
+  <!-- TAB 3 : ENGAGEMENT RECIPROQUE (NOUVEAU) -->
+  <div id="engagement" class="tab-content">
+    <div class="card">
+      <div class="print-only print-header">
+        <div class="print-header-title">
+          <h1>Engagement Réciproque</h1>
+          <p>Convention Collective Nationale des Assistantes Maternelles (Article 5)</p>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 9pt; font-weight: bold;" id="eng-print-date-sig">Fait le : --/--/----</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;" class="no-print">
+        <h2 style="margin:0;">📜 Élaboration de l'Engagement Réciproque</h2>
+        <button class="btn btn-primary btn-sm" onclick="imprimerEngagement()">🖨️ Imprimer l'Engagement (2 ex.)</button>
+      </div>
+
+      <!-- Saisie spécifique Engagement -->
+      <div class="no-print">
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.4;">
+          L'engagement réciproque permet d'assurer la réservation de la place d'accueil avant la signature du contrat définitif.
+        </p>
+
+        <div class="grid-2" style="margin-bottom: 1rem;">
+          <div class="form-group">
+            <label>Date de signature de l'engagement</label>
+            <input type="date" id="eng-date-signature" onchange="sauvegarderEngagementForm()">
+          </div>
+          <div class="form-group">
+            <label>Date de début d'accueil prévue</label>
+            <input type="date" id="eng-date-effet" onchange="sauvegarderEngagementForm()">
+          </div>
+          <div class="form-group">
+            <label>Période d'adaptation prévue</label>
+            <input type="text" id="eng-adaptation" placeholder="ex: Du 01/09 au 15/09 (optionnel)" onchange="sauvegarderEngagementForm()">
+          </div>
+          <div class="form-group">
+            <label>Taux Brut (€/h estimé)</label>
+            <input type="number" step="0.01" id="eng-tarif-brut" placeholder="ex: 5.12" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+          </div>
+        </div>
+
+        <div class="info-group">
+          <h3>👩‍🍼 Assistante Maternelle</h3>
+          <div class="grid-2">
+            <div class="form-group"><label>Nom & Prénom</label><input type="text" id="eng-assmat-nom" placeholder="Mme Jane Doe" onchange="sauvegarderEngagementForm()"></div>
+            <div class="form-group"><label>Adresse d'accueil</label><input type="text" id="eng-assmat-adresse" placeholder="12 Rue des Fleurs, 29000 Brest" onchange="sauvegarderEngagementForm()"></div>
+          </div>
+        </div>
+
+        <div class="summary-card" style="margin-bottom: 1rem;">
+          <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
+          <div class="summary-line total"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
+        </div>
+      </div>
+
+      <!-- COMPOSANT D'IMPRESSION RENDERED -->
+      <div class="print-only">
+        <div class="print-grid-info">
+          <div class="print-box">
+            <div class="print-box-title">Employeur (Parents)</div>
+            <div class="print-box-content" id="eng-print-parents"></div>
+          </div>
+          <div class="print-box">
+            <div class="print-box-title">Assistante Maternelle Agréée</div>
+            <div class="print-box-content" id="eng-print-assmat"></div>
+          </div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Objet du contrat & Enfant</div>
+          <div class="print-box-content" id="eng-print-enfant-info"></div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Conditions de l'accueil prévues</div>
+          <div class="print-box-content" id="eng-print-conditions"></div>
+        </div>
+
+        <div class="legal-print-clause">
+          <strong>Article 5 - Engagement Réciproque (CCN Assistantes Maternelles) :</strong><br>
+          Les parties s'engagent à conclure un contrat de travail à la date d'effet mentionnée ci-dessus.<br>
+          En cas de non-respect de cet engagement par l'une des parties, celle-ci versera à l'autre une indemnité forfaitaire compensatrice égale à <strong>un demi-mois du salaire brut mensuel lissé prévisible</strong> (<span id="eng-print-indemnite-texte">0.00 €</span>), sauf cas de force majeure, de décès de l'enfant, ou de retrait/suspension d'agrément de l'assistante maternelle.
+        </div>
+
+        <div class="print-signatures">
+          <div class="print-signature-box">
+            <strong>Signature du/des Parent(s) Employeur(s) :</strong><br>
+            <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
+          </div>
+          <div class="print-signature-box">
+            <strong>Signature de l'Assistante Maternelle :</strong><br>
+            <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB 4 : CONTRAT ENFANT ACTIF -->
   <div id="contrat" class="tab-content">
     <div class="card">
       <h2>Informations de l'enfant</h2>
@@ -341,7 +451,7 @@
           <input type="text" id="cfg-nom-enfant">
         </div>
         <div class="form-group">
-          <label>Date de naissance</label>
+          <label>Date de naissance (ou prévue)</label>
           <input type="date" id="cfg-naissance-enfant">
         </div>
       </div>
@@ -440,7 +550,7 @@
     </div>
   </div>
 
-  <!-- TAB 4 : FICHE DE PAIE & PAJEMPLOI -->
+  <!-- TAB 5 : FICHE DE PAIE & PAJEMPLOI -->
   <div id="paie" class="tab-content">
     <div class="card">
       <div class="print-only print-header">
@@ -460,7 +570,7 @@
           <div class="form-group" style="margin:0;">
             <input type="month" id="fp-select-mois" onchange="calculerFicheDePaie()" style="padding:0.4rem 0.6rem; font-size:0.85rem;">
           </div>
-          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Imprimer / PDF</button>
+          <button class="btn btn-primary btn-sm" onclick="imprimerPaie()">🖨️ Imprimer / PDF</button>
         </div>
       </div>
 
@@ -553,7 +663,7 @@
     </div>
   </div>
 
-  <!-- TAB 5 : DÉCLARATION D'IMPÔTS FISCALE (NOUVEAU) -->
+  <!-- TAB 6 : DÉCLARATION D'IMPÔTS FISCALE -->
   <div id="impots" class="tab-content">
     <div class="card">
       <h2>📊 Déclaration de Revenus (Régime Spécifique Assistante Maternelle)</h2>
@@ -708,6 +818,9 @@
           urgence: { nom: '', tel: '' },
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52 
         },
+        engagement: {
+          dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
+        },
         semaineType: {
           0: { actif: true, arrivee: '08:30', depart: '17:30' },
           1: { actif: true, arrivee: '08:30', depart: '17:30' },
@@ -736,6 +849,10 @@
 
         enfants[id].contrat = c;
 
+        if(!enfants[id].engagement) {
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), assmatNom: '', assmatAdresse: '' };
+        }
+
         if (enfants[id].planningPrevu) {
           Object.keys(enfants[id].planningPrevu).forEach(date => {
             if (enfants[id].planningPrevu[date].status === 'absent' || enfants[id].planningPrevu[date].type === 'absence') {
@@ -753,7 +870,6 @@
     const defaultMonthVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('fp-select-mois').value = defaultMonthVal;
 
-    // Valeurs par défaut pour les impôts (13 mois : Décembre A-1 à Décembre A)
     const prevYear = today.getFullYear() - 1;
     const currYear = today.getFullYear();
     document.getElementById('imp-debut').value = `${prevYear}-12`;
@@ -838,12 +954,14 @@
     function rafraichirTouteLInterface() {
       rendreSlider();
       chargerFormulaireContrat();
+      chargerFormulaireEngagement();
       afficherPresences();
       chargerSemaineTypeInterface();
       rendreCalendrier();
       chargerHorairePrevuPourDate();
       if (document.getElementById('paie').classList.contains('active')) calculerFicheDePaie();
       if (document.getElementById('impots').classList.contains('active')) calculerImpotsAnnuel();
+      if (document.getElementById('engagement').classList.contains('active')) preparerImpressionEngagement();
     }
 
     function rendreSlider() {
@@ -897,6 +1015,7 @@
       const today = new Date();
       const birth = new Date(dateNaissance);
       let months = (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
+      if (months < 0) return 'Naissance prévue';
       if (months < 24) return `${months} mois`;
       return `${Math.floor(months / 12)} ans`;
     }
@@ -925,6 +1044,9 @@
           urgence: { nom: '', tel: '' },
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52
         },
+        engagement: {
+          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptation: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
+        },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
           2: {actif:false, arrivee:'', depart:''}, 3: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -936,6 +1058,7 @@
       activeEnfantId = id;
       sauvegarderGlobal();
       rafraichirTouteLInterface();
+      switchTab('engagement');
     }
 
     function supprimerEnfantActif() {
@@ -1097,6 +1220,8 @@
       if (document.getElementById('cfg-h-hebdo')) document.getElementById('cfg-h-hebdo').value = total.toFixed(1);
       if (document.getElementById('cfg-j-hebdo')) document.getElementById('cfg-j-hebdo').value = nbJoursActifs;
       if (document.getElementById('cfg-h-mensuel')) document.getElementById('cfg-h-mensuel').value = Math.round((total * semainesAn) / 12);
+      
+      calculerIndemniteEngagement();
     }
 
     function chargerSemaineTypeInterface() {
@@ -1187,6 +1312,7 @@
       if(tabId === 'paie') calculerFicheDePaie();
       if(tabId === 'planning') { chargerSemaineTypeInterface(); rendreCalendrier(); }
       if(tabId === 'impots') calculerImpotsAnnuel();
+      if(tabId === 'engagement') { chargerFormulaireEngagement(); preparerImpressionEngagement(); }
     }
 
     document.getElementById('input-date').valueAsDate = new Date();
@@ -1248,6 +1374,7 @@
       });
     }
 
+    /* --- GESTION DU CONTRAT --- */
     function chargerFormulaireContrat() {
       const c = enfants[activeEnfantId].contrat || {};
       document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || c.prenom || '';
@@ -1316,6 +1443,101 @@
       alert("Contrat mis à jour avec succès !");
     }
 
+    /* --- GESTION DE L'ENGAGEMENT RECIPROQUE --- */
+    function chargerFormulaireEngagement() {
+      const eng = enfants[activeEnfantId]?.engagement || {};
+      const c = enfants[activeEnfantId]?.contrat || {};
+
+      document.getElementById('eng-date-signature').value = eng.dateSignature || new Date().toISOString().split('T')[0];
+      document.getElementById('eng-date-effet').value = eng.dateEffet || '';
+      document.getElementById('eng-adaptation').value = eng.adaptation || '';
+      document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
+      document.getElementById('eng-assmat-nom').value = eng.assmatNom || '';
+      document.getElementById('eng-assmat-adresse').value = eng.assmatAdresse || '';
+
+      calculerIndemniteEngagement();
+    }
+
+    function sauvegarderEngagementForm() {
+      enfants[activeEnfantId].engagement = {
+        dateSignature: document.getElementById('eng-date-signature').value,
+        dateEffet: document.getElementById('eng-date-effet').value,
+        adaptation: document.getElementById('eng-adaptation').value,
+        tarifBrut: parseFloat(document.getElementById('eng-tarif-brut').value) || 0,
+        assmatNom: document.getElementById('eng-assmat-nom').value,
+        assmatAdresse: document.getElementById('eng-assmat-adresse').value
+      };
+      sauvegarderGlobal();
+    }
+
+    function calculerIndemniteEngagement() {
+      const c = enfants[activeEnfantId]?.contrat || {};
+      const tarifBrut = parseFloat(document.getElementById('eng-tarif-brut')?.value) || 0;
+      const hMensuelles = c.hMensuel || Math.round(((c.hHebdo || 35) * (c.semainesAn || 52)) / 12);
+
+      const brutMensuel = hMensuelles * tarifBrut;
+      const indemnite = brutMensuel / 2;
+
+      if(document.getElementById('eng-brut-mensuel-val')) document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} € (${hMensuelles}h x ${tarifBrut.toFixed(2)}€)`;
+      if(document.getElementById('eng-indemnite-val')) document.getElementById('eng-indemnite-val').innerText = `${indemnite.toFixed(2)} €`;
+      if(document.getElementById('eng-print-indemnite-texte')) document.getElementById('eng-print-indemnite-texte').innerText = `${indemnite.toFixed(2)} €`;
+
+      return { brutMensuel, indemnite, hMensuelles };
+    }
+
+    function preparerImpressionEngagement() {
+      const c = enfants[activeEnfantId].contrat;
+      const eng = enfants[activeEnfantId].engagement || {};
+      const { brutMensuel, indemnite, hMensuelles } = calculerIndemniteEngagement();
+
+      // Date signature
+      let dtSig = eng.dateSignature ? new Date(eng.dateSignature).toLocaleDateString('fr-FR') : '____/____/________';
+      document.getElementById('eng-print-date-sig').innerText = `Fait le : ${dtSig}`;
+
+      // Parents
+      let parentsHtml = ``;
+      if (c.mere?.prenom || c.mere?.nom) parentsHtml += `<strong>Mme ${c.mere.prenom} ${c.mere.nom}</strong> (Tél: ${c.mere.port || 'N/C'})<br>`;
+      if (c.pere?.prenom || c.pere?.nom) parentsHtml += `<strong>M. ${c.pere.prenom} ${c.pere.nom}</strong> (Tél: ${c.pere.port || 'N/C'})<br>`;
+      if (!parentsHtml) parentsHtml = `Parents non renseignés`;
+      document.getElementById('eng-print-parents').innerHTML = parentsHtml;
+
+      // AssMat
+      document.getElementById('eng-print-assmat').innerHTML = `
+        <strong>${eng.assmatNom || 'Assistante Maternelle'}</strong><br>
+        Adresse d'accueil : ${eng.assmatAdresse || 'Non renseignée'}
+      `;
+
+      // Enfant
+      let prenom = c.prenomEnfant || c.prenom || 'Enfant';
+      let nom = c.nomEnfant || c.nom || '';
+      let dtNaiss = c.naissance ? new Date(c.naissance).toLocaleDateString('fr-FR') : 'à venir';
+      document.getElementById('eng-print-enfant-info').innerHTML = `
+        Enfant : <strong>${prenom} ${nom}</strong> | Date de naissance (ou prévisionnelle) : <strong>${dtNaiss}</strong>
+      `;
+
+      // Conditions
+      let dtEffet = eng.dateEffet ? new Date(eng.dateEffet).toLocaleDateString('fr-FR') : '____/____/________';
+      document.getElementById('eng-print-conditions').innerHTML = `
+        • Date de début d'accueil prévue : <strong>${dtEffet}</strong><br>
+        • Période d'adaptation prévue : <strong>${eng.adaptation || 'Aucune / À définir'}</strong><br>
+        • Volume d'accueil prévu : <strong>${c.hHebdo || 0}h / semaine</strong> sur <strong>${c.semainesAn || 52} semaines/an</strong> (soit <strong>${hMensuelles}h mensualisées</strong>)<br>
+        • Tarif horaire brut : <strong>${(parseFloat(eng.tarifBrut)||0).toFixed(2)} € / h</strong> (Tarif net estimé : ${c.tarifNet || 0} €/h)<br>
+        • Salaire mensuel brut de base prévisible : <strong>${brutMensuel.toFixed(2)} €</strong>
+      `;
+    }
+
+    function imprimerEngagement() {
+      preparerImpressionEngagement();
+      document.body.className = "print-mode-engagement";
+      window.print();
+    }
+
+    function imprimerPaie() {
+      document.body.className = "print-mode-paie";
+      window.print();
+    }
+
+    /* --- FICHE DE PAIE --- */
     function calculerFicheDePaie() {
       const data = enfants[activeEnfantId];
       const contrat = data.contrat;
@@ -1396,7 +1618,7 @@
       document.getElementById('paje-indemnites').innerText = `${totalIndem.toFixed(2)} €`;
     }
 
-    // --- CALCUL DE DÉCLARATION D'IMPÔTS FISCALE ---
+    /* --- CALCUL FISCAL --- */
     function calculerImpotsAnnuel() {
       const mDebut = document.getElementById('imp-debut').value;
       const mFin = document.getElementById('imp-fin').value;
@@ -1405,7 +1627,6 @@
 
       if (!mDebut || !mFin) return;
 
-      // Génération des mois YYYY-MM compris dans l'intervalle inclusif
       const listeMois = [];
       let current = new Date(`${mDebut}-01`);
       const end = new Date(`${mFin}-01`);
@@ -1417,8 +1638,6 @@
       }
 
       document.getElementById('imp-nb-mois').innerText = listeMois.length;
-
-      // Liste des cibles d'enfants (soit tous, soit uniquement l'enfant sélectionné)
       const targets = tousEnfants ? Object.keys(enfants) : [activeEnfantId];
 
       let totalSalairesNets = 0;
@@ -1440,7 +1659,6 @@
           let nbJoursPresents = presencesMois.length;
           let nbRepas = presencesMois.filter(p => p.repas === 'oui').length;
 
-          // Si présence enregistrée ou mensualisation lissée
           let salaireBase = contrat.moisLisse ? (contrat.hMensuel * contrat.tarifNet) : (totHNorm * contrat.tarifNet);
           let montantHComp = totHComp * contrat.tarifNet;
           let montantHSup = totHSup * (contrat.tarifNet * (1 + contrat.majoration / 100));
@@ -1451,7 +1669,6 @@
           totalSalairesNets += (salaireBase + montantHComp + montantHSup);
           totalIndemnites += (totalIE + totalIR);
 
-          // Détail de l'abattement par jour d'accueil
           presencesMois.forEach(p => {
             if (p.duree >= 3) {
               totalJoursPlus3h++;
