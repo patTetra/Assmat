@@ -207,6 +207,17 @@
         "hComp": 0,
         "hSup": 0,
         "repas": "oui"
+      },
+      {
+        "id": 1787508592917,
+        "date": "2026-08-21",
+        "arrivee": "08:10",
+        "depart": "18:30",
+        "duree": 10.333333333333334,
+        "hNorm": 10.333333333333334,
+        "hComp": 0,
+        "hSup": 0,
+        "repas": "oui"
       }
     ],
     "semaineType": {
