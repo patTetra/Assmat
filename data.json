@@ -191,14 +191,14 @@
     "presences": [],
     "semaineType": {
       "0": {
-        "actif": false,
-        "arrivee": "10:00",
-        "depart": "18:00"
+        "actif": true,
+        "arrivee": "08:10",
+        "depart": "18:20"
       },
       "1": {
-        "actif": false,
-        "arrivee": "10:00",
-        "depart": "18:00"
+        "actif": true,
+        "arrivee": "08:10",
+        "depart": "18:20"
       },
       "2": {
         "actif": false,
@@ -206,14 +206,14 @@
         "depart": "15:00"
       },
       "3": {
-        "actif": false,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "actif": true,
+        "arrivee": "08:10",
+        "depart": "18:20"
       },
       "4": {
-        "actif": false,
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "actif": true,
+        "arrivee": "08:10",
+        "depart": "18:20"
       },
       "5": {
         "actif": false,
