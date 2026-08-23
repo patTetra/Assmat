@@ -440,6 +440,51 @@
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
     .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
 
+    /* CARD DÉDIÉE PAJEMPLOI */
+    .pajemploi-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      margin-top: 1.25rem;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+    }
+    .pajemploi-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #10b981;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    .pajemploi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+    .pajemploi-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+    }
+    .pajemploi-item-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .pajemploi-item-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 2px;
+    }
+
     .info-group {
       background: var(--surface-card);
       border-radius: var(--radius-md);
@@ -458,9 +503,6 @@
 
     .print-only { display: none; }
 
-    /* ==========================================================================
-       STYLES SPÉCIFIQUES D'IMPRESSION (PDF & IMPRIMANTE A4)
-       ========================================================================== */
     @media print {
       @page {
         size: A4 portrait;
@@ -473,22 +515,15 @@
         padding: 0 !important;
         margin: 0 !important;
         font-family: 'Helvetica Neue', Arial, sans-serif !important;
-        font-size: 11pt !important;
+        font-size: 10pt !important;
       }
 
-      /* Cacher toute l'UI web */
       header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #presence, #planning, #contrat {
         display: none !important;
       }
 
-      /* Afficher proprement l'onglet Paie */
-      #paie {
-        display: block !important;
-      }
-
-      .print-only {
-        display: block !important;
-      }
+      #paie { display: block !important; }
+      .print-only { display: block !important; }
 
       .card {
         background: #ffffff !important;
@@ -498,40 +533,34 @@
         margin: 0 !important;
       }
 
-      /* En-tête de la Fiche de Paie */
       .print-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         border-bottom: 2px solid #000;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
       }
 
       .print-header-title h1 {
-        font-size: 18pt;
+        font-size: 16pt;
         font-weight: bold;
         color: #000;
         text-transform: uppercase;
-        margin-bottom: 4px;
-      }
-
-      .print-header-title p {
-        font-size: 10pt;
-        color: #444;
+        margin-bottom: 2px;
       }
 
       .print-grid-info {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin-bottom: 15px;
       }
 
       .print-box {
         border: 1px solid #ccc;
         border-radius: 4px;
-        padding: 10px 12px;
+        padding: 8px 10px;
         background: #fafafa !important;
       }
 
@@ -540,22 +569,21 @@
         font-weight: bold;
         text-transform: uppercase;
         color: #666;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         border-bottom: 1px solid #eee;
         padding-bottom: 2px;
       }
 
       .print-box-content {
-        font-size: 10pt;
+        font-size: 9.5pt;
         color: #000;
-        line-height: 1.4;
+        line-height: 1.3;
       }
 
-      /* Table de paie */
       .table-container {
         border: 1px solid #000 !important;
         border-radius: 0 !important;
-        margin-bottom: 20px !important;
+        margin-bottom: 15px !important;
       }
 
       table {
@@ -569,58 +597,80 @@
         color: #000 !important;
         border-bottom: 1px solid #000 !important;
         border-right: 1px solid #ccc !important;
-        font-size: 9pt !important;
-        padding: 8px !important;
+        font-size: 8.5pt !important;
+        padding: 6px !important;
       }
 
       td {
         color: #000 !important;
         border-bottom: 1px solid #eee !important;
         border-right: 1px solid #eee !important;
-        font-size: 10pt !important;
-        padding: 8px !important;
+        font-size: 9pt !important;
+        padding: 6px !important;
       }
 
-      th:last-child, td:last-child {
-        border-right: none !important;
+      .pajemploi-card {
+        background: #fff !important;
+        border: 1px dashed #000 !important;
+        border-radius: 4px !important;
+        padding: 10px !important;
+        margin-top: 15px !important;
+        box-shadow: none !important;
       }
 
-      /* Récapitulatif */
+      .pajemploi-title {
+        color: #000 !important;
+        font-size: 9pt !important;
+        border-bottom: 1px solid #000 !important;
+        padding-bottom: 4px !important;
+        margin-bottom: 8px !important;
+      }
+
+      .pajemploi-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+      }
+
+      .pajemploi-item {
+        background: #f9f9f9 !important;
+        border: 1px solid #ddd !important;
+        padding: 4px 6px !important;
+      }
+
+      .pajemploi-item-label { color: #444 !important; font-size: 6.5pt !important; }
+      .pajemploi-item-val { color: #000 !important; font-size: 9.5pt !important; }
+
       .summary-card {
         background: #fff !important;
         border: none !important;
         padding: 0 !important;
         margin-top: 10px !important;
-        width: 60%;
+        width: 50%;
         margin-left: auto;
       }
 
-      .summary-line {
-        color: #000 !important;
-        font-size: 10pt !important;
-        margin-bottom: 6px !important;
-      }
-
+      .summary-line { color: #000 !important; font-size: 9pt !important; margin-bottom: 4px !important; }
       .summary-line.total {
         border-top: 2px solid #000 !important;
-        padding-top: 8px !important;
-        margin-top: 8px !important;
-        font-size: 12pt !important;
+        padding-top: 6px !important;
+        margin-top: 6px !important;
+        font-size: 11pt !important;
         color: #000 !important;
       }
 
       .print-signatures {
-        margin-top: 40px;
+        margin-top: 25px;
         display: flex;
         justify-content: space-between;
-        font-size: 9pt;
+        font-size: 8.5pt;
       }
 
       .print-signature-box {
         width: 45%;
         border-top: 1px solid #aaa;
-        padding-top: 5px;
-        min-height: 70px;
+        padding-top: 4px;
+        min-height: 50px;
       }
     }
   </style>
@@ -653,7 +703,7 @@
     <button class="tab-btn active" onclick="switchTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchTab('planning')">🗓️ Planning Mois</button>
     <button class="tab-btn" onclick="switchTab('contrat')">📜 Contrat Enfant</button>
-    <button class="tab-btn" onclick="switchTab('paie')">📄 Paie</button>
+    <button class="tab-btn" onclick="switchTab('paie')">📄 Paie & Pajemploi</button>
   </nav>
 
   <!-- TAB 1 : VALIDATION DU JOUR -->
@@ -800,7 +850,7 @@
         </div>
       </div>
 
-      <h2>Tarification & Contrat</h2>
+      <h2>Tarification & Contrat Pajemploi</h2>
       <div class="grid-2">
         <div class="form-group">
           <label>Tarif Net (€/h)</label>
@@ -826,6 +876,14 @@
           <label>H. Hebdo Contrat</label>
           <input type="number" id="cfg-h-hebdo">
         </div>
+        <div class="form-group">
+          <label>Jours / semaine</label>
+          <input type="number" id="cfg-j-hebdo" placeholder="ex: 4">
+        </div>
+        <div class="form-group">
+          <label>Semaines / an</label>
+          <input type="number" id="cfg-semaines-an" placeholder="52 ou 46...">
+        </div>
       </div>
       <br>
       <div style="display:flex; flex-direction: column; gap: 0.75rem;">
@@ -835,7 +893,7 @@
     </div>
   </div>
 
-  <!-- TAB 4 : FICHE DE PAIE -->
+  <!-- TAB 4 : FICHE DE PAIE & PAJEMPLOI -->
   <div id="paie" class="tab-content">
     <div class="card">
       
@@ -846,13 +904,13 @@
           <p>Relevé mensuel d'accueil de l'enfant</p>
         </div>
         <div style="text-align: right;">
-          <div style="font-size: 11pt; font-weight: bold;" id="fp-print-date"></div>
-          <div style="font-size: 9pt; color: #666;">Document généré via AssMat Flow</div>
+          <div style="font-size: 10pt; font-weight: bold;" id="fp-print-date"></div>
+          <div style="font-size: 8.5pt; color: #666;">Document généré via AssMat Flow</div>
         </div>
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;" class="no-print">
-        <h2 style="margin:0;">Fiche de Paie</h2>
+        <h2 style="margin:0;">Fiche de Paie & Déclaration</h2>
         <div style="display:flex; align-items:center; gap:0.5rem;">
           <div class="form-group" style="margin:0;">
             <input type="month" id="fp-select-mois" onchange="calculerFicheDePaie()" style="padding:0.4rem 0.6rem; font-size:0.85rem;">
@@ -861,7 +919,7 @@
         </div>
       </div>
 
-      <!-- Bloc d'information Employeur / Enfant (Adapté Web + Print) -->
+      <!-- Bloc d'information Employeur / Enfant -->
       <div>
         <div class="no-print" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
           <div>
@@ -875,7 +933,6 @@
           </div>
         </div>
 
-        <!-- Structure d'informations dédiée à l'impression -->
         <div class="print-only print-grid-info">
           <div class="print-box">
             <div class="print-box-title">Période & Objet</div>
@@ -911,7 +968,41 @@
           <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent-light);">0.00 €</span></div>
         </div>
 
-        <!-- Bloc Signature pour l'impression -->
+        <!-- BLOC DÉCLARATION PAJEMPLOI (Écran + Print) -->
+        <div class="pajemploi-card">
+          <div class="pajemploi-title">
+            <span>📋 ÉLÉMENTS POUR LA DÉCLARATION PAJEMPLOI</span>
+            <span style="font-size: 0.7rem; font-weight: normal; color: var(--text-muted);" class="no-print">Chiffres à recopier par les parents</span>
+          </div>
+          <div class="pajemploi-grid">
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Heures normales</div>
+              <div class="pajemploi-item-val" id="paje-h-normales">0 h</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Jours d'activité (arrondi)</div>
+              <div class="pajemploi-item-val" id="paje-j-activite">0 j</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Heures compl. / supp.</div>
+              <div class="pajemploi-item-val" id="paje-h-supp">0 h</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Jours de Congés Payés</div>
+              <div class="pajemploi-item-val" id="paje-cp">0 j</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Salaire Net Total</div>
+              <div class="pajemploi-item-val" id="paje-salaire-net">0.00 €</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Total Indemnités (IE+IR)</div>
+              <div class="pajemploi-item-val" id="paje-indemnites">0.00 €</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signature pour l'impression -->
         <div class="print-only print-signatures">
           <div class="print-signature-box">
             Signature Assistante Maternelle :
@@ -1009,7 +1100,7 @@
           mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
           pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
           urgence: { nom: '', tel: '' },
-          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52 
         },
         semaineType: {
           0: { actif: true, arrivee: '08:30', depart: '17:30' },
@@ -1049,6 +1140,8 @@
           };
         }
         if(!c.urgence) c.urgence = { nom: '', tel: '' };
+        if(!c.jHebdo) c.jHebdo = 4;
+        if(!c.semainesAn) c.semainesAn = 52;
 
         enfants[id].contrat = c;
 
@@ -1294,7 +1387,7 @@
           mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
           pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
           urgence: { nom: '', tel: '' },
-          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35 
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52
         },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -1533,15 +1626,16 @@
       let duree = (hD + mD/60) - (hA + mA/60);
       if (duree < 0) duree += 24;
 
-      let hNorm = Math.min(duree, contrat.hHebdo / 5);
+      let hNorm = Math.min(duree, contrat.hHebdo / (contrat.jHebdo || 5));
       let hComp = 0, hSup = 0;
 
-      if (duree > contrat.hHebdo / 5) {
+      let maxJourNorm = contrat.hHebdo / (contrat.jHebdo || 5);
+      if (duree > maxJourNorm) {
         if (duree > 9) {
-          hComp = 9 - (contrat.hHebdo / 5);
+          hComp = Math.max(0, 9 - maxJourNorm);
           hSup = duree - 9;
         } else {
-          hComp = duree - (contrat.hHebdo / 5);
+          hComp = duree - maxJourNorm;
         }
       }
 
@@ -1606,6 +1700,8 @@
       document.getElementById('cfg-ir').value = c.ir || 4.00;
       document.getElementById('cfg-h-mensuel').value = c.hMensuel || 120;
       document.getElementById('cfg-h-hebdo').value = c.hHebdo || 35;
+      document.getElementById('cfg-j-hebdo').value = c.jHebdo || 4;
+      document.getElementById('cfg-semaines-an').value = c.semainesAn || 52;
     }
 
     function sauvegarderContrat() {
@@ -1637,7 +1733,9 @@
         ie: parseFloat(document.getElementById('cfg-ie').value) || 0,
         ir: parseFloat(document.getElementById('cfg-ir').value) || 0,
         hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
-        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value) || 0
+        hHebdo: parseFloat(document.getElementById('cfg-h-hebdo').value) || 0,
+        jHebdo: parseFloat(document.getElementById('cfg-j-hebdo').value) || 4,
+        semainesAn: parseFloat(document.getElementById('cfg-semaines-an').value) || 52
       };
       
       sauvegarderGlobal();
@@ -1658,7 +1756,6 @@
         monthTitle = `${MOIS[parseInt(mois, 10) - 1]} ${annee}`;
       }
       
-      // Affectation aux zones UI Web & zones Print
       document.getElementById('fp-periode').innerText = monthTitle;
       document.getElementById('fp-print-periode').innerText = monthTitle;
       
@@ -1684,26 +1781,29 @@
 
       let totHComp = presencesDuMois.reduce((acc, p) => acc + (p.hComp || 0), 0);
       let totHSup = presencesDuMois.reduce((acc, p) => acc + (p.hSup || 0), 0);
-      let nbJours = presencesDuMois.length;
+      let totHSuppTotal = totHComp + totHSup;
+      let nbJoursPresents = presencesDuMois.length;
       let nbRepas = presencesDuMois.filter(p => p.repas === 'oui').length;
 
       let salaireBase = contrat.hMensuel * contrat.tarifNet;
       let montantHComp = totHComp * contrat.tarifNet;
       let tarifHSup = contrat.tarifNet * (1 + contrat.majoration / 100);
       let montantHSup = totHSup * tarifHSup;
+      let salaireNetTotal = salaireBase + montantHComp + montantHSup;
       
-      let totalIE = nbJours * contrat.ie;
+      let totalIE = nbJoursPresents * contrat.ie;
       let totalIR = nbRepas * contrat.ir;
       let totalIndem = totalIE + totalIR;
 
-      let netAPayer = salaireBase + montantHComp + montantHSup + totalIndem;
+      let netAPayer = salaireNetTotal + totalIndem;
 
+      // Table classique
       const body = document.getElementById('fp-body');
       body.innerHTML = `
         <tr><td style="text-align:left;">Salaire de base mensualisé</td><td>${contrat.hMensuel} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${salaireBase.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Heures complémentaires</td><td>${totHComp.toFixed(2)} h</td><td>${contrat.tarifNet.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHComp.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Heures supplémentaires (+${contrat.majoration}%)</td><td>${totHSup.toFixed(2)} h</td><td>${tarifHSup.toFixed(2)} €</td><td style="text-align:right;"><strong>${montantHSup.toFixed(2)} €</strong></td></tr>
-        <tr><td style="text-align:left;">Indemnités d'entretien</td><td>${nbJours} j</td><td>${contrat.ie.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIE.toFixed(2)} €</strong></td></tr>
+        <tr><td style="text-align:left;">Indemnités d'entretien</td><td>${nbJoursPresents} j</td><td>${contrat.ie.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIE.toFixed(2)} €</strong></td></tr>
         <tr><td style="text-align:left;">Indemnités de repas</td><td>${nbRepas} r</td><td>${contrat.ir.toFixed(2)} €</td><td style="text-align:right;"><strong>${totalIR.toFixed(2)} €</strong></td></tr>
       `;
 
@@ -1711,6 +1811,18 @@
       document.getElementById('fp-total-hs').innerText = (montantHComp + montantHSup).toFixed(2) + ' €';
       document.getElementById('fp-total-indemnites').innerText = totalIndem.toFixed(2) + ' €';
       document.getElementById('fp-net-a-payer').innerText = netAPayer.toFixed(2) + ' €';
+
+      // --- CALCULS & ASSIGNATION PAJEMPLOI ---
+      let jHebdo = contrat.jHebdo || 4;
+      let semainesAn = contrat.semainesAn || 52;
+      let joursActiviteArrondis = Math.ceil((jHebdo * semainesAn) / 12);
+
+      document.getElementById('paje-h-normales').innerText = `${contrat.hMensuel} h`;
+      document.getElementById('paje-j-activite').innerText = `${joursActiviteArrondis} j`;
+      document.getElementById('paje-h-supp').innerText = `${totHSuppTotal.toFixed(2)} h`;
+      document.getElementById('paje-cp').innerText = `0 j`;
+      document.getElementById('paje-salaire-net').innerText = `${salaireNetTotal.toFixed(2)} €`;
+      document.getElementById('paje-indemnites').innerText = `${totalIndem.toFixed(2)} €`;
     }
 
     // INITIALISATION
