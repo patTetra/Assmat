@@ -500,9 +500,9 @@
       "adaptationDebut": "2026-09-01",
       "adaptationFin": "2026-09-04",
       "tarifBrut": 4.8643,
-      "heuresSemaine": 35,
-      "typeAnnee": "complete",
-      "semainesAn": 52,
+      "heuresSemaine": 48.75,
+      "typeAnnee": "incomplete",
+      "semainesAn": 44,
       "assmatNom": "Gaël Desaegher",
       "assmatAdresse": "Le Penquer Lescloeden, 1071 Route De Plouegat Guerrand, 29610 Plouigneau",
       "valide": false
