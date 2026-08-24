@@ -518,6 +518,13 @@
               <input type="number" step="0.5" min="1" max="60" id="eng-heures-semaine" placeholder="ex: 35" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
             <div class="form-group">
+              <label>Type d'année d'accueil</label>
+              <select id="eng-type-annee" onchange="basculerTypeAnneeEngagement(); calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+                <option value="complete">Année complète (≥ 47 sem., CP inclus)</option>
+                <option value="incomplete">Année incomplète (CP versés à part)</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label>Semaines de travail / an</label>
               <input type="number" step="1" min="1" max="52" id="eng-semaines-an" placeholder="ex: 52" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
@@ -537,6 +544,14 @@
           <div class="summary-card" style="margin-bottom: 1rem;">
             <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
             <div class="summary-line total"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
+          </div>
+
+          <div id="eng-cp-notice" class="info-group" style="display:none; border-color: var(--warning);">
+            <h3>🏖️ Congés payés — Année incomplète</h3>
+            <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.5rem;">
+              En année incomplète, les congés payés ne sont <strong>pas inclus</strong> dans ce salaire mensualisé. Ils doivent être versés <strong>à part</strong> (généralement en juin, à la fin de la période de référence), selon la méthode la plus favorable à l'assmat (10% ou maintien de salaire). Le versement mensuel anticipé des 10% est interdit par la convention collective.
+            </p>
+            <div class="summary-line"><span>Indemnité de CP estimée (méthode 10%, à verser à part) :</span><span id="eng-cp-estimee-val">0.00 €/an</span></div>
           </div>
 
           <button class="btn btn-primary" style="width:100%;" onclick="validerEngagementEtPreremplirContrat()">✅ Valider l'engagement & pré-remplir le contrat</button>
@@ -1002,12 +1017,13 @@
         enfants[id].contrat = c;
 
         if(!enfants[id].engagement) {
-          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), heuresSemaine: c.hHebdo || 35, semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), heuresSemaine: c.hHebdo || 35, typeAnnee: 'complete', semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
         }
         if(enfants[id].engagement.adaptationDebut === undefined) enfants[id].engagement.adaptationDebut = '';
         if(enfants[id].engagement.adaptationFin === undefined) enfants[id].engagement.adaptationFin = '';
         if(enfants[id].engagement.heuresSemaine === undefined) enfants[id].engagement.heuresSemaine = c.hHebdo || 35;
         delete enfants[id].engagement.joursSemaine;
+        if(enfants[id].engagement.typeAnnee === undefined) enfants[id].engagement.typeAnnee = (enfants[id].engagement.semainesAn && enfants[id].engagement.semainesAn < 47) ? 'incomplete' : 'complete';
         if(enfants[id].engagement.semainesAn === undefined) enfants[id].engagement.semainesAn = c.semainesAn || 52;
         if(enfants[id].engagement.valide === undefined) enfants[id].engagement.valide = !!(c.tarifNet);
         enfants[id].engagement.assmatNom = getNomCompletAssmat();
@@ -1363,7 +1379,7 @@
           tarifNet: '', majoration: '', ie: '', ir: '', hMensuel: '', hHebdo: '', jHebdo: '', semainesAn: ''
         },
         engagement: {
-          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: '', heuresSemaine: '', semainesAn: '', assmatNom: '', assmatAdresse: '', valide: false
+          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: '', heuresSemaine: '', typeAnnee: 'complete', semainesAn: '', assmatNom: '', assmatAdresse: '', valide: false
         },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -1800,9 +1816,12 @@
       document.getElementById('eng-adaptation-fin').value = eng.adaptationFin || '';
       document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
       document.getElementById('eng-heures-semaine').value = eng.heuresSemaine || c.hHebdo || 35;
+      document.getElementById('eng-type-annee').value = eng.typeAnnee || 'complete';
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
       document.getElementById('eng-assmat-nom').value = getNomCompletAssmat();
       document.getElementById('eng-assmat-adresse').value = getAdresseCompleteAssmatTexte();
+
+      basculerTypeAnneeEngagement();
 
       const badge = document.getElementById('eng-statut-badge');
       if (badge) {
@@ -1814,6 +1833,22 @@
       calculerIndemniteEngagement();
     }
 
+    function basculerTypeAnneeEngagement() {
+      const type = document.getElementById('eng-type-annee').value;
+      const champSemaines = document.getElementById('eng-semaines-an');
+      const cpNotice = document.getElementById('eng-cp-notice');
+
+      if (type === 'complete') {
+        champSemaines.value = 52;
+        champSemaines.disabled = true;
+        if (cpNotice) cpNotice.style.display = 'none';
+      } else {
+        champSemaines.disabled = false;
+        if (parseFloat(champSemaines.value) >= 47 || !champSemaines.value) champSemaines.value = 46;
+        if (cpNotice) cpNotice.style.display = 'block';
+      }
+    }
+
     function sauvegarderEngagementForm() {
       if (!enfants[activeEnfantId].engagement) enfants[activeEnfantId].engagement = {};
       const eng = enfants[activeEnfantId].engagement;
@@ -1823,6 +1858,7 @@
       eng.adaptationFin = document.getElementById('eng-adaptation-fin').value;
       eng.tarifBrut = parseFloat(document.getElementById('eng-tarif-brut').value) || 0;
       eng.heuresSemaine = parseFloat(document.getElementById('eng-heures-semaine').value) || 35;
+      eng.typeAnnee = document.getElementById('eng-type-annee').value || 'complete';
       eng.semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 52;
       eng.assmatNom = getNomCompletAssmat();
       eng.assmatAdresse = getAdresseCompleteAssmatTexte();
@@ -1833,6 +1869,7 @@
       const tBrut = parseFloat(document.getElementById('eng-tarif-brut')?.value) || 0;
       const hHebdo = parseFloat(document.getElementById('eng-heures-semaine')?.value) || 0;
       const semainesAn = parseFloat(document.getElementById('eng-semaines-an')?.value) || 52;
+      const typeAnnee = document.getElementById('eng-type-annee')?.value || 'complete';
 
       const brutMensuel = (tBrut * hHebdo * semainesAn) / 12;
       const indemnite = brutMensuel / 2;
@@ -1840,6 +1877,13 @@
       document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} €`;
       document.getElementById('eng-indemnite-val').innerText = `${indemnite.toFixed(2)} €`;
       document.getElementById('eng-print-indemnite-texte').innerText = `${indemnite.toFixed(2)} €`;
+
+      if (typeAnnee === 'incomplete') {
+        const salaireAnnuelBase = brutMensuel * 12;
+        const cpEstimee = salaireAnnuelBase * 0.10;
+        const cpVal = document.getElementById('eng-cp-estimee-val');
+        if (cpVal) cpVal.innerText = `~${cpEstimee.toFixed(2)} €/an`;
+      }
     }
 
     function validerEngagementEtPreremplirContrat() {
@@ -1905,21 +1949,28 @@
       const tNet = (tBrut / 1.2816).toFixed(2);
       const hHebdo = eng.heuresSemaine || 0;
       const semainesAn = eng.semainesAn || 52;
+      const typeAnnee = eng.typeAnnee || 'complete';
       const hMensuelles = (hHebdo * semainesAn) / 12;
       const brutMensuel = tBrut * hMensuelles;
+      const typeAnneeTexte = typeAnnee === 'incomplete' ? "Année incomplète (CP versés à part)" : "Année complète (CP inclus)";
 
       document.getElementById('eng-print-conditions').innerHTML = `
         • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
         • Période d'adaptation : ${adaptationTexte}<br>
         • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong><br>
-        • Périodicités : ${semainesAn} semaines / an<br>
+        • Type d'année / Périodicité : <strong>${typeAnneeTexte}</strong> — ${semainesAn} semaines / an<br>
         • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)
       `;
 
-      document.getElementById('eng-print-calcul-salaire').innerHTML = `
+      let calculHtml = `
         • Volume horaire mensualisé : ${hHebdo}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${hMensuelles.toFixed(2)} h/mois</strong><br>
         • Salaire brut mensuel : ${hMensuelles.toFixed(2)} h/mois × ${tBrut.toFixed(2)} €/h = <strong>${brutMensuel.toFixed(2)} € brut/mois</strong>
       `;
+      if (typeAnnee === 'incomplete') {
+        const cpEstimee = (brutMensuel * 12) * 0.10;
+        calculHtml += `<br>• Congés payés : <strong>non inclus</strong> ci-dessus, à verser à part (≈ ${cpEstimee.toFixed(2)} €/an, méthode 10% ou maintien de salaire si plus favorable)`;
+      }
+      document.getElementById('eng-print-calcul-salaire').innerHTML = calculHtml;
     }
 
     function imprimerEngagement() {
