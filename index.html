@@ -121,10 +121,12 @@
     .cal-day.has-presence { background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(129, 140, 248, 0.4); opacity: 1; }
     .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
     
-    .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; }
-    .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: var(--accent-light); }
+    .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
+    .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
     .cal-day-badge { font-size: 0.58rem; font-weight: 600; padding: 2px 3px; border-radius: 4px; text-align: center; width: 100%; }
     .cal-day-badge.off { color: var(--text-muted); font-size: 0.75rem; opacity: 0.4; }
+    .cal-day-del { position: absolute; top: -3px; right: -1px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; }
+    .cal-day-del:hover, .cal-day-del:active { opacity: 0.85; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 1rem; }
     .modal-overlay.active { display: flex; }
@@ -135,6 +137,14 @@
     .week-day-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
     .week-day-row.weekend-row { background: rgba(15, 23, 42, 0.4); opacity: 0.7; }
     .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
+
+    .dup-panel { display: none; background: rgba(99, 102, 241, 0.1); border: 1px dashed rgba(129, 140, 248, 0.4); border-radius: var(--radius-sm); padding: 0.6rem; margin: -0.15rem 0 0.35rem 0; }
+    .dup-panel.active { display: block; }
+    .dup-panel p { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .dup-days { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
+    .dup-day-chip { display: flex; align-items: center; gap: 0.3rem; background: var(--surface-card); padding: 0.3rem 0.55rem; border-radius: 20px; font-size: 0.75rem; cursor: pointer; border: 1px solid var(--border); }
+    .dup-day-chip input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+    .dup-panel-actions { display: flex; gap: 0.4rem; justify-content: flex-end; }
     .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
 
     .table-container { width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 0.5rem; }
@@ -305,6 +315,8 @@
         <button class="btn btn-secondary btn-sm" onclick="synchroniserICSMaintenant()">🔄 Forcer la synchro calendrier</button>
         <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📥 Télécharger le .ics</button>
       </div>
+
+      <div id="planning-total-mois" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem;"></div>
 
       <div class="calendar-days-header">
         <div>LUN</div><div>MAR</div><div>MER</div><div>JEU</div><div>VEN</div><div>SAM</div><div>DIM</div>
@@ -1442,12 +1454,66 @@
         if (dayOfWeek === 5 || dayOfWeek === 6) dayClass += " is-weekend";
 
         if (prevu && prevu.arrivee && prevu.depart) {
-          badgeHtml = `<div class="cal-day-badge-stack"><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
+          badgeHtml = `<div class="cal-day-badge-stack"><span class="cal-day-del" onclick="event.stopPropagation(); supprimerJourPlanning('${isoDate}')" title="Effacer cette journée">🗑</span><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
           dayClass += " has-presence";
         }
 
         grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')"><div class="cal-day-num">${day}</div>${badgeHtml}</div>`;
       }
+
+      mettreAJourTotalMoisPlanning();
+    }
+
+    function supprimerJourPlanning(isoDate) {
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+      if (!planning[isoDate]) return;
+      if (!confirm(`Effacer les horaires du ${isoDate} ?`)) return;
+      delete planning[isoDate];
+      sauvegarderGlobal();
+      rendreCalendrier();
+    }
+
+    function mettreAJourTotalMoisPlanning() {
+      const zone = document.getElementById('planning-total-mois');
+      if (!zone) return;
+
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+      const isoMois = `${year}-${String(month + 1).padStart(2, '0')}`;
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+
+      let totalHeures = 0;
+      Object.keys(planning).forEach(isoDate => {
+        if (!isoDate.startsWith(isoMois)) return;
+        const j = planning[isoDate];
+        if (!j || !j.arrivee || !j.depart) return;
+        const [hA, mA] = j.arrivee.split(':').map(Number);
+        const [hD, mD] = j.depart.split(':').map(Number);
+        let duree = (hD + mD / 60) - (hA + mA / 60);
+        if (duree < 0) duree += 24;
+        totalHeures += duree;
+      });
+
+      const hMensuel = enfants[activeEnfantId]?.contrat?.hMensuel || 0;
+      let html = `<span class="badge badge-primary">Total posé : ${totalHeures.toFixed(1)}h</span>`;
+
+      if (hMensuel > 0) {
+        const ecart = totalHeures - hMensuel;
+        if (ecart <= 0) {
+          html += `<span class="badge badge-success">Reste à poser : ${Math.abs(ecart).toFixed(1)}h / ${hMensuel}h</span>`;
+        } else {
+          // Au-delà du volume mensuel contractuel : heures complémentaires dans la limite de 1/10e du volume mensuel, puis heures supplémentaires au-delà.
+          const seuilComp = hMensuel * 0.10;
+          const hComp = Math.min(ecart, seuilComp);
+          const hSup = Math.max(0, ecart - seuilComp);
+          html += `<span class="badge badge-warning">Heures complémentaires : ${hComp.toFixed(1)}h</span>`;
+          if (hSup > 0) {
+            html += `<span class="badge badge-danger">Heures supplémentaires : ${hSup.toFixed(1)}h</span>`;
+          }
+        }
+      }
+
+      zone.innerHTML = html;
     }
 
     function ouvrirModalJour(isoDate) {
@@ -1567,6 +1633,11 @@
       JOURS.forEach((jour, idx) => {
         const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
         const isWeekend = (idx === 5 || idx === 6);
+        const autresJours = JOURS.map((j2, idx2) => idx2 === idx ? '' : `
+              <label class="dup-day-chip">
+                <input type="checkbox" id="dup-check-${idx}-${idx2}"> ${j2.slice(0, 3)}
+              </label>`).join('');
+
         grid.innerHTML += `
           <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
             <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -1574,8 +1645,16 @@
               <label for="st-check-${idx}">${jour}</label>
             </div>
             <div style="display:flex; gap:0.3rem;">
-              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="autoCheckSemaineType(${idx})">
-              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="autoCheckSemaineType(${idx})">
+              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx})">
+              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx})">
+            </div>
+          </div>
+          <div class="dup-panel" id="dup-panel-${idx}">
+            <p>Appliquer ces horaires (${item.arrivee || '08:30'} - ${item.depart || '17:30'}) à d'autres jours ?</p>
+            <div class="dup-days">${autresJours}</div>
+            <div class="dup-panel-actions">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="fermerPanelDuplication(${idx})">Ignorer</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="dupliquerHorairesSemaineType(${idx})">Dupliquer vers les jours cochés</button>
             </div>
           </div>
         `;
@@ -1586,6 +1665,50 @@
     function autoCheckSemaineType(idx) {
       const check = document.getElementById(`st-check-${idx}`);
       if (check && !check.checked && event.type === 'input') check.checked = true;
+      mettreAJourCalculsSemaineTypeUI();
+    }
+
+    function onChangeHoraireSemaineType(idx) {
+      autoCheckSemaineType(idx);
+
+      // Propose de dupliquer les horaires qui viennent d'être saisis sur d'autres jours
+      const panel = document.getElementById(`dup-panel-${idx}`);
+      const arr = document.getElementById(`st-arr-${idx}`)?.value || '';
+      const dep = document.getElementById(`st-dep-${idx}`)?.value || '';
+      const texte = panel?.querySelector('p');
+      if (texte) texte.innerText = `Appliquer ces horaires (${arr} - ${dep}) à d'autres jours ?`;
+      if (panel) panel.classList.add('active');
+    }
+
+    function fermerPanelDuplication(idx) {
+      const panel = document.getElementById(`dup-panel-${idx}`);
+      if (panel) panel.classList.remove('active');
+      JOURS.forEach((_, idx2) => {
+        const chk = document.getElementById(`dup-check-${idx}-${idx2}`);
+        if (chk) chk.checked = false;
+      });
+    }
+
+    function dupliquerHorairesSemaineType(idx) {
+      const arr = document.getElementById(`st-arr-${idx}`)?.value;
+      const dep = document.getElementById(`st-dep-${idx}`)?.value;
+      if (!arr || !dep) return;
+
+      let auMoinsUnJour = false;
+      JOURS.forEach((_, idx2) => {
+        if (idx2 === idx) return;
+        const chk = document.getElementById(`dup-check-${idx}-${idx2}`);
+        if (chk && chk.checked) {
+          document.getElementById(`st-arr-${idx2}`).value = arr;
+          document.getElementById(`st-dep-${idx2}`).value = dep;
+          document.getElementById(`st-check-${idx2}`).checked = true;
+          auMoinsUnJour = true;
+        }
+      });
+
+      if (!auMoinsUnJour) { alert("Cochez au moins un jour pour dupliquer les horaires."); return; }
+
+      fermerPanelDuplication(idx);
       mettreAJourCalculsSemaineTypeUI();
     }
 
