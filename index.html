@@ -2107,22 +2107,33 @@
       sauvegarderGlobal();
     }
 
-    // Calcule le salaire brut mensuel à partir du taux horaire BRUT, en appliquant
+    // Calcule le salaire brut et net mensuel à partir du taux horaire BRUT, en appliquant
     // une majoration de 10% sur les heures d'accueil hebdomadaires au-delà de 45h.
+    // Les heures majorées bénéficient en outre d'une exonération partielle de charges
+    // salariales de 11,31 points (réduction TEPA sur les heures supplémentaires),
+    // ce qui donne un taux horaire net plus favorable sur ces heures-là.
+    const TAUX_CONVERSION_NET_BRUT = 1 / 1.2816; // ≈ taux de charges salariales de 21,97%
+    const EXONERATION_HEURES_SUP = 0.1131; // 11,31% d'exonération partielle sur les heures majorées
+
     function calculerBrutMensuelEngagement(tauxBrut, heuresSemaine, semainesAn) {
       const heuresNormal = Math.min(heuresSemaine, 45);
       const heuresSup = Math.max(0, heuresSemaine - 45);
       const heuresNormalesAnnuelles = heuresNormal * semainesAn;
       const heuresSupAnnuelles = heuresSup * semainesAn;
       const tauxBrutSup = tauxBrut * 1.10;
+      const tauxNetNormal = tauxBrut * TAUX_CONVERSION_NET_BRUT;
+      const tauxNetSup = tauxBrutSup * (TAUX_CONVERSION_NET_BRUT + EXONERATION_HEURES_SUP);
       const mensualisationNormale = (tauxBrut * heuresNormalesAnnuelles) / 12;
       const mensualisationMajoree = (tauxBrutSup * heuresSupAnnuelles) / 12;
       const brutMensuel = mensualisationNormale + mensualisationMajoree;
-      const netMensuel = brutMensuel / 1.2816;
+      const mensualisationNormaleNet = (tauxNetNormal * heuresNormalesAnnuelles) / 12;
+      const mensualisationMajoreeNet = (tauxNetSup * heuresSupAnnuelles) / 12;
+      const netMensuel = mensualisationNormaleNet + mensualisationMajoreeNet;
       return {
-        tauxBrut, tauxBrutSup, heuresNormal, heuresSup,
+        tauxBrut, tauxBrutSup, tauxNetNormal, tauxNetSup, heuresNormal, heuresSup,
         heuresNormalesAnnuelles, heuresSupAnnuelles,
         mensualisationNormale, mensualisationMajoree,
+        mensualisationNormaleNet, mensualisationMajoreeNet,
         brutMensuel, netMensuel
       };
     }
@@ -2137,7 +2148,11 @@
       const indemnite = r.brutMensuel / 2;
 
       const netHoraireEl = document.getElementById('eng-tarif-net-calcule-val');
-      if (netHoraireEl) netHoraireEl.innerText = `${fmtEng(tBrut / 1.2816, 2)} €/h`;
+      if (netHoraireEl) {
+        netHoraireEl.innerText = hHebdo > 45
+          ? `${fmtEng(r.tauxNetNormal, 2)} €/h (${fmtEng(r.tauxNetSup, 2)} €/h heures majorées)`
+          : `${fmtEng(r.tauxNetNormal, 2)} €/h`;
+      }
 
       document.getElementById('eng-brut-mensuel-val').innerText = `${fmtEng(r.brutMensuel, 4)} €`;
       const netEl = document.getElementById('eng-net-mensuel-val');
@@ -2246,7 +2261,7 @@
       }
 
       const tBrut = eng.tarifBrut || 0;
-      const tNet = tBrut / 1.2816;
+      const tNet = tBrut * TAUX_CONVERSION_NET_BRUT;
       const hHebdo = eng.heuresSemaine || 0;
       const semainesAn = eng.semainesAn || 52;
       const typeAnnee = eng.typeAnnee || 'complete';
@@ -2269,6 +2284,8 @@
           • Mensualisation heures normales : ${fmtEng(r.tauxBrut, 4)} €/h × ${fmtEng(r.heuresNormalesAnnuelles, 2)} h/an ÷ 12 = <strong>${fmtEng(r.mensualisationNormale, 4)} €</strong><br>
           • Mensualisation heures majorées : 110% × ${fmtEng(r.tauxBrut, 4)} €/h (= ${fmtEng(r.tauxBrutSup, 4)} €/h) × ${fmtEng(r.heuresSupAnnuelles, 2)} h/an ÷ 12 = <strong>${fmtEng(r.mensualisationMajoree, 4)} €</strong><br>
           • Salaire brut mensuel : <strong>${fmtEng(r.brutMensuel, 4)} € brut/mois</strong><br>
+          • Taux horaire net (heures normales) : <strong>${fmtEng(r.tauxNetNormal, 4)} €/h</strong><br>
+          • Taux horaire net (heures majorées, exonération partielle de charges de 11,31%) : <strong>${fmtEng(r.tauxNetSup, 4)} €/h</strong><br>
           • Salaire net mensuel (pour information) : <strong>${fmtEng(r.netMensuel, 2)} € net/mois</strong>
         `;
       } else {
