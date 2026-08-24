@@ -474,7 +474,7 @@
       "prenomEnfant": "Rose",
       "nomEnfant": "Lebeau",
       "naissance": "2026-05-27",
-      "sortiesVoiture": false,
+      "sortiesVoiture": true,
       "moisLisse": false,
       "mere": {
         "nom": "Lebeau",
