@@ -538,8 +538,8 @@
               <input type="date" id="eng-adaptation-fin" onchange="sauvegarderEngagementForm()">
             </div>
             <div class="form-group">
-              <label>Taux Brut (€/h estimé)</label>
-              <input type="number" step="0.0001" id="eng-tarif-brut" placeholder="ex: 5.1200" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+              <label>Taux Horaire Net (€/h)</label>
+              <input type="number" step="0.01" id="eng-tarif-net" placeholder="ex: 4.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
             <div class="form-group">
               <label>Heures d'accueil / semaine</label>
@@ -611,13 +611,13 @@
                 <input type="number" step="0.01" id="eng-ir-diner" placeholder="ex: 4.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
               </div>
             </div>
-            <div class="summary-line" style="margin-top:0.6rem;"><span>Total indemnité repas / jour (si tous fournis) :</span><span id="eng-ir-total-val">0.00 €</span></div>
           </div>
 
           <div class="summary-card" style="margin-bottom: 1rem;">
-            <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
+            <div class="summary-line"><span>Taux Horaire Brut calculé :</span><span id="eng-tarif-brut-calcule-val">0.0000 €/h</span></div>
+            <div class="summary-line total"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val" style="color:var(--accent-light);">0.00 €</span></div>
             <div class="summary-line"><span>Salaire Net Mensuel (pour information) :</span><span id="eng-net-mensuel-val">0.00 €</span></div>
-            <div class="summary-line total"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
+            <div class="summary-line"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
           </div>
 
           <div id="eng-cp-notice" class="info-group" style="display:none; border-color: var(--warning);">
@@ -2029,7 +2029,7 @@
       document.getElementById('eng-date-effet').value = eng.dateEffet || '';
       document.getElementById('eng-adaptation-debut').value = eng.adaptationDebut || '';
       document.getElementById('eng-adaptation-fin').value = eng.adaptationFin || '';
-      document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? fmtEng(c.tarifNet * 1.28, 4) : 5.12);
+      document.getElementById('eng-tarif-net').value = eng.tarifNet || c.tarifNet || (eng.tarifBrut ? fmtEng(eng.tarifBrut / 1.2816, 2) : 4.00);
       document.getElementById('eng-heures-semaine').value = eng.heuresSemaine || c.hHebdo || 35;
       document.getElementById('eng-type-annee').value = eng.typeAnnee || 'complete';
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
@@ -2084,7 +2084,8 @@
       eng.dateEffet = document.getElementById('eng-date-effet').value;
       eng.adaptationDebut = document.getElementById('eng-adaptation-debut').value;
       eng.adaptationFin = document.getElementById('eng-adaptation-fin').value;
-      eng.tarifBrut = parseFloat((parseFloat(document.getElementById('eng-tarif-brut').value) || 0).toFixed(4));
+      eng.tarifNet = parseFloat((parseFloat(document.getElementById('eng-tarif-net').value) || 0).toFixed(2));
+      eng.tarifBrut = parseFloat((eng.tarifNet * 1.2816).toFixed(4));
       eng.heuresSemaine = parseFloat(document.getElementById('eng-heures-semaine').value) || 35;
       eng.typeAnnee = document.getElementById('eng-type-annee').value || 'complete';
       eng.semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 52;
@@ -2106,36 +2107,48 @@
       sauvegarderGlobal();
     }
 
+    // Calcule le salaire brut mensuel à partir du taux horaire NET, en appliquant
+    // une majoration de 10% sur les heures d'accueil hebdomadaires au-delà de 45h.
+    function calculerBrutMensuelEngagement(tauxNet, heuresSemaine, semainesAn) {
+      const tauxBrut = tauxNet * 1.2816;
+      const heuresNormal = Math.min(heuresSemaine, 45);
+      const heuresSup = Math.max(0, heuresSemaine - 45);
+      const tauxBrutSup = tauxBrut * 1.10;
+      const hMensuellesNormal = (heuresNormal * semainesAn) / 12;
+      const hMensuellesSup = (heuresSup * semainesAn) / 12;
+      const brutMensuel = (hMensuellesNormal * tauxBrut) + (hMensuellesSup * tauxBrutSup);
+      const netMensuel = brutMensuel / 1.2816;
+      return { tauxBrut, tauxBrutSup, heuresNormal, heuresSup, hMensuellesNormal, hMensuellesSup, brutMensuel, netMensuel };
+    }
+
     function calculerIndemniteEngagement() {
-      const tBrut = parseFloat(document.getElementById('eng-tarif-brut')?.value) || 0;
+      const tNet = parseFloat(document.getElementById('eng-tarif-net')?.value) || 0;
       const hHebdo = parseFloat(document.getElementById('eng-heures-semaine')?.value) || 0;
       const semainesAn = parseFloat(document.getElementById('eng-semaines-an')?.value) || 52;
       const typeAnnee = document.getElementById('eng-type-annee')?.value || 'complete';
 
-      const brutMensuel = (tBrut * hHebdo * semainesAn) / 12;
-      const netMensuel = brutMensuel / 1.2816;
-      const indemnite = brutMensuel / 2;
+      const r = calculerBrutMensuelEngagement(tNet, hHebdo, semainesAn);
+      const indemnite = r.brutMensuel / 2;
 
-      document.getElementById('eng-brut-mensuel-val').innerText = `${fmtEng(brutMensuel, 4)} €`;
+      const brutHoraireEl = document.getElementById('eng-tarif-brut-calcule-val');
+      if (brutHoraireEl) {
+        brutHoraireEl.innerText = hHebdo > 45
+          ? `${fmtEng(r.tauxBrut, 4)} €/h (${fmtEng(r.tauxBrutSup, 4)} €/h au-delà de 45h/sem)`
+          : `${fmtEng(r.tauxBrut, 4)} €/h`;
+      }
+
+      document.getElementById('eng-brut-mensuel-val').innerText = `${fmtEng(r.brutMensuel, 4)} €`;
       const netEl = document.getElementById('eng-net-mensuel-val');
-      if (netEl) netEl.innerText = `${fmtEng(netMensuel, 2)} €`;
+      if (netEl) netEl.innerText = `${fmtEng(r.netMensuel, 2)} €`;
       document.getElementById('eng-indemnite-val').innerText = `${fmtEng(indemnite, 2)} €`;
       document.getElementById('eng-print-indemnite-texte').innerText = `${fmtEng(indemnite, 2)} €`;
 
       if (typeAnnee === 'incomplete') {
-        const salaireAnnuelBase = brutMensuel * 12;
+        const salaireAnnuelBase = r.brutMensuel * 12;
         const cpEstimee = salaireAnnuelBase * 0.10;
         const cpVal = document.getElementById('eng-cp-estimee-val');
         if (cpVal) cpVal.innerText = `~${fmtEng(cpEstimee, 2)} €/an`;
       }
-
-      const irPetitDej = parseFloat(document.getElementById('eng-ir-petit-dej')?.value) || 0;
-      const irDejeuner = parseFloat(document.getElementById('eng-ir-dejeuner')?.value) || 0;
-      const irGouter = parseFloat(document.getElementById('eng-ir-gouter')?.value) || 0;
-      const irDiner = parseFloat(document.getElementById('eng-ir-diner')?.value) || 0;
-      const irTotal = irPetitDej + irDejeuner + irGouter + irDiner;
-      const irTotalEl = document.getElementById('eng-ir-total-val');
-      if (irTotalEl) irTotalEl.innerText = `${fmtEng(irTotal, 2)} €`;
     }
 
     function validerEngagementEtPreremplirContrat() {
@@ -2144,8 +2157,8 @@
       const c = enfants[activeEnfantId].contrat;
 
       eng.valide = true;
-      if (eng.tarifBrut && !c.tarifNet) {
-        c.tarifNet = parseFloat((eng.tarifBrut / 1.2816).toFixed(2));
+      if (eng.tarifNet && !c.tarifNet) {
+        c.tarifNet = eng.tarifNet;
       }
       if (eng.heuresSemaine) c.hHebdo = eng.heuresSemaine;
       if (eng.semainesAn) c.semainesAn = eng.semainesAn;
@@ -2230,31 +2243,38 @@
         adaptationTexte = `À partir du ${formaterDateFr(eng.adaptationDebut)}`;
       }
 
-      const tBrut = eng.tarifBrut || 0;
-      const tNet = tBrut / 1.2816;
+      const tNet = eng.tarifNet || (eng.tarifBrut ? eng.tarifBrut / 1.2816 : 0);
       const hHebdo = eng.heuresSemaine || 0;
       const semainesAn = eng.semainesAn || 52;
       const typeAnnee = eng.typeAnnee || 'complete';
-      const hMensuelles = (hHebdo * semainesAn) / 12;
-      const brutMensuel = tBrut * hMensuelles;
-      const netMensuel = brutMensuel / 1.2816;
+      const r = calculerBrutMensuelEngagement(tNet, hHebdo, semainesAn);
       const typeAnneeTexte = typeAnnee === 'incomplete' ? "Année incomplète (CP versés à part)" : "Année complète (CP inclus)";
 
       document.getElementById('eng-print-conditions').innerHTML = `
         • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
         • Période d'adaptation : ${adaptationTexte}<br>
-        • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong><br>
+        • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong>${hHebdo > 45 ? ' (dont 45h majorées à 10% au-delà)' : ''}<br>
         • Type d'année / Périodicité : <strong>${typeAnneeTexte}</strong> — ${semainesAn} semaines / an<br>
-        • Tarif Horaire Brut estimé : <strong>${fmtEng(tBrut, 4)} €/h</strong> (soit ~${fmtEng(tNet, 2)} €/h Net)
+        • Tarif Horaire Net convenu : <strong>${fmtEng(tNet, 2)} €/h</strong> (soit ${fmtEng(r.tauxBrut, 4)} €/h Brut)
       `;
 
-      let calculHtml = `
-        • Volume horaire mensualisé : ${hHebdo}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${fmtEng(hMensuelles, 2)} h/mois</strong><br>
-        • Salaire brut mensuel : ${fmtEng(hMensuelles, 2)} h/mois × ${fmtEng(tBrut, 4)} €/h = <strong>${fmtEng(brutMensuel, 4)} € brut/mois</strong><br>
-        • Salaire net mensuel (pour information) : <strong>${fmtEng(netMensuel, 2)} € net/mois</strong>
-      `;
+      let calculHtml;
+      if (hHebdo > 45) {
+        calculHtml = `
+          • Volume horaire mensualisé (45h/sem) : 45h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${fmtEng(r.hMensuellesNormal, 2)} h/mois</strong> × ${fmtEng(r.tauxBrut, 4)} €/h = <strong>${fmtEng(r.hMensuellesNormal * r.tauxBrut, 4)} €</strong><br>
+          • Volume horaire mensualisé au-delà de 45h/sem (majoration 10%) : ${fmtEng(hHebdo - 45, 2)}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${fmtEng(r.hMensuellesSup, 2)} h/mois</strong> × ${fmtEng(r.tauxBrutSup, 4)} €/h = <strong>${fmtEng(r.hMensuellesSup * r.tauxBrutSup, 4)} €</strong><br>
+          • Salaire brut mensuel total : <strong>${fmtEng(r.brutMensuel, 4)} € brut/mois</strong><br>
+          • Salaire net mensuel (pour information) : <strong>${fmtEng(r.netMensuel, 2)} € net/mois</strong>
+        `;
+      } else {
+        calculHtml = `
+          • Volume horaire mensualisé : ${hHebdo}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${fmtEng(r.hMensuellesNormal, 2)} h/mois</strong><br>
+          • Salaire brut mensuel : ${fmtEng(r.hMensuellesNormal, 2)} h/mois × ${fmtEng(r.tauxBrut, 4)} €/h = <strong>${fmtEng(r.brutMensuel, 4)} € brut/mois</strong><br>
+          • Salaire net mensuel (pour information) : <strong>${fmtEng(r.netMensuel, 2)} € net/mois</strong>
+        `;
+      }
       if (typeAnnee === 'incomplete') {
-        const cpEstimee = (brutMensuel * 12) * 0.10;
+        const cpEstimee = (r.brutMensuel * 12) * 0.10;
         calculHtml += `<br>• Congés payés : <strong>non inclus</strong> ci-dessus, à verser à part (≈ ${fmtEng(cpEstimee, 2)} €/an, méthode 10% ou maintien de salaire si plus favorable)`;
       }
       document.getElementById('eng-print-calcul-salaire').innerHTML = calculHtml;
