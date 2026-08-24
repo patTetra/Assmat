@@ -588,6 +588,32 @@
             </div>
           </div>
 
+          <div class="info-group">
+            <h3>🍽️ Indemnités de Repas</h3>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.7rem;">
+              Montant prévu par repas effectivement fourni par l'assistante maternelle (laisser à 0 si non concerné).
+            </p>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Petit déjeuner (€)</label>
+                <input type="number" step="0.01" id="eng-ir-petit-dej" placeholder="ex: 1.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+              </div>
+              <div class="form-group">
+                <label>Déjeuner (€)</label>
+                <input type="number" step="0.01" id="eng-ir-dejeuner" placeholder="ex: 4.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+              </div>
+              <div class="form-group">
+                <label>Goûter (€)</label>
+                <input type="number" step="0.01" id="eng-ir-gouter" placeholder="ex: 1.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+              </div>
+              <div class="form-group">
+                <label>Dîner (€)</label>
+                <input type="number" step="0.01" id="eng-ir-diner" placeholder="ex: 4.00" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+              </div>
+            </div>
+            <div class="summary-line" style="margin-top:0.6rem;"><span>Total indemnité repas / jour (si tous fournis) :</span><span id="eng-ir-total-val">0.00 €</span></div>
+          </div>
+
           <div class="summary-card" style="margin-bottom: 1rem;">
             <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
             <div class="summary-line"><span>Salaire Net Mensuel (pour information) :</span><span id="eng-net-mensuel-val">0.00 €</span></div>
@@ -630,6 +656,11 @@
           <div class="print-box" style="margin-bottom: 10px;">
             <div class="print-box-title">Détail du calcul du salaire brut mensuel</div>
             <div class="print-box-content" id="eng-print-calcul-salaire"></div>
+          </div>
+
+          <div class="print-box" style="margin-bottom: 10px;" id="eng-print-repas-box">
+            <div class="print-box-title">Indemnités de repas prévues</div>
+            <div class="print-box-content" id="eng-print-repas"></div>
           </div>
 
           <div class="legal-print-clause">
@@ -1598,7 +1629,7 @@
         const configJour = st[dayIdx];
 
         if(configJour && configJour.actif) {
-          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart };
+          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart, repasParents: !!configJour.repasParents };
         }
       }
 
@@ -1671,7 +1702,7 @@
       const st = enfants[activeEnfantId].semaineType || {};
 
       JOURS.forEach((jour, idx) => {
-        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30', repasParents: false };
         const isWeekend = (idx === 5 || idx === 6);
         const autresJours = JOURS.map((j2, idx2) => idx2 === idx ? '' : `
               <label class="dup-day-chip">
@@ -1679,15 +1710,21 @@
               </label>`).join('');
 
         grid.innerHTML += `
-          <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx})">
-              <label for="st-check-${idx}">${jour}</label>
+          <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}" style="flex-direction:column; align-items:stretch; gap:0.4rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx})">
+                <label for="st-check-${idx}">${jour}</label>
+              </div>
+              <div style="display:flex; gap:0.3rem;">
+                <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx})">
+                <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx})">
+              </div>
             </div>
-            <div style="display:flex; gap:0.3rem;">
-              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx})">
-              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx})">
-            </div>
+            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; color:var(--text-muted); text-transform:none; font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="st-repas-${idx}" ${item.repasParents ? 'checked' : ''} style="width:14px; height:14px; accent-color: var(--accent);">
+              🍽️ Repas fourni par les parents
+            </label>
           </div>
           <div class="dup-panel" id="dup-panel-${idx}">
             <p>Appliquer ces horaires (${item.arrivee || '08:30'} - ${item.depart || '17:30'}) à d'autres jours ?</p>
@@ -1766,7 +1803,8 @@
         st[idx] = {
           actif: document.getElementById(`st-check-${idx}`).checked,
           arrivee: document.getElementById(`st-arr-${idx}`).value,
-          depart: document.getElementById(`st-dep-${idx}`).value
+          depart: document.getElementById(`st-dep-${idx}`).value,
+          repasParents: document.getElementById(`st-repas-${idx}`)?.checked || false
         };
       });
       enfants[activeEnfantId].semaineType = st;
@@ -1790,12 +1828,15 @@
     function chargerHorairePrevuPourDate() {
       const date = document.getElementById('input-date').value;
       const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
+      const selectRepas = document.getElementById('input-repas');
       if(prev) {
         document.getElementById('input-arrivee').value = prev.arrivee || "08:30";
         document.getElementById('input-depart').value = prev.depart || "17:30";
+        if (selectRepas) selectRepas.value = prev.repasParents ? 'non' : 'oui';
       } else {
         document.getElementById('input-arrivee').value = "08:30";
         document.getElementById('input-depart').value = "17:30";
+        if (selectRepas) selectRepas.value = 'oui';
       }
     }
 
@@ -2002,6 +2043,12 @@
       document.getElementById('eng-parent-tel').value = engParent.telephone || '';
       document.getElementById('eng-parent-email').value = engParent.email || '';
 
+      const engRepas = eng.indemnitesRepas || {};
+      document.getElementById('eng-ir-petit-dej').value = engRepas.petitDej || '';
+      document.getElementById('eng-ir-dejeuner').value = engRepas.dejeuner || '';
+      document.getElementById('eng-ir-gouter').value = engRepas.gouter || '';
+      document.getElementById('eng-ir-diner').value = engRepas.diner || '';
+
       basculerTypeAnneeEngagement();
 
       const badge = document.getElementById('eng-statut-badge');
@@ -2050,6 +2097,12 @@
         telephone: document.getElementById('eng-parent-tel')?.value || '',
         email: document.getElementById('eng-parent-email')?.value || ''
       };
+      eng.indemnitesRepas = {
+        petitDej: parseFloat(document.getElementById('eng-ir-petit-dej')?.value) || 0,
+        dejeuner: parseFloat(document.getElementById('eng-ir-dejeuner')?.value) || 0,
+        gouter: parseFloat(document.getElementById('eng-ir-gouter')?.value) || 0,
+        diner: parseFloat(document.getElementById('eng-ir-diner')?.value) || 0
+      };
       sauvegarderGlobal();
     }
 
@@ -2075,6 +2128,14 @@
         const cpVal = document.getElementById('eng-cp-estimee-val');
         if (cpVal) cpVal.innerText = `~${fmtEng(cpEstimee, 2)} €/an`;
       }
+
+      const irPetitDej = parseFloat(document.getElementById('eng-ir-petit-dej')?.value) || 0;
+      const irDejeuner = parseFloat(document.getElementById('eng-ir-dejeuner')?.value) || 0;
+      const irGouter = parseFloat(document.getElementById('eng-ir-gouter')?.value) || 0;
+      const irDiner = parseFloat(document.getElementById('eng-ir-diner')?.value) || 0;
+      const irTotal = irPetitDej + irDejeuner + irGouter + irDiner;
+      const irTotalEl = document.getElementById('eng-ir-total-val');
+      if (irTotalEl) irTotalEl.innerText = `${fmtEng(irTotal, 2)} €`;
     }
 
     function validerEngagementEtPreremplirContrat() {
@@ -2101,6 +2162,12 @@
           bureau: '',
           email: eng.parent.email || ''
         };
+      }
+
+      // Pré-remplissage de l'indemnité repas du contrat (somme des repas prévus dans l'engagement)
+      if (eng.indemnitesRepas && !c.ir) {
+        const irTotal = (eng.indemnitesRepas.petitDej || 0) + (eng.indemnitesRepas.dejeuner || 0) + (eng.indemnitesRepas.gouter || 0) + (eng.indemnitesRepas.diner || 0);
+        if (irTotal > 0) c.ir = parseFloat(irTotal.toFixed(2));
       }
 
       sauvegarderGlobal();
@@ -2191,6 +2258,25 @@
         calculHtml += `<br>• Congés payés : <strong>non inclus</strong> ci-dessus, à verser à part (≈ ${fmtEng(cpEstimee, 2)} €/an, méthode 10% ou maintien de salaire si plus favorable)`;
       }
       document.getElementById('eng-print-calcul-salaire').innerHTML = calculHtml;
+
+      const irEng = eng.indemnitesRepas || {};
+      const repasLignes = [
+        ['Petit déjeuner', irEng.petitDej],
+        ['Déjeuner', irEng.dejeuner],
+        ['Goûter', irEng.gouter],
+        ['Dîner', irEng.diner]
+      ].filter(([, montant]) => montant > 0);
+
+      const repasBox = document.getElementById('eng-print-repas-box');
+      if (repasLignes.length > 0) {
+        const irTotal = repasLignes.reduce((s, [, m]) => s + m, 0);
+        document.getElementById('eng-print-repas').innerHTML = repasLignes
+          .map(([label, montant]) => `• ${label} : <strong>${fmtEng(montant, 2)} €</strong>`)
+          .join('<br>') + `<br>• Total par jour (si tous fournis) : <strong>${fmtEng(irTotal, 2)} €</strong>`;
+        if (repasBox) repasBox.style.removeProperty('display');
+      } else {
+        if (repasBox) repasBox.style.setProperty('display', 'none', 'important');
+      }
     }
 
     function imprimerEngagement() {
