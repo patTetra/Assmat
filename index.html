@@ -1241,17 +1241,47 @@
       if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
       majStatutSync('syncing');
       const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
-      const jsonString = JSON.stringify(enfants, null, 2);
-      const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-      const bodyData = { message: "Mise à jour automatique - AssMat Flow", content: base64Content };
-      if (githubFileSha) bodyData.sha = githubFileSha;
 
       try {
+        // Si on n'a pas encore le sha du fichier distant (ex: juste après le chargement de la
+        // page, ou après un précédent échec), on va le chercher avant de pousser. Sans ça, le
+        // PUT part sans sha alors que le fichier existe déjà sur GitHub, qui le refuse (409/422).
+        if (githubFileSha === null) {
+          const resCheck = await fetch(url, { headers: { 'Authorization': `token ${githubConfig.token}` } });
+          if (resCheck.status === 200) {
+            const dCheck = await resCheck.json();
+            githubFileSha = dCheck.sha;
+          } else if (resCheck.status !== 404) {
+            majStatutSync('offline');
+            return;
+          }
+        }
+
+        const jsonString = JSON.stringify(enfants, null, 2);
+        const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+        const bodyData = { message: "Mise à jour automatique - AssMat Flow", content: base64Content };
+        if (githubFileSha) bodyData.sha = githubFileSha;
+
         const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData) });
         if (res.status === 200 || res.status === 201) {
           const resData = await res.json();
           githubFileSha = resData.content.sha;
           majStatutSync('online');
+        } else if (res.status === 409) {
+          // Conflit de sha (données modifiées ailleurs entre-temps) : on récupère le sha à jour
+          // et on retente une fois automatiquement.
+          const resRetry = await fetch(url, { headers: { 'Authorization': `token ${githubConfig.token}` } });
+          if (resRetry.status === 200) {
+            const dRetry = await resRetry.json();
+            githubFileSha = dRetry.sha;
+            const bodyRetry = { message: "Mise à jour automatique - AssMat Flow", content: base64Content, sha: githubFileSha };
+            const res2 = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(bodyRetry) });
+            if (res2.status === 200 || res2.status === 201) {
+              const resData2 = await res2.json();
+              githubFileSha = resData2.content.sha;
+              majStatutSync('online');
+            } else { majStatutSync('offline'); }
+          } else { majStatutSync('offline'); }
         } else { majStatutSync('offline'); }
       } catch (err) { console.error("Erreur push GitHub:", err); majStatutSync('offline'); }
     }
@@ -2271,7 +2301,7 @@
       document.getElementById('eng-print-conditions').innerHTML = `
         • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
         • Période d'adaptation : ${adaptationTexte}<br>
-        • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong>${hHebdo > 45 ? ' (dont 45h majorées à 10% au-delà)' : ''}<br>
+        • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong>${hHebdo > 45 ? ` (dont ${fmtEng(r.heuresSup, 2)}h majorées à 10%, au-delà de 45h/sem)` : ''}<br>
         • Type d'année / Périodicité : <strong>${typeAnneeTexte}</strong> — ${semainesAn} semaines / an<br>
         • Tarif Horaire Brut convenu : <strong>${fmtEng(tBrut, 4)} €/h</strong> (soit ${fmtEng(tNet, 2)} €/h Net)
       `;
