@@ -313,14 +313,14 @@
       "dateEffet": "2026-09-01",
       "adaptation": "Du 01/09 au 05/09",
       "tarifBrut": 5.12,
-      "semainesAn": 52,
+      "semainesAn": 46,
       "assmatNom": "",
       "assmatAdresse": "",
       "valide": true,
       "adaptationDebut": "",
       "adaptationFin": "",
       "heuresSemaine": 48,
-      "typeAnnee": "complete"
+      "typeAnnee": "incomplete"
     },
     "semaineType": {
       "0": {
