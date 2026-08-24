@@ -29,7 +29,7 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 117,
-      "hHebdo": 48.75,
+      "hHebdo": 38,
       "jHebdo": 3,
       "semainesAn": 52
     },
@@ -80,7 +80,7 @@
         "depart": "18:00"
       },
       "2": {
-        "actif": true,
+        "actif": false,
         "arrivee": "07:15",
         "depart": "18:00"
       },
