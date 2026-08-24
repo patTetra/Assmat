@@ -225,8 +225,9 @@
       },
       "2026-08-25": {
         "status": "prevu",
-        "arrivee": "09:00",
-        "depart": "17:00"
+        "arrivee": "05:00",
+        "depart": "17:00",
+        "note": ""
       },
       "2026-08-27": {
         "status": "prevu",
