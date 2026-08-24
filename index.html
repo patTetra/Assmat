@@ -395,28 +395,44 @@
         <h2>Coordonnées des Parents</h2>
         
         <div class="info-group">
-          <h3>👩 Coordonnées Mère</h3>
+          <h3>👤 Coordonnées Parent 1</h3>
           <div class="grid-2" style="margin-bottom: 0.6rem;">
             <div class="form-group"><label>Nom</label><input type="text" id="cfg-mere-nom"></div>
             <div class="form-group"><label>Prénom</label><input type="text" id="cfg-mere-prenom"></div>
           </div>
-          <div class="grid-3">
+          <div class="form-group" style="margin-bottom: 0.6rem;">
+            <label>Adresse postale</label>
+            <input type="text" id="cfg-mere-adresse" placeholder="N° et rue, code postal, ville">
+          </div>
+          <div class="grid-3" style="margin-bottom: 0.6rem;">
             <div class="form-group"><label>Portable</label><input type="tel" id="cfg-mere-port"></div>
             <div class="form-group"><label>Maison</label><input type="tel" id="cfg-mere-maison"></div>
             <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-mere-bureau"></div>
           </div>
+          <div class="form-group">
+            <label>Adresse mail</label>
+            <input type="email" id="cfg-mere-email" placeholder="ex: parent1@mail.com">
+          </div>
         </div>
 
         <div class="info-group">
-          <h3>👨 Coordonnées Père</h3>
+          <h3>👤 Coordonnées Parent 2</h3>
           <div class="grid-2" style="margin-bottom: 0.6rem;">
             <div class="form-group"><label>Nom</label><input type="text" id="cfg-pere-nom"></div>
             <div class="form-group"><label>Prénom</label><input type="text" id="cfg-pere-prenom"></div>
           </div>
-          <div class="grid-3">
+          <div class="form-group" style="margin-bottom: 0.6rem;">
+            <label>Adresse postale</label>
+            <input type="text" id="cfg-pere-adresse" placeholder="N° et rue, code postal, ville">
+          </div>
+          <div class="grid-3" style="margin-bottom: 0.6rem;">
             <div class="form-group"><label>Portable</label><input type="tel" id="cfg-pere-port"></div>
             <div class="form-group"><label>Maison</label><input type="tel" id="cfg-pere-maison"></div>
             <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-pere-bureau"></div>
+          </div>
+          <div class="form-group">
+            <label>Adresse mail</label>
+            <input type="email" id="cfg-pere-email" placeholder="ex: parent2@mail.com">
           </div>
         </div>
 
@@ -555,6 +571,7 @@
 
           <div class="summary-card" style="margin-bottom: 1rem;">
             <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
+            <div class="summary-line"><span>Salaire Net Mensuel (pour information) :</span><span id="eng-net-mensuel-val">0.00 €</span></div>
             <div class="summary-line total"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
           </div>
 
@@ -992,8 +1009,8 @@
       "leo": {
         contrat: { 
           prenomEnfant: 'Léo', nomEnfant: 'Dupont', naissance: '', sortiesVoiture: true, moisLisse: true,
-          mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
-          pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
+          mere: { nom: 'Dupont', prenom: 'Marie', adresse: '', port: '0611223344', maison: '', bureau: '', email: '' },
+          pere: { nom: 'Dupont', prenom: 'Thomas', adresse: '', port: '0622334455', maison: '', bureau: '', email: '' },
           urgence: { nom: '', tel: '' },
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52 
         },
@@ -1020,8 +1037,12 @@
         if(!c.nomEnfant && c.nom) c.nomEnfant = c.nom;
         if(c.moisLisse === undefined) c.moisLisse = true;
 
-        if(!c.mere) { c.mere = { nom: c.nomEnfant || '', prenom: c.parent1 || c.parent || '', port: c.tel1 || c.telephone || '', maison: '', bureau: '' }; }
-        if(!c.pere) { c.pere = { nom: c.nomEnfant || '', prenom: c.parent2 || '', port: c.tel2 || '', maison: '', bureau: '' }; }
+        if(!c.mere) { c.mere = { nom: c.nomEnfant || '', prenom: c.parent1 || c.parent || '', adresse: '', port: c.tel1 || c.telephone || '', maison: '', bureau: '', email: '' }; }
+        if(!c.pere) { c.pere = { nom: c.nomEnfant || '', prenom: c.parent2 || '', adresse: '', port: c.tel2 || '', maison: '', bureau: '', email: '' }; }
+        if (c.mere.adresse === undefined) c.mere.adresse = '';
+        if (c.mere.email === undefined) c.mere.email = '';
+        if (c.pere.adresse === undefined) c.pere.adresse = '';
+        if (c.pere.email === undefined) c.pere.email = '';
         if(!c.urgence) c.urgence = { nom: '', tel: '' };
         if(c.jHebdo === undefined) c.jHebdo = 4;
         if(c.semainesAn === undefined) c.semainesAn = 52;
@@ -1029,7 +1050,7 @@
         enfants[id].contrat = c;
 
         if(!enfants[id].engagement) {
-          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), heuresSemaine: c.hHebdo || 35, typeAnnee: 'complete', semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28) : 5.12), heuresSemaine: c.hHebdo || 35, typeAnnee: 'complete', semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
         }
         if(enfants[id].engagement.adaptationDebut === undefined) enfants[id].engagement.adaptationDebut = '';
         if(enfants[id].engagement.adaptationFin === undefined) enfants[id].engagement.adaptationFin = '';
@@ -1385,8 +1406,8 @@
       enfants[id] = {
         contrat: { 
           prenomEnfant: prenom, nomEnfant: '', naissance: '', sortiesVoiture: true, moisLisse: true,
-          mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
-          pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          mere: { nom: '', prenom: '', adresse: '', port: '', maison: '', bureau: '', email: '' },
+          pere: { nom: '', prenom: '', adresse: '', port: '', maison: '', bureau: '', email: '' },
           urgence: { nom: '', tel: '' },
           tarifNet: '', majoration: '', ie: '', ir: '', hMensuel: '', hHebdo: '', jHebdo: '', semainesAn: ''
         },
@@ -1867,15 +1888,19 @@
 
       document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
       document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
+      document.getElementById('cfg-mere-adresse').value = c.mere?.adresse || '';
       document.getElementById('cfg-mere-port').value = c.mere?.port || '';
       document.getElementById('cfg-mere-maison').value = c.mere?.maison || '';
       document.getElementById('cfg-mere-bureau').value = c.mere?.bureau || '';
+      document.getElementById('cfg-mere-email').value = c.mere?.email || '';
 
       document.getElementById('cfg-pere-nom').value = c.pere?.nom || '';
       document.getElementById('cfg-pere-prenom').value = c.pere?.prenom || '';
+      document.getElementById('cfg-pere-adresse').value = c.pere?.adresse || '';
       document.getElementById('cfg-pere-port').value = c.pere?.port || '';
       document.getElementById('cfg-pere-maison').value = c.pere?.maison || '';
       document.getElementById('cfg-pere-bureau').value = c.pere?.bureau || '';
+      document.getElementById('cfg-pere-email').value = c.pere?.email || '';
 
       document.getElementById('cfg-urgence-nom').value = c.urgence?.nom || '';
       document.getElementById('cfg-urgence-tel').value = c.urgence?.tel || '';
@@ -1910,8 +1935,8 @@
         naissance: document.getElementById('cfg-naissance-enfant').value,
         sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
         moisLisse: moisLisse,
-        mere: { nom: document.getElementById('cfg-mere-nom').value, prenom: document.getElementById('cfg-mere-prenom').value, port: document.getElementById('cfg-mere-port').value, maison: document.getElementById('cfg-mere-maison').value, bureau: document.getElementById('cfg-mere-bureau').value },
-        pere: { nom: document.getElementById('cfg-pere-nom').value, prenom: document.getElementById('cfg-pere-prenom').value, port: document.getElementById('cfg-pere-port').value, maison: document.getElementById('cfg-pere-maison').value, bureau: document.getElementById('cfg-pere-bureau').value },
+        mere: { nom: document.getElementById('cfg-mere-nom').value, prenom: document.getElementById('cfg-mere-prenom').value, adresse: document.getElementById('cfg-mere-adresse').value, port: document.getElementById('cfg-mere-port').value, maison: document.getElementById('cfg-mere-maison').value, bureau: document.getElementById('cfg-mere-bureau').value, email: document.getElementById('cfg-mere-email').value },
+        pere: { nom: document.getElementById('cfg-pere-nom').value, prenom: document.getElementById('cfg-pere-prenom').value, adresse: document.getElementById('cfg-pere-adresse').value, port: document.getElementById('cfg-pere-port').value, maison: document.getElementById('cfg-pere-maison').value, bureau: document.getElementById('cfg-pere-bureau').value, email: document.getElementById('cfg-pere-email').value },
         urgence: { nom: document.getElementById('cfg-urgence-nom').value, tel: document.getElementById('cfg-urgence-tel').value },
         tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value) || 0,
         majoration: parseFloat(document.getElementById('cfg-majoration').value) || 0,
@@ -1929,6 +1954,15 @@
     }
 
     /* --- GESTION DE L'ENGAGEMENT RECIPROQUE --- */
+    // Formate un nombre SANS l'arrondir (aucune perte de précision sur les décimales) :
+    // supprime uniquement le "bruit" binaire lié aux flottants (ex: 41.99999999999999)
+    // en nettoyant au-delà de la 10e décimale, très largement sous le seuil de précision utile.
+    function fmtEng(n) {
+      n = Number(n) || 0;
+      const propre = Math.round((n + Number.EPSILON) * 1e10) / 1e10;
+      return propre.toString();
+    }
+
     function chargerFormulaireEngagement() {
       const eng = enfants[activeEnfantId]?.engagement || {};
       const c = enfants[activeEnfantId]?.contrat || {};
@@ -1937,7 +1971,7 @@
       document.getElementById('eng-date-effet').value = eng.dateEffet || '';
       document.getElementById('eng-adaptation-debut').value = eng.adaptationDebut || '';
       document.getElementById('eng-adaptation-fin').value = eng.adaptationFin || '';
-      document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
+      document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28) : 5.12);
       document.getElementById('eng-heures-semaine').value = eng.heuresSemaine || c.hHebdo || 35;
       document.getElementById('eng-type-annee').value = eng.typeAnnee || 'complete';
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
@@ -1995,17 +2029,20 @@
       const typeAnnee = document.getElementById('eng-type-annee')?.value || 'complete';
 
       const brutMensuel = (tBrut * hHebdo * semainesAn) / 12;
+      const netMensuel = brutMensuel / 1.2816;
       const indemnite = brutMensuel / 2;
 
-      document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} €`;
-      document.getElementById('eng-indemnite-val').innerText = `${indemnite.toFixed(2)} €`;
-      document.getElementById('eng-print-indemnite-texte').innerText = `${indemnite.toFixed(2)} €`;
+      document.getElementById('eng-brut-mensuel-val').innerText = `${fmtEng(brutMensuel)} €`;
+      const netEl = document.getElementById('eng-net-mensuel-val');
+      if (netEl) netEl.innerText = `${fmtEng(netMensuel)} €`;
+      document.getElementById('eng-indemnite-val').innerText = `${fmtEng(indemnite)} €`;
+      document.getElementById('eng-print-indemnite-texte').innerText = `${fmtEng(indemnite)} €`;
 
       if (typeAnnee === 'incomplete') {
         const salaireAnnuelBase = brutMensuel * 12;
         const cpEstimee = salaireAnnuelBase * 0.10;
         const cpVal = document.getElementById('eng-cp-estimee-val');
-        if (cpVal) cpVal.innerText = `~${cpEstimee.toFixed(2)} €/an`;
+        if (cpVal) cpVal.innerText = `~${fmtEng(cpEstimee)} €/an`;
       }
     }
 
@@ -2016,7 +2053,7 @@
 
       eng.valide = true;
       if (eng.tarifBrut && !c.tarifNet) {
-        c.tarifNet = parseFloat((eng.tarifBrut / 1.2816).toFixed(2));
+        c.tarifNet = eng.tarifBrut / 1.2816;
       }
       if (eng.heuresSemaine) c.hHebdo = eng.heuresSemaine;
       if (eng.semainesAn) c.semainesAn = eng.semainesAn;
@@ -2041,8 +2078,16 @@
       document.getElementById('eng-print-date-sig').innerText = `Fait le : ${formaterDateFr(eng.dateSignature) || '--/--/----'}`;
       
       let pText = "";
-      if (c.mere?.nom || c.mere?.prenom) pText += `Mme ${c.mere.prenom} ${c.mere.nom} (${c.mere.port || 'Tél N/C'})<br>`;
-      if (c.pere?.nom || c.pere?.prenom) pText += `M. ${c.pere.prenom} ${c.pere.nom} (${c.pere.port || 'Tél N/C'})<br>`;
+      if (c.mere?.nom || c.mere?.prenom) {
+        pText += `<strong>Parent 1 :</strong> ${c.mere.prenom} ${c.mere.nom}<br>`;
+        if (c.mere.adresse) pText += `${c.mere.adresse}<br>`;
+        pText += `Tél. : ${c.mere.port || 'N/C'}${c.mere.email ? ` — E-mail : ${c.mere.email}` : ''}<br>`;
+      }
+      if (c.pere?.nom || c.pere?.prenom) {
+        pText += `<strong>Parent 2 :</strong> ${c.pere.prenom} ${c.pere.nom}<br>`;
+        if (c.pere.adresse) pText += `${c.pere.adresse}<br>`;
+        pText += `Tél. : ${c.pere.port || 'N/C'}${c.pere.email ? ` — E-mail : ${c.pere.email}` : ''}<br>`;
+      }
       document.getElementById('eng-print-parents').innerHTML = pText || "Parents non renseignés";
 
       const assmatContact = [
@@ -2069,12 +2114,13 @@
       }
 
       const tBrut = eng.tarifBrut || 0;
-      const tNet = (tBrut / 1.2816).toFixed(2);
+      const tNet = tBrut / 1.2816;
       const hHebdo = eng.heuresSemaine || 0;
       const semainesAn = eng.semainesAn || 52;
       const typeAnnee = eng.typeAnnee || 'complete';
       const hMensuelles = (hHebdo * semainesAn) / 12;
       const brutMensuel = tBrut * hMensuelles;
+      const netMensuel = brutMensuel / 1.2816;
       const typeAnneeTexte = typeAnnee === 'incomplete' ? "Année incomplète (CP versés à part)" : "Année complète (CP inclus)";
 
       document.getElementById('eng-print-conditions').innerHTML = `
@@ -2082,16 +2128,17 @@
         • Période d'adaptation : ${adaptationTexte}<br>
         • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong><br>
         • Type d'année / Périodicité : <strong>${typeAnneeTexte}</strong> — ${semainesAn} semaines / an<br>
-        • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)
+        • Tarif Horaire Brut estimé : <strong>${fmtEng(tBrut)} €/h</strong> (soit ~${fmtEng(tNet)} €/h Net)
       `;
 
       let calculHtml = `
-        • Volume horaire mensualisé : ${hHebdo}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${hMensuelles.toFixed(2)} h/mois</strong><br>
-        • Salaire brut mensuel : ${hMensuelles.toFixed(2)} h/mois × ${tBrut.toFixed(2)} €/h = <strong>${brutMensuel.toFixed(2)} € brut/mois</strong>
+        • Volume horaire mensualisé : ${hHebdo}h/sem × ${semainesAn} sem/an ÷ 12 = <strong>${fmtEng(hMensuelles)} h/mois</strong><br>
+        • Salaire brut mensuel : ${fmtEng(hMensuelles)} h/mois × ${fmtEng(tBrut)} €/h = <strong>${fmtEng(brutMensuel)} € brut/mois</strong><br>
+        • Salaire net mensuel (pour information) : <strong>${fmtEng(netMensuel)} € net/mois</strong>
       `;
       if (typeAnnee === 'incomplete') {
         const cpEstimee = (brutMensuel * 12) * 0.10;
-        calculHtml += `<br>• Congés payés : <strong>non inclus</strong> ci-dessus, à verser à part (≈ ${cpEstimee.toFixed(2)} €/an, méthode 10% ou maintien de salaire si plus favorable)`;
+        calculHtml += `<br>• Congés payés : <strong>non inclus</strong> ci-dessus, à verser à part (≈ ${fmtEng(cpEstimee)} €/an, méthode 10% ou maintien de salaire si plus favorable)`;
       }
       document.getElementById('eng-print-calcul-salaire').innerHTML = calculHtml;
     }
