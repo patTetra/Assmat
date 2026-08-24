@@ -469,21 +469,21 @@
       }
     ]
   },
-  "enf_1787589021437": {
+  "enf_1787603186095": {
     "contrat": {
-      "prenomEnfant": "Lou",
-      "nomEnfant": "",
-      "naissance": "",
-      "sortiesVoiture": true,
+      "prenomEnfant": "Rose",
+      "nomEnfant": "Lebeau",
+      "naissance": "2026-05-27",
+      "sortiesVoiture": false,
       "moisLisse": false,
       "mere": {
-        "nom": "",
-        "prenom": "",
-        "adresse": "",
-        "port": "",
+        "nom": "Lebeau",
+        "prenom": "Dylan",
+        "adresse": "14 la Chapelle du Mur 29610 Plouigneau",
+        "port": "06 58 73 68 61",
         "maison": "",
         "bureau": "",
-        "email": ""
+        "email": "dylanlebeau@hotmail.fr"
       },
       "pere": {
         "nom": "",
@@ -501,7 +501,7 @@
       "tarifNet": 3.8,
       "majoration": 0,
       "ie": 0,
-      "ir": 0,
+      "ir": 7,
       "hMensuel": 179,
       "hHebdo": 48.8,
       "jHebdo": 5,
@@ -518,157 +518,67 @@
       "semainesAn": 44,
       "assmatNom": "Gaël Desaegher",
       "assmatAdresse": "1071 route de Plouégat-Guerrand, 29610 Plouigneau",
-      "valide": true
+      "valide": true,
+      "tarifNet": 3.8,
+      "parent": {
+        "nom": "Lebeau",
+        "prenom": "Dylan",
+        "adresse": "14 la Chapelle du Mur 29610 Plouigneau",
+        "telephone": "06 58 73 68 61",
+        "email": "dylanlebeau@hotmail.fr"
+      },
+      "indemnitesRepas": {
+        "petitDej": 1,
+        "dejeuner": 2.5,
+        "gouter": 1,
+        "diner": 2.5
+      }
     },
     "semaineType": {
       "0": {
         "actif": true,
         "arrivee": "07:15",
-        "depart": "18:00"
+        "depart": "18:00",
+        "repasParents": false
       },
       "1": {
         "actif": true,
         "arrivee": "07:15",
-        "depart": "18:00"
+        "depart": "18:00",
+        "repasParents": false
       },
       "2": {
         "actif": true,
         "arrivee": "07:15",
-        "depart": "18:00"
+        "depart": "18:00",
+        "repasParents": false
       },
       "3": {
         "actif": true,
         "arrivee": "07:15",
-        "depart": "18:00"
+        "depart": "18:00",
+        "repasParents": false
       },
       "4": {
         "actif": true,
         "arrivee": "07:15",
-        "depart": "13:00"
+        "depart": "13:00",
+        "repasParents": false
       },
       "5": {
         "actif": false,
         "arrivee": "08:30",
-        "depart": "17:30"
+        "depart": "17:30",
+        "repasParents": false
       },
       "6": {
         "actif": false,
         "arrivee": "08:30",
-        "depart": "17:30"
+        "depart": "17:30",
+        "repasParents": false
       }
     },
-    "planningPrevu": {
-      "2026-09-01": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-02": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-03": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-04": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "13:00"
-      },
-      "2026-09-07": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-08": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-09": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-10": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-11": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "13:00"
-      },
-      "2026-09-14": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-15": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-16": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-17": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-18": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "13:00"
-      },
-      "2026-09-21": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-22": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-23": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-24": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-25": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "13:00"
-      },
-      "2026-09-28": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-29": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      },
-      "2026-09-30": {
-        "status": "prevu",
-        "arrivee": "07:15",
-        "depart": "18:00"
-      }
-    },
+    "planningPrevu": {},
     "presences": []
   }
 }
