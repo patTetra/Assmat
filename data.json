@@ -225,7 +225,7 @@
       },
       "2026-08-25": {
         "status": "prevu",
-        "arrivee": "05:00",
+        "arrivee": "08:01",
         "depart": "17:00",
         "note": ""
       },
@@ -264,11 +264,14 @@
       "dateEffet": "2026-08-24",
       "adaptation": "",
       "tarifBrut": 5.12,
-      "joursSemaine": 4,
       "semainesAn": 52,
       "assmatNom": "",
       "assmatAdresse": "",
-      "valide": true
+      "valide": true,
+      "adaptationDebut": "",
+      "adaptationFin": "",
+      "heuresSemaine": 32,
+      "typeAnnee": "complete"
     }
   },
   "enf_1787547278643": {
@@ -310,11 +313,14 @@
       "dateEffet": "2026-09-01",
       "adaptation": "Du 01/09 au 05/09",
       "tarifBrut": 5.12,
-      "joursSemaine": 4,
       "semainesAn": 52,
-      "assmatNom": "Gaël Desaegher ",
-      "assmatAdresse": "1071 route de Plouegat Guerrand 29610 Plouigneau ",
-      "valide": true
+      "assmatNom": "",
+      "assmatAdresse": "",
+      "valide": true,
+      "adaptationDebut": "",
+      "adaptationFin": "",
+      "heuresSemaine": 48,
+      "typeAnnee": "complete"
     },
     "semaineType": {
       "0": {
