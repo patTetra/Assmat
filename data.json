@@ -265,8 +265,8 @@
       "adaptation": "",
       "tarifBrut": 5.12,
       "semainesAn": 52,
-      "assmatNom": "",
-      "assmatAdresse": "",
+      "assmatNom": "Gaël Desaegher",
+      "assmatAdresse": "Le Penquer Lescloeden, 1071 Route De Plouegat Guerrand, 29610 Plouigneau",
       "valide": true,
       "adaptationDebut": "",
       "adaptationFin": "",
@@ -317,8 +317,8 @@
       "heuresSemaine": "",
       "typeAnnee": "complete",
       "semainesAn": "",
-      "assmatNom": "",
-      "assmatAdresse": "",
+      "assmatNom": "Gaël Desaegher",
+      "assmatAdresse": "Le Penquer Lescloeden, 1071 Route De Plouegat Guerrand, 29610 Plouigneau",
       "valide": false
     },
     "semaineType": {
@@ -459,179 +459,5 @@
         "repas": "oui"
       }
     ]
-  },
-  "enf_1787581503123": {
-    "contrat": {
-      "prenomEnfant": "Lou",
-      "nomEnfant": "",
-      "naissance": "",
-      "sortiesVoiture": true,
-      "moisLisse": true,
-      "mere": {
-        "nom": "",
-        "prenom": "",
-        "port": "",
-        "maison": "",
-        "bureau": ""
-      },
-      "pere": {
-        "nom": "",
-        "prenom": "",
-        "port": "",
-        "maison": "",
-        "bureau": ""
-      },
-      "urgence": {
-        "nom": "",
-        "tel": ""
-      },
-      "tarifNet": "",
-      "majoration": "",
-      "ie": "",
-      "ir": "",
-      "hMensuel": "",
-      "hHebdo": "",
-      "jHebdo": "",
-      "semainesAn": ""
-    },
-    "engagement": {
-      "dateSignature": "2026-08-24",
-      "dateEffet": "",
-      "adaptationDebut": "",
-      "adaptationFin": "",
-      "tarifBrut": "",
-      "heuresSemaine": "",
-      "typeAnnee": "complete",
-      "semainesAn": "",
-      "assmatNom": "",
-      "assmatAdresse": "",
-      "valide": false
-    },
-    "semaineType": {
-      "0": {
-        "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "1": {
-        "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2": {
-        "actif": false,
-        "arrivee": "",
-        "depart": ""
-      },
-      "3": {
-        "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "4": {
-        "actif": true,
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "5": {
-        "actif": false,
-        "arrivee": "",
-        "depart": ""
-      },
-      "6": {
-        "actif": false,
-        "arrivee": "",
-        "depart": ""
-      }
-    },
-    "planningPrevu": {
-      "2026-08-03": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-04": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-06": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "16:00",
-        "note": ""
-      },
-      "2026-08-07": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-10": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-11": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-13": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-14": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-17": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-18": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-20": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-21": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-24": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-25": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-27": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-28": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      },
-      "2026-08-31": {
-        "status": "prevu",
-        "arrivee": "08:00",
-        "depart": "17:00"
-      }
-    },
-    "presences": []
   }
 }
