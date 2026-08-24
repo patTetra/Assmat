@@ -170,8 +170,8 @@
     .print-only { display: none; }
 
     @media print {
-      @page { size: A4 portrait; margin: 10mm 12mm; }
-      body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; font-family: 'Helvetica Neue', Arial, sans-serif !important; font-size: 9.5pt !important; }
+      @page { size: A4 portrait; margin: 8mm 8mm; }
+      body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; font-family: 'Helvetica Neue', Arial, sans-serif !important; font-size: 9.5pt !important; }
       header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #presence, #planning, #admin, #contrat, #impots { display: none !important; }
       
       .print-only { display: block !important; }
@@ -560,11 +560,6 @@
           <div class="print-box" style="margin-bottom: 10px;">
             <div class="print-box-title">Conditions de l'accueil prévues</div>
             <div class="print-box-content" id="eng-print-conditions"></div>
-          </div>
-
-          <div class="print-box" style="margin-bottom: 10px;">
-            <div class="print-box-title">Détail du calcul du salaire brut mensuel estimé</div>
-            <div class="print-box-content" id="eng-print-calcul-salaire"></div>
           </div>
 
           <div class="legal-print-clause">
@@ -1901,27 +1896,18 @@
 
       const tBrut = eng.tarifBrut || 0;
       const tNet = (tBrut / 1.2816).toFixed(2);
-      document.getElementById('eng-print-conditions').innerHTML = `
-        • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
-        • Période d'adaptation : ${adaptationTexte}<br>
-        • Horaire hebdo prévu : <strong>${eng.heuresSemaine || 0}h / sem</strong><br>
-        • Périodicités : ${eng.semainesAn || 52} semaines / an<br>
-        • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)
-      `;
-
       const hHebdo = eng.heuresSemaine || 0;
       const semainesAn = eng.semainesAn || 52;
       const hMensuelles = (hHebdo * semainesAn) / 12;
       const brutMensuel = tBrut * hMensuelles;
-      const indemnite = brutMensuel / 2;
 
-      document.getElementById('eng-print-calcul-salaire').innerHTML = `
-        1. Volume horaire mensualisé (lissé sur l'année) :<br>
-        <span style="padding-left:10px;">${hHebdo}h/semaine × ${semainesAn} semaines/an ÷ 12 mois = <strong>${hMensuelles.toFixed(2)} h/mois</strong></span><br><br>
-        2. Salaire brut mensuel prévisible :<br>
-        <span style="padding-left:10px;">${hMensuelles.toFixed(2)} h/mois × ${tBrut.toFixed(2)} €/h brut = <strong>${brutMensuel.toFixed(2)} € brut/mois</strong></span><br><br>
-        3. Indemnité de dédit en cas de non-respect de l'engagement (1/2 mois de salaire brut) :<br>
-        <span style="padding-left:10px;">${brutMensuel.toFixed(2)} € ÷ 2 = <strong>${indemnite.toFixed(2)} €</strong></span>
+      document.getElementById('eng-print-conditions').innerHTML = `
+        • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
+        • Période d'adaptation : ${adaptationTexte}<br>
+        • Horaire hebdo prévu : <strong>${hHebdo}h / sem</strong><br>
+        • Périodicités : ${semainesAn} semaines / an (soit ${hMensuelles.toFixed(2)} h/mois lissées)<br>
+        • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)<br>
+        • Salaire Brut Mensuel prévisible : <strong>${brutMensuel.toFixed(2)} €</strong>
       `;
     }
 
