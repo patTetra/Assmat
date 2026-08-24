@@ -485,14 +485,14 @@
         "nom": "",
         "tel": ""
       },
-      "tarifNet": "",
+      "tarifNet": 3.8,
       "majoration": "",
       "ie": "",
       "ir": "",
       "hMensuel": "",
-      "hHebdo": "",
+      "hHebdo": 48.75,
       "jHebdo": "",
-      "semainesAn": ""
+      "semainesAn": 44
     },
     "engagement": {
       "dateSignature": "2026-09-01",
@@ -505,7 +505,7 @@
       "semainesAn": 44,
       "assmatNom": "Gaël Desaegher",
       "assmatAdresse": "Le Penquer Lescloeden, 1071 Route De Plouegat Guerrand, 29610 Plouigneau",
-      "valide": false
+      "valide": true
     },
     "semaineType": {
       "0": {
