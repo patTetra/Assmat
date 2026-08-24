@@ -188,7 +188,7 @@
       "nomEnfant": "",
       "naissance": "",
       "sortiesVoiture": true,
-      "moisLisse": true,
+      "moisLisse": false,
       "mere": {
         "nom": "",
         "prenom": "",
@@ -211,8 +211,8 @@
       "majoration": 10,
       "ie": 3.5,
       "ir": 4,
-      "hMensuel": "",
-      "hHebdo": "",
+      "hMensuel": 156,
+      "hHebdo": 36,
       "jHebdo": 4,
       "semainesAn": 52
     },
