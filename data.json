@@ -107,59 +107,118 @@
     },
     "planningPrevu": {
       "2026-08-03": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-05": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-06": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-10": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-12": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-13": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-17": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-19": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-20": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-24": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-26": {
         "status": "prevu",
-        "arrivee": "09:00",
-        "depart": "17:00",
-        "note": ""
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-27": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
       },
       "2026-08-31": {
-        "arrivee": "08:00",
-        "depart": "17:00"
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
+      },
+      "2026-08-04": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
+      },
+      "2026-08-07": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "13:00"
+      },
+      "2026-08-11": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
+      },
+      "2026-08-14": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "13:00"
+      },
+      "2026-08-18": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
+      },
+      "2026-08-21": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "13:00"
+      },
+      "2026-08-25": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "18:00"
+      },
+      "2026-08-28": {
+        "status": "prevu",
+        "arrivee": "07:15",
+        "depart": "13:00"
       }
+    },
+    "engagement": {
+      "dateSignature": "",
+      "dateEffet": "",
+      "adaptation": "",
+      "tarifBrut": "5.12",
+      "assmatNom": "",
+      "assmatAdresse": ""
     }
   },
   "enf_1787433514852": {
@@ -604,6 +663,14 @@
         "arrivee": "08:10",
         "depart": "18:20"
       }
+    },
+    "engagement": {
+      "dateSignature": "",
+      "dateEffet": "",
+      "adaptation": "",
+      "tarifBrut": "5.12",
+      "assmatNom": "",
+      "assmatAdresse": ""
     }
   },
   "enf_1787461779180": {
@@ -776,7 +843,15 @@
         "hSup": 0.13333333333333286,
         "repas": "oui"
       }
-    ]
+    ],
+    "engagement": {
+      "dateSignature": "",
+      "dateEffet": "",
+      "adaptation": "",
+      "tarifBrut": "5.12",
+      "assmatNom": "",
+      "assmatAdresse": ""
+    }
   },
   "enf_1787509550713": {
     "contrat": {
@@ -850,6 +925,14 @@
       }
     },
     "planningPrevu": {},
-    "presences": []
+    "presences": [],
+    "engagement": {
+      "dateSignature": "",
+      "dateEffet": "",
+      "adaptation": "",
+      "tarifBrut": "5.12",
+      "assmatNom": "",
+      "assmatAdresse": ""
+    }
   }
 }
