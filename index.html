@@ -940,24 +940,56 @@
       afficherUrlWebcal();
     }
 
-    function sauvegarderConfigGitHub() {
-      githubConfig = {
-        user: document.getElementById('gh-user').value.trim(),
-        repo: document.getElementById('gh-repo').value.trim(),
-        path: document.getElementById('gh-path').value.trim() || 'data.json',
-        icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
-        branch: document.getElementById('gh-branch').value.trim() || 'main',
-        token: document.getElementById('gh-token').value.trim()
-      };
-      localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
-      githubFileSha = null;
-      icsFileSha = null;
-      majStatutSync('online');
-      afficherUrlWebcal();
-      fermerModalConfigGitHub();
-      chargerDepuisGitHub();
-      pousserICSVersGitHub();
-    }
+   function sauvegarderConfigGitHub() {
+
+  githubConfig = {
+    user: document.getElementById('gh-user').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim(),
+    path: document.getElementById('gh-path').value.trim() || 'data.json',
+    icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
+    branch: document.getElementById('gh-branch').value.trim() || 'main',
+    token: document.getElementById('gh-token').value.trim()
+  };
+
+  localStorage.setItem(
+    'assmat_gh_config',
+    JSON.stringify(githubConfig)
+  );
+
+  githubFileSha = null;
+  icsFileSha = null;
+
+  majStatutSync('syncing');
+
+  try {
+
+    await chargerDepuisGitHub();
+
+    console.log(
+      'Enfants après chargement :',
+      Object.keys(enfants)
+    );
+
+    console.log(
+      'Nombre d’enfants :',
+      Object.keys(enfants).length
+    );
+
+    fermerModalConfigGitHub();
+
+    majStatutSync('online');
+
+  } catch (err) {
+
+    console.error(
+      'Erreur synchronisation GitHub :',
+      err
+    );
+
+    majStatutSync('offline');
+  }
+
+}
 
     function afficherUrlWebcal() {
       const box = document.getElementById('gh-webcal-box');
