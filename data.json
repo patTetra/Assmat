@@ -218,11 +218,11 @@
     },
     "engagement": {
       "dateSignature": "2026-08-24",
-      "dateEffet": "",
+      "dateEffet": "2026-08-24",
       "adaptation": "",
-      "tarifBrut": "",
-      "joursSemaine": "",
-      "semainesAn": "",
+      "tarifBrut": 5.12,
+      "joursSemaine": 4,
+      "semainesAn": 52,
       "assmatNom": "",
       "assmatAdresse": "",
       "valide": false
