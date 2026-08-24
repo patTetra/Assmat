@@ -519,9 +519,12 @@
 
           <div class="info-group">
             <h3>👩‍🍼 Assistante Maternelle</h3>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.7rem;">
+              Ces informations proviennent du profil général de l'application et se modifient depuis l'icône ⚙️.
+            </p>
             <div class="grid-2">
-              <div class="form-group"><label>Nom & Prénom</label><input type="text" id="eng-assmat-nom" placeholder="Mme Jane Doe" onchange="sauvegarderEngagementForm()"></div>
-              <div class="form-group"><label>Adresse d'accueil</label><input type="text" id="eng-assmat-adresse" placeholder="12 Rue des Fleurs, 29000 Brest" onchange="sauvegarderEngagementForm()"></div>
+              <div class="form-group"><label>Nom & Prénom</label><input type="text" id="eng-assmat-nom" readonly></div>
+              <div class="form-group"><label>Adresse d'accueil</label><input type="text" id="eng-assmat-adresse" readonly></div>
             </div>
           </div>
 
@@ -624,6 +627,10 @@
             <div class="print-box">
               <div class="print-box-title">Employeur (Parents)</div>
               <div class="print-box-content" id="fp-print-parents"></div>
+            </div>
+            <div class="print-box">
+              <div class="print-box-title">Assistante Maternelle</div>
+              <div class="print-box-content" id="fp-print-assmat"></div>
             </div>
           </div>
 
@@ -769,7 +776,51 @@
   <div class="modal-overlay" id="modal-config-gh">
     <div class="modal">
       <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
-      <div class="grid-2">
+
+      <div class="info-group" style="margin-bottom:1rem;">
+        <h3>👩‍🍼 Mon profil d'assistante maternelle</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">
+          Ces informations sont communes à toute l'application et seront utilisées automatiquement dans les engagements réciproques, les documents imprimés et les nouvelles fiches.
+        </p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="assmat-prenom" placeholder="Prénom">
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="assmat-nom" placeholder="Nom">
+          </div>
+          <div class="form-group">
+            <label>Adresse</label>
+            <input type="text" id="assmat-adresse" placeholder="N° et voie">
+          </div>
+          <div class="form-group">
+            <label>Complément d'adresse</label>
+            <input type="text" id="assmat-complement" placeholder="Bâtiment, lieu-dit...">
+          </div>
+          <div class="form-group">
+            <label>Code postal</label>
+            <input type="text" id="assmat-code-postal" placeholder="29600">
+          </div>
+          <div class="form-group">
+            <label>Ville</label>
+            <input type="text" id="assmat-ville" placeholder="Morlaix">
+          </div>
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" id="assmat-telephone" placeholder="06...">
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="assmat-email" placeholder="adresse@email.fr">
+          </div>
+        </div>
+      </div>
+
+      <div class="info-group" style="margin-bottom:1rem;">
+        <h3>☁️ Synchronisation GitHub</h3>
+        <div class="grid-2">
         <div class="form-group">
           <label>Utilisateur GitHub</label>
           <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
@@ -794,10 +845,11 @@
           <label>Clé API / Token (PAT)</label>
           <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
         </div>
+        </div>
       </div>
       <br>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">Enregistrer & Synchroniser</button>
+        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">💾 Enregistrer les paramètres & Synchroniser</button>
         <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
         <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
       </div>
@@ -856,6 +908,48 @@
       user: '', repo: '', path: 'data.json', token: ''
     };
 
+    let profilAssmat = JSON.parse(localStorage.getItem('assmat_profil')) || {
+      prenom: '',
+      nom: '',
+      adresse: '',
+      complement: '',
+      codePostal: '',
+      ville: '',
+      telephone: '',
+      email: ''
+    };
+
+    function getNomCompletAssmat() {
+      return `${profilAssmat.prenom || ''} ${profilAssmat.nom || ''}`.trim();
+    }
+
+    function getAdresseCompleteAssmat() {
+      return [
+        profilAssmat.adresse || '',
+        profilAssmat.complement || '',
+        [profilAssmat.codePostal || '', profilAssmat.ville || ''].filter(Boolean).join(' ')
+      ].filter(Boolean).join('<br>');
+    }
+
+    function getAdresseCompleteAssmatTexte() {
+      return [
+        profilAssmat.adresse || '',
+        profilAssmat.complement || '',
+        [profilAssmat.codePostal || '', profilAssmat.ville || ''].filter(Boolean).join(' ')
+      ].filter(Boolean).join(', ');
+    }
+
+    function migrerProfilAssmatDansEngagements() {
+      const nom = getNomCompletAssmat();
+      const adresse = getAdresseCompleteAssmatTexte();
+
+      Object.keys(enfants).forEach(id => {
+        if (!enfants[id].engagement) enfants[id].engagement = {};
+        enfants[id].engagement.assmatNom = nom;
+        enfants[id].engagement.assmatAdresse = adresse;
+      });
+    }
+
     let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
       "leo": {
         contrat: { 
@@ -902,6 +996,8 @@
         if(enfants[id].engagement.joursSemaine === undefined) enfants[id].engagement.joursSemaine = c.jHebdo || 4;
         if(enfants[id].engagement.semainesAn === undefined) enfants[id].engagement.semainesAn = c.semainesAn || 52;
         if(enfants[id].engagement.valide === undefined) enfants[id].engagement.valide = !!(c.tarifNet);
+        enfants[id].engagement.assmatNom = getNomCompletAssmat();
+        enfants[id].engagement.assmatAdresse = getAdresseCompleteAssmatTexte();
 
         if (enfants[id].planningPrevu) {
           Object.keys(enfants[id].planningPrevu).forEach(date => {
@@ -930,6 +1026,15 @@
     function majStatutSync(status) { const led = document.getElementById('sync-led'); led.className = `sync-led ${status}`; }
 
     function chargerFormulaireGitHub() {
+      document.getElementById('assmat-prenom').value = profilAssmat.prenom || '';
+      document.getElementById('assmat-nom').value = profilAssmat.nom || '';
+      document.getElementById('assmat-adresse').value = profilAssmat.adresse || '';
+      document.getElementById('assmat-complement').value = profilAssmat.complement || '';
+      document.getElementById('assmat-code-postal').value = profilAssmat.codePostal || '';
+      document.getElementById('assmat-ville').value = profilAssmat.ville || '';
+      document.getElementById('assmat-telephone').value = profilAssmat.telephone || '';
+      document.getElementById('assmat-email').value = profilAssmat.email || '';
+
       document.getElementById('gh-user').value = githubConfig.user || '';
       document.getElementById('gh-repo').value = githubConfig.repo || '';
       document.getElementById('gh-path').value = githubConfig.path || 'data.json';
@@ -940,56 +1045,39 @@
       afficherUrlWebcal();
     }
 
-   async function sauvegarderConfigGitHub() {
+    function sauvegarderConfigGitHub() {
+      profilAssmat = {
+        prenom: document.getElementById('assmat-prenom').value.trim(),
+        nom: document.getElementById('assmat-nom').value.trim(),
+        adresse: document.getElementById('assmat-adresse').value.trim(),
+        complement: document.getElementById('assmat-complement').value.trim(),
+        codePostal: document.getElementById('assmat-code-postal').value.trim(),
+        ville: document.getElementById('assmat-ville').value.trim(),
+        telephone: document.getElementById('assmat-telephone').value.trim(),
+        email: document.getElementById('assmat-email').value.trim()
+      };
 
-  githubConfig = {
-    user: document.getElementById('gh-user').value.trim(),
-    repo: document.getElementById('gh-repo').value.trim(),
-    path: document.getElementById('gh-path').value.trim() || 'data.json',
-    icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
-    branch: document.getElementById('gh-branch').value.trim() || 'main',
-    token: document.getElementById('gh-token').value.trim()
-  };
+      localStorage.setItem('assmat_profil', JSON.stringify(profilAssmat));
+      migrerProfilAssmatDansEngagements();
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
 
-  localStorage.setItem(
-    'assmat_gh_config',
-    JSON.stringify(githubConfig)
-  );
-
-  githubFileSha = null;
-  icsFileSha = null;
-
-  majStatutSync('syncing');
-
-  try {
-
-    await chargerDepuisGitHub();
-
-    console.log(
-      'Enfants après chargement :',
-      Object.keys(enfants)
-    );
-
-    console.log(
-      'Nombre d’enfants :',
-      Object.keys(enfants).length
-    );
-
-    fermerModalConfigGitHub();
-
-    majStatutSync('online');
-
-  } catch (err) {
-
-    console.error(
-      'Erreur synchronisation GitHub :',
-      err
-    );
-
-    majStatutSync('offline');
-  }
-
-}
+      githubConfig = {
+        user: document.getElementById('gh-user').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        path: document.getElementById('gh-path').value.trim() || 'data.json',
+        icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
+        branch: document.getElementById('gh-branch').value.trim() || 'main',
+        token: document.getElementById('gh-token').value.trim()
+      };
+      localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
+      githubFileSha = null;
+      icsFileSha = null;
+      majStatutSync('online');
+      afficherUrlWebcal();
+      fermerModalConfigGitHub();
+      chargerDepuisGitHub();
+      pousserICSVersGitHub();
+    }
 
     function afficherUrlWebcal() {
       const box = document.getElementById('gh-webcal-box');
@@ -1698,8 +1786,8 @@
       document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
       document.getElementById('eng-jours-semaine').value = eng.joursSemaine || c.jHebdo || 4;
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
-      document.getElementById('eng-assmat-nom').value = eng.assmatNom || '';
-      document.getElementById('eng-assmat-adresse').value = eng.assmatAdresse || '';
+      document.getElementById('eng-assmat-nom').value = getNomCompletAssmat();
+      document.getElementById('eng-assmat-adresse').value = getAdresseCompleteAssmatTexte();
 
       const badge = document.getElementById('eng-statut-badge');
       if (badge) {
@@ -1720,8 +1808,8 @@
       eng.tarifBrut = parseFloat(document.getElementById('eng-tarif-brut').value) || 0;
       eng.joursSemaine = parseFloat(document.getElementById('eng-jours-semaine').value) || 4;
       eng.semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 52;
-      eng.assmatNom = document.getElementById('eng-assmat-nom').value;
-      eng.assmatAdresse = document.getElementById('eng-assmat-adresse').value;
+      eng.assmatNom = getNomCompletAssmat();
+      eng.assmatAdresse = getAdresseCompleteAssmatTexte();
       sauvegarderGlobal();
     }
 
@@ -1767,9 +1855,15 @@
       if (c.pere?.nom || c.pere?.prenom) pText += `M. ${c.pere.prenom} ${c.pere.nom} (${c.pere.port || 'Tél N/C'})<br>`;
       document.getElementById('eng-print-parents').innerHTML = pText || "Parents non renseignés";
 
+      const assmatContact = [
+        profilAssmat.telephone ? `Tél. : ${profilAssmat.telephone}` : '',
+        profilAssmat.email ? `E-mail : ${profilAssmat.email}` : ''
+      ].filter(Boolean).join('<br>');
+
       document.getElementById('eng-print-assmat').innerHTML = `
-        <strong>${eng.assmatNom || 'Assmat N/C'}</strong><br>
-        ${eng.assmatAdresse || 'Adresse N/C'}
+        <strong>${getNomCompletAssmat() || 'Assistante maternelle N/C'}</strong><br>
+        ${getAdresseCompleteAssmat() || 'Adresse N/C'}
+        ${assmatContact ? '<br>' + assmatContact : ''}
       `;
 
       document.getElementById('eng-print-enfant-info').innerHTML = `
@@ -1904,6 +1998,17 @@
       if (c.mere?.nom) pText += `Mme ${c.mere.prenom} ${c.mere.nom}<br>`;
       if (c.pere?.nom) pText += `M. ${c.pere.prenom} ${c.pere.nom}<br>`;
       document.getElementById('fp-print-parents').innerHTML = pText || "Non renseigné";
+
+      const assmatContact = [
+        profilAssmat.telephone ? `Tél. : ${profilAssmat.telephone}` : '',
+        profilAssmat.email ? `E-mail : ${profilAssmat.email}` : ''
+      ].filter(Boolean).join('<br>');
+
+      document.getElementById('fp-print-assmat').innerHTML = `
+        <strong>${getNomCompletAssmat() || 'Assistante maternelle N/C'}</strong><br>
+        ${getAdresseCompleteAssmat() || 'Adresse N/C'}
+        ${assmatContact ? '<br>' + assmatContact : ''}
+      `;
     }
 
     function imprimerPaie() {
@@ -1990,6 +2095,8 @@
     // INITIALISATION GENERALE AU CHARGEMENT
     window.addEventListener('DOMContentLoaded', () => {
       normaliserEtMigrerDonnees();
+      migrerProfilAssmatDansEngagements();
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       chargerFormulaireGitHub();
       rafraichirTouteLInterface();
     });
