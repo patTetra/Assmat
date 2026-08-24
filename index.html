@@ -146,6 +146,7 @@
     .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--accent-light); border: 1px solid rgba(99, 102, 241, 0.3); }
     .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-danger { background: rgba(244, 63, 94, 0.2); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
@@ -155,6 +156,13 @@
     .legal-alert-box h4 { color: #f43f5e; font-size: 0.85rem; font-weight: 800; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
     .legal-alert-box ul { margin-left: 1.2rem; margin-top: 0.4rem; margin-bottom: 0.5rem; }
     .legal-alert-box li { margin-bottom: 0.2rem; }
+
+    .pajemploi-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: var(--radius-lg); padding: 1.15rem; margin-top: 1.25rem; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); }
+    .pajemploi-title { display: flex; align-items: center; justify-content: space-between; color: #10b981; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; margin-bottom: 0.85rem; border-bottom: 1px solid rgba(16, 185, 129, 0.2); padding-bottom: 0.5rem; }
+    .pajemploi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
+    .pajemploi-item { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); }
+    .pajemploi-item-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .pajemploi-item-val { font-size: 1.05rem; font-weight: 800; color: #fff; margin-top: 2px; }
 
     .info-group { background: var(--surface-card); border-radius: var(--radius-md); padding: 0.85rem; border: 1px solid var(--border); margin-bottom: 0.85rem; }
     .info-group h3 { font-size: 0.85rem; color: var(--accent-light); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
@@ -169,6 +177,11 @@
       .print-only { display: block !important; }
       .card { background: #ffffff !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
 
+      /* IMPRESSION PAIE */
+      body.print-mode-paie #admin, body.print-mode-paie #paie { display: block !important; }
+      body.print-mode-paie #engagement, body.print-mode-paie #contrat, body.print-mode-paie #impots { display: none !important; }
+
+      /* IMPRESSION ENGAGEMENT */
       body.print-mode-engagement #admin, body.print-mode-engagement #engagement { display: block !important; }
       body.print-mode-engagement #paie, body.print-mode-engagement #contrat, body.print-mode-engagement #impots { display: none !important; }
 
@@ -178,6 +191,11 @@
       .print-box { border: 1px solid #ccc; border-radius: 4px; padding: 6px 8px; background: #fafafa !important; }
       .print-box-title { font-size: 7.5pt; font-weight: bold; text-transform: uppercase; color: #555; margin-bottom: 3px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
       .print-box-content { font-size: 9pt; color: #000; line-height: 1.3; }
+      
+      .table-container { border: 1px solid #000 !important; border-radius: 0 !important; margin-bottom: 12px !important; }
+      table { background: #fff !important; width: 100% !important; border-collapse: collapse !important; }
+      th { background: #f0f0f0 !important; color: #000 !important; border-bottom: 1px solid #000 !important; border-right: 1px solid #ccc !important; font-size: 8pt !important; padding: 5px !important; }
+      td { color: #000 !important; border-bottom: 1px solid #eee !important; border-right: 1px solid #eee !important; font-size: 8.5pt !important; padding: 5px !important; }
       
       .summary-card { background: #fff !important; border: none !important; padding: 0 !important; margin-top: 8px !important; width: 50%; margin-left: auto; }
       .summary-line { color: #000 !important; font-size: 8.5pt !important; margin-bottom: 3px !important; }
@@ -208,17 +226,20 @@
     </div>
   </header>
 
+  <!-- SLIDER DES ENFANTS -->
   <div class="slider-container no-print">
     <div class="slider-track" id="slider-track" onscroll="handleSliderScroll()"></div>
     <div class="slider-dots" id="slider-dots"></div>
   </div>
 
+  <!-- NAVIGATION PRINCIPALE -->
   <nav class="nav-tabs no-print main-nav">
     <button class="tab-btn active" onclick="switchMainTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchMainTab('planning')">🗓️ Planning</button>
     <button class="tab-btn" onclick="switchMainTab('admin')">📁 Paramètres</button>
   </nav>
 
+  <!-- TAB 1 : VALIDATION DU JOUR -->
   <div id="presence" class="tab-content main-content active">
     <div class="card no-print">
       <h2>Saisie / Validation rapide du jour</h2>
@@ -268,6 +289,7 @@
     </div>
   </div>
 
+  <!-- TAB 2 : PLANNING TYPES iOS DU MOIS -->
   <div id="planning" class="tab-content main-content">
     <div class="card">
       <div class="calendar-header">
@@ -278,6 +300,8 @@
 
       <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <button class="btn btn-primary btn-sm" onclick="genererPlanningMoisComplet()">⚡ Appliquer la semaine type</button>
+        <button class="btn btn-secondary btn-sm" onclick="synchroniserICSMaintenant()">🔄 Forcer la synchro calendrier</button>
+        <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📥 Télécharger le .ics</button>
       </div>
 
       <div class="calendar-days-header">
@@ -285,20 +309,54 @@
       </div>
       <div class="calendar-grid" id="calendar-grid"></div>
     </div>
+
+    <div class="card">
+      <details open>
+        <summary style="display:flex; justify-content:space-between; align-items:center;">
+          <span>⚙️ Configurer la semaine type de base</span>
+          <span id="st-total-badge" class="badge badge-primary">0h / sem</span>
+        </summary>
+        <div class="week-grid" id="week-schedule-grid"></div>
+        
+        <div id="st-legal-alert" class="legal-alert-box" style="display:none;">
+          <h4>⚠️ Dépassement des plafonds légaux</h4>
+          <div id="st-alert-text"></div>
+          <div style="margin-top:0.4rem; font-weight:600;">Solutions recommandées :</div>
+          <ul>
+            <li>Réduire le nombre de semaines d'accueil (ex: passer en <i>Année Incomplète</i> à 45 ou 46 semaines) pour respecter la limite de 2 250h/an.</li>
+            <li>Ajuster les horaires quotidiens pour lisser la moyenne hebdomadaire sous les 48h.</li>
+          </ul>
+          <div style="font-size:0.75rem; opacity:0.85;"><i>Note : Si le volume est maintenu, un accord écrit explicite de l'assistante maternelle est obligatoirement requis.</i></div>
+        </div>
+
+        <div id="st-alert-45h" style="display:none; margin-top:0.75rem; padding:0.6rem; background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--radius-sm); font-size:0.78rem; color:var(--warning);">
+          ℹ️ <b>Semaine > 45h :</b> Le contrat est automatiquement passé au réel (option « Mois lissé » décochée).
+        </div>
+        <br>
+        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType()">Sauvegarder la semaine type</button>
+      </details>
+    </div>
   </div>
 
+  <!-- TAB 3 : PARAMÈTRES (CONTIENT CONTRAT, ENGAGEMENT, PAIE, IMPOTS) -->
   <div id="admin" class="tab-content main-content">
     
+    <!-- NAVIGATION SECONDAIRE -->
     <nav class="nav-tabs no-print sub-nav" style="margin-bottom: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
       <button class="tab-btn sub-tab-btn active" onclick="switchSubTab('contrat')">✍️ Contrat</button>
       <button class="tab-btn sub-tab-btn" onclick="switchSubTab('engagement')">📜 Engag.</button>
       <button class="tab-btn sub-tab-btn" onclick="switchSubTab('paie')">📄 Paie</button>
+      <button class="tab-btn sub-tab-btn" onclick="switchSubTab('impots')">📊 Impôts</button>
     </nav>
 
+    <!-- SOUS-ONGLET : CONTRAT -->
     <div id="contrat" class="sub-tab-content" style="display: block;">
+      <div id="contrat-eng-notice" class="no-print" style="display:none; margin-bottom:1.25rem; padding:0.85rem; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); font-size: 0.82rem; color: #fde68a; line-height:1.4;">
+        ⚠️ L'engagement réciproque n'a pas encore été validé. Ce contrat est vierge — rendez-vous dans l'onglet <strong>📜 Engag.</strong> pour le créer, il pourra ensuite pré-remplir automatiquement les champs ci-dessous.
+      </div>
       <div class="card">
-        <h2>Informations du contrat</h2>
-        <div class="grid-2">
+        <h2>Informations de l'enfant</h2>
+        <div class="grid-2" style="margin-bottom: 1rem;">
           <div class="form-group">
             <label>Prénom de l'enfant</label>
             <input type="text" id="cfg-prenom-enfant">
@@ -308,23 +366,106 @@
             <input type="text" id="cfg-nom-enfant">
           </div>
           <div class="form-group">
+            <label>Date de naissance (ou prévue)</label>
+            <input type="date" id="cfg-naissance-enfant">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="cfg-sorties-voiture">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">🚗 Sorties autorisées en voiture</span>
+          </label>
+        </div>
+
+        <h2>Coordonnées des Parents</h2>
+        
+        <div class="info-group">
+          <h3>👩 Coordonnées Mère</h3>
+          <div class="grid-2" style="margin-bottom: 0.6rem;">
+            <div class="form-group"><label>Nom</label><input type="text" id="cfg-mere-nom"></div>
+            <div class="form-group"><label>Prénom</label><input type="text" id="cfg-mere-prenom"></div>
+          </div>
+          <div class="grid-3">
+            <div class="form-group"><label>Portable</label><input type="tel" id="cfg-mere-port"></div>
+            <div class="form-group"><label>Maison</label><input type="tel" id="cfg-mere-maison"></div>
+            <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-mere-bureau"></div>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <h3>👨 Coordonnées Père</h3>
+          <div class="grid-2" style="margin-bottom: 0.6rem;">
+            <div class="form-group"><label>Nom</label><input type="text" id="cfg-pere-nom"></div>
+            <div class="form-group"><label>Prénom</label><input type="text" id="cfg-pere-prenom"></div>
+          </div>
+          <div class="grid-3">
+            <div class="form-group"><label>Portable</label><input type="tel" id="cfg-pere-port"></div>
+            <div class="form-group"><label>Maison</label><input type="tel" id="cfg-pere-maison"></div>
+            <div class="form-group"><label>Bureau</label><input type="tel" id="cfg-pere-bureau"></div>
+          </div>
+        </div>
+
+        <div class="info-group" style="border-color: rgba(244, 63, 94, 0.4);">
+          <h3 style="color: var(--danger);">🚨 Contact d'Urgence</h3>
+          <div class="grid-2">
+            <div class="form-group"><label>Nom & Prénom</label><input type="text" id="cfg-urgence-nom"></div>
+            <div class="form-group"><label>Téléphone Urgence</label><input type="tel" id="cfg-urgence-tel"></div>
+          </div>
+        </div>
+
+        <h2>Tarification & Contrat Pajemploi</h2>
+        
+        <div style="margin-bottom: 1rem;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="cfg-mois-lisse" onchange="toggleLissageState()">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">📊 Mois lissé (Mensualisation fixe)</span>
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
             <label>Tarif Net (€/h)</label>
             <input type="number" step="0.01" id="cfg-tarif-net" placeholder="ex: 4.00">
           </div>
           <div class="form-group">
+            <label>Majoration H.Sup (%)</label>
+            <input type="number" id="cfg-majoration" placeholder="ex: 10">
+          </div>
+          <div class="form-group">
+            <label>Indem. Entretien (€/j)</label>
+            <input type="number" step="0.01" id="cfg-ie" placeholder="ex: 3.50">
+          </div>
+          <div class="form-group">
+            <label>Indem. Repas (€/j)</label>
+            <input type="number" step="0.01" id="cfg-ir" placeholder="ex: 4.00">
+          </div>
+          <div class="form-group">
+            <label>H. Mensualisées</label>
+            <input type="number" id="cfg-h-mensuel" placeholder="ex: 120">
+          </div>
+          <div class="form-group">
             <label>H. Hebdo Contrat</label>
-            <input type="number" id="cfg-h-hebdo" placeholder="ex: 35">
+            <input type="number" id="cfg-h-hebdo" placeholder="ex: 35" oninput="mettreAJourCalculsSemaineTypeUI()">
+          </div>
+          <div class="form-group">
+            <label>Jours / semaine</label>
+            <input type="number" id="cfg-j-hebdo" placeholder="ex: 4">
           </div>
           <div class="form-group">
             <label>Semaines / an</label>
-            <input type="number" id="cfg-semaines-an" placeholder="ex: 52">
+            <input type="number" id="cfg-semaines-an" placeholder="ex: 52 ou 46..." oninput="mettreAJourCalculsSemaineTypeUI()">
           </div>
         </div>
         <br>
-        <button class="btn btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+        <div style="display:flex; flex-direction: column; gap: 0.75rem;">
+          <button class="btn btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
+          <button class="btn btn-danger btn-sm" onclick="supprimerEnfantActif()">Supprimer ce profil</button>
+        </div>
       </div>
     </div>
 
+    <!-- SOUS-ONGLET : ENGAGEMENT RECIPROQUE -->
     <div id="engagement" class="sub-tab-content">
       <div class="card">
         <div class="print-only print-header">
@@ -339,12 +480,16 @@
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;" class="no-print">
           <h2 style="margin:0;">📜 Élaboration de l'Engagement Réciproque</h2>
-          <button class="btn btn-primary btn-sm" onclick="imprimerEngagement()">🖨️ Imprimer l'Engagement</button>
+          <button class="btn btn-primary btn-sm" onclick="imprimerEngagement()">🖨️ Imprimer l'Engagement (2 ex.)</button>
         </div>
 
         <div id="eng-statut-badge" class="no-print" style="margin-bottom: 1rem;"></div>
 
         <div class="no-print">
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.4;">
+            L'engagement réciproque permet d'assurer la réservation de la place d'accueil avant la signature du contrat définitif.
+          </p>
+
           <div class="grid-2" style="margin-bottom: 1rem;">
             <div class="form-group">
               <label>Date de signature</label>
@@ -356,92 +501,74 @@
             </div>
             <div class="form-group">
               <label>Période d'adaptation</label>
-              <input type="text" id="eng-adaptation" placeholder="ex: 1 semaine (du 01/09 au 07/09)" oninput="sauvegarderEngagementForm()">
+              <input type="text" id="eng-adaptation" placeholder="ex: Du 01/09 au 15/09 (optionnel)" onchange="sauvegarderEngagementForm()">
             </div>
             <div class="form-group">
-              <label>Tarif Brut (€/h)</label>
-              <input type="number" step="0.01" id="eng-tarif-brut" placeholder="ex: 5.12" oninput="sauvegarderEngagementForm(); calculerIndemniteEngagement();">
+              <label>Taux Brut (€/h estimé)</label>
+              <input type="number" step="0.01" id="eng-tarif-brut" placeholder="ex: 5.12" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
             <div class="form-group">
-              <label>Heures / semaine</label>
-              <input type="number" step="0.5" id="eng-heures-semaine" placeholder="ex: 35" oninput="sauvegarderEngagementForm(); calculerIndemniteEngagement();">
+              <label>Jours d'accueil / semaine</label>
+              <input type="number" step="1" min="1" max="7" id="eng-jours-semaine" placeholder="ex: 4" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
             <div class="form-group">
-              <label>Semaines / an</label>
-              <input type="number" id="eng-semaines-an" placeholder="ex: 52 ou 46" oninput="sauvegarderEngagementForm(); calculerIndemniteEngagement();">
+              <label>Semaines de travail / an</label>
+              <input type="number" step="1" min="1" max="52" id="eng-semaines-an" placeholder="ex: 52" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
           </div>
 
           <div class="info-group">
-            <h3>👤 Coordonnées Assistante Maternelle</h3>
+            <h3>👩‍🍼 Assistante Maternelle</h3>
             <div class="grid-2">
-              <div class="form-group">
-                <label>Nom & Prénom AssMat</label>
-                <input type="text" id="eng-assmat-nom" oninput="sauvegarderEngagementForm()">
-              </div>
-              <div class="form-group">
-                <label>Adresse d'accueil</label>
-                <input type="text" id="eng-assmat-adresse" oninput="sauvegarderEngagementForm()">
-              </div>
+              <div class="form-group"><label>Nom & Prénom</label><input type="text" id="eng-assmat-nom" placeholder="Mme Jane Doe" onchange="sauvegarderEngagementForm()"></div>
+              <div class="form-group"><label>Adresse d'accueil</label><input type="text" id="eng-assmat-adresse" placeholder="12 Rue des Fleurs, 29000 Brest" onchange="sauvegarderEngagementForm()"></div>
             </div>
           </div>
 
-          <div class="summary-card">
-            <div class="summary-line">
-              <span>Heures mensuelles estimées :</span>
-              <strong id="eng-val-h-mensuelles">0 h</strong>
-            </div>
-            <div class="summary-line">
-              <span>Salaire brut mensuel estimé :</span>
-              <strong id="eng-val-brut-mensuel">0.00 €</strong>
-            </div>
-            <div class="summary-line total">
-              <span>Montant de l'indemnité forfaitaire (1/2 mois brut) :</span>
-              <strong id="eng-val-indemnite" style="color:var(--accent-light);">0.00 €</strong>
-            </div>
+          <div class="summary-card" style="margin-bottom: 1rem;">
+            <div class="summary-line"><span>Salaire Brut Mensuel prévu :</span><span id="eng-brut-mensuel-val">0.00 €</span></div>
+            <div class="summary-line total"><span>Indemnité de dédit (1/2 mois brut) :</span><span id="eng-indemnite-val" style="color:var(--warning);">0.00 €</span></div>
           </div>
 
-          <br>
-          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="validerEtAppliquerEngagement()">✅ Valider l'engagement & pré-remplir le contrat</button>
-          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="validerEngagementEtPreremplirContrat()">✅ Valider l'engagement & pré-remplir le contrat</button>
         </div>
 
         <div class="print-only">
           <div class="print-grid-info">
             <div class="print-box">
-              <div class="print-box-title">L'Employeur (Parent)</div>
+              <div class="print-box-title">Employeur (Parents)</div>
               <div class="print-box-content" id="eng-print-parents"></div>
             </div>
             <div class="print-box">
-              <div class="print-box-title">L'Salariée (Assistante Maternelle)</div>
+              <div class="print-box-title">Assistante Maternelle Agréée</div>
               <div class="print-box-content" id="eng-print-assmat"></div>
             </div>
           </div>
 
-          <div class="print-box" style="margin-bottom: 12px;">
-            <div class="print-box-title">L'Enfant</div>
+          <div class="print-box" style="margin-bottom: 10px;">
+            <div class="print-box-title">Objet du contrat & Enfant</div>
             <div class="print-box-content" id="eng-print-enfant-info"></div>
           </div>
 
-          <div class="print-box" style="margin-bottom: 12px;">
-            <div class="print-box-title">Conditions de l'Engagement</div>
+          <div class="print-box" style="margin-bottom: 10px;">
+            <div class="print-box-title">Conditions de l'accueil prévues</div>
             <div class="print-box-content" id="eng-print-conditions"></div>
           </div>
 
           <div class="legal-print-clause">
-            <strong>Clause légale d'engagement réciproque :</strong><br>
-            En application de la Convention Collective Nationale des Assistants Maternels du Particulier Employeur, les parties s'engagent à conclure un contrat de travail à la date d'effet mentionnée ci-dessus. En cas de non-respect de cet engagement par l'une des parties sans motif légitime (décès, non-obtention ou retrait d'agrément), la partie défaillante versera à l'autre une indemnité forfaitaire compensatrice égale à 1/2 mois de salaire brut calculé sur la base de la mensualisation convenue.
+            <strong>Article 5 - Engagement Réciproque (CCN Assistantes Maternelles) :</strong><br>
+            Les parties s'engagent à conclure un contrat de travail à la date d'effet mentionnée ci-dessus.<br>
+            En cas de non-respect de cet engagement par l'une des parties, celle-ci versera à l'autre une indemnité forfaitaire compensatrice égale à <strong>un demi-mois du salaire brut mensuel lissé prévisible</strong> (<span id="eng-print-indemnite-texte">0.00 €</span>), sauf cas de force majeure, de décès de l'enfant, ou de retrait/suspension d'agrément de l'assistante maternelle.
           </div>
 
           <div class="print-signatures">
             <div class="print-signature-box">
-              <strong>Signature de l'Employeur</strong><br>
-              <small>(Précédée de la mention "Lu et approuvé")</small>
+              <strong>Signature du/des Parent(s) Employeur(s) :</strong><br>
+              <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
             </div>
             <div class="print-signature-box">
-              <strong>Signature de l'Assistante Maternelle</strong><br>
-              <small>(Précédée de la mention "Lu et approuvé")</small>
+              <strong>Signature de l'Assistante Maternelle :</strong><br>
+              <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
             </div>
           </div>
         </div>
@@ -449,13 +576,1086 @@
       </div>
     </div>
 
+    <!-- SOUS-ONGLET : FICHE DE PAIE & PAJEMPLOI -->
+    <div id="paie" class="sub-tab-content">
+      <div class="card">
+        <div class="print-only print-header">
+          <div class="print-header-title">
+            <h1>Fiche de Paie</h1>
+            <p>Relevé mensuel d'accueil de l'enfant</p>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 10pt; font-weight: bold;" id="fp-print-date"></div>
+            <div style="font-size: 8.5pt; color: #666;">Document généré via AssMat Flow</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;" class="no-print">
+          <h2 style="margin:0;">Fiche de Paie & Déclaration</h2>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div class="form-group" style="margin:0;">
+              <input type="month" id="fp-select-mois" onchange="calculerFicheDePaie()" style="padding:0.4rem 0.6rem; font-size:0.85rem;">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="imprimerPaie()">🖨️ Imprimer / PDF</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="no-print" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1rem;">
+            <div>
+              <span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Période de Paie</span><br>
+              <strong id="fp-periode" style="font-size:0.95rem; color:var(--accent-light);"></strong>
+            </div>
+            <div>
+              <span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant & Parents</span><br>
+              <strong id="fp-enfant" style="font-size:0.9rem; color:#fff;"></strong><br>
+              <span id="fp-parent" style="font-size:0.78rem; color:var(--text-muted);"></span>
+            </div>
+          </div>
+
+          <div class="print-only print-grid-info">
+            <div class="print-box">
+              <div class="print-box-title">Période & Objet</div>
+              <div class="print-box-content">
+                Mois de paie : <strong id="fp-print-periode"></strong><br>
+                Enfant accueilli : <strong id="fp-print-enfant"></strong>
+              </div>
+            </div>
+            <div class="print-box">
+              <div class="print-box-title">Employeur (Parents)</div>
+              <div class="print-box-content" id="fp-print-parents"></div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Élément</th>
+                  <th>Volume</th>
+                  <th>Taux Net</th>
+                  <th style="text-align:right;">Total Net</th>
+                </tr>
+              </thead>
+              <tbody id="fp-body"></tbody>
+            </table>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-line"><span>Salaire Net de base :</span><span id="fp-salaire-base">0.00 €</span></div>
+            <div class="summary-line"><span>Heures Compl. / Sup. :</span><span id="fp-total-hs">0.00 €</span></div>
+            <div class="summary-line"><span>Indemnités (IE + IR) :</span><span id="fp-total-indemnites">0.00 €</span></div>
+            <div class="summary-line total"><span>NET À PAYER :</span><span id="fp-net-a-payer" style="color:var(--accent-light);">0.00 €</span></div>
+          </div>
+
+          <div class="pajemploi-card">
+            <div class="pajemploi-title">
+              <span>📋 ÉLÉMENTS POUR LA DÉCLARATION PAJEMPLOI</span>
+              <span style="font-size: 0.7rem; font-weight: normal; color: var(--text-muted);" class="no-print">Chiffres à recopier</span>
+            </div>
+            <div class="pajemploi-grid">
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Heures normales</div>
+                <div class="pajemploi-item-val" id="paje-h-normales">0 h</div>
+              </div>
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Jours d'activité (arrondi)</div>
+                <div class="pajemploi-item-val" id="paje-j-activite">0 j</div>
+              </div>
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Heures compl. / supp.</div>
+                <div class="pajemploi-item-val" id="paje-h-supp">0 h</div>
+              </div>
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Jours de Congés Payés</div>
+                <div class="pajemploi-item-val" id="paje-cp">0 j</div>
+              </div>
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Salaire Net Total</div>
+                <div class="pajemploi-item-val" id="paje-salaire-net">0.00 €</div>
+              </div>
+              <div class="pajemploi-item">
+                <div class="pajemploi-item-label">Total Indemnités (IE+IR)</div>
+                <div class="pajemploi-item-val" id="paje-indemnites">0.00 €</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="print-only print-signatures">
+            <div class="print-signature-box">Signature Assistante Maternelle :</div>
+            <div class="print-signature-box">Signature Parent / Employeur :</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOUS-ONGLET : DÉCLARATION D'IMPÔTS FISCALE -->
+    <div id="impots" class="sub-tab-content">
+      <div class="card">
+        <h2>📊 Déclaration de Revenus (Régime Spécifique Assistante Maternelle)</h2>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.4;">
+          Calcule le montant net imposable après application de l'abattement forfaitaire. Choisissez la période correspondant à la date effective d'encaissement de vos salaires.
+        </p>
+
+        <div class="grid-3" style="margin-bottom: 1rem;">
+          <div class="form-group">
+            <label>Mois / Année de début</label>
+            <input type="month" id="imp-debut" onchange="calculerImpotsAnnuel()">
+          </div>
+          <div class="form-group">
+            <label>Mois / Année de fin</label>
+            <input type="month" id="imp-fin" onchange="calculerImpotsAnnuel()">
+          </div>
+          <div class="form-group">
+            <label>SMIC Horaire Net (€/h)</label>
+            <input type="number" step="0.01" id="imp-smic" value="9.27" onchange="calculerImpotsAnnuel()">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="imp-tous-enfants" checked onchange="calculerImpotsAnnuel()">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">Consolider tous les enfants sur cette période</span>
+          </label>
+        </div>
+
+        <div class="pajemploi-card" style="border-color: rgba(99, 102, 241, 0.4); margin-top: 1rem;">
+          <div class="pajemploi-title" style="color: var(--accent-light); border-bottom-color: rgba(99, 102, 241, 0.2);">
+            <span>📑 RÉSULTATS FISCAUX DE LA PÉRIODE (<span id="imp-nb-mois">0</span> MOIS SÉLECTIONNÉS)</span>
+          </div>
+          
+          <div class="pajemploi-grid" style="margin-bottom: 1rem;">
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Cumul Salaires Nets</div>
+              <div class="pajemploi-item-val" id="imp-val-salaires">0.00 €</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Cumul Indemnités (IE+IR)</div>
+              <div class="pajemploi-item-val" id="imp-val-indemnites">0.00 €</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Total Brut Imposable</div>
+              <div class="pajemploi-item-val" id="imp-val-brut" style="color:var(--warning);">0.00 €</div>
+            </div>
+          </div>
+
+          <div class="pajemploi-grid">
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Jours ≥ 3h (Abattement x3)</div>
+              <div class="pajemploi-item-val" id="imp-val-j-plus3">0 j</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Heures Jours < 3h (Prorata)</div>
+              <div class="pajemploi-item-val" id="imp-val-h-moins3">0.00 h</div>
+            </div>
+            <div class="pajemploi-item">
+              <div class="pajemploi-item-label">Montant Total Abattement</div>
+              <div class="pajemploi-item-val" id="imp-val-abattement" style="color:var(--success);">0.00 €</div>
+            </div>
+          </div>
+
+          <div class="summary-card" style="margin-top:1rem; background: rgba(0,0,0,0.2);">
+            <div class="summary-line total">
+              <span>NET IMPOSABLE À DÉCLARER (Case 1AJ / 1BJ) :</span>
+              <span id="imp-net-imposable" style="color:var(--accent-light); font-size:1.2rem;">0.00 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIGURATION GITHUB -->
+  <div class="modal-overlay" id="modal-config-gh">
+    <div class="modal">
+      <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Utilisateur GitHub</label>
+          <input type="text" id="gh-user" placeholder="ex: mon-pseudo">
+        </div>
+        <div class="form-group">
+          <label>Nom du Dépôt (Repo)</label>
+          <input type="text" id="gh-repo" placeholder="ex: assmat-flow">
+        </div>
+        <div class="form-group">
+          <label>Fichier JSON</label>
+          <input type="text" id="gh-path" placeholder="data.json" value="data.json">
+        </div>
+        <div class="form-group">
+          <label>Fichier ICS (Planning)</label>
+          <input type="text" id="gh-ics-path" placeholder="planning.ics" value="planning.ics">
+        </div>
+        <div class="form-group">
+          <label>Branche</label>
+          <input type="text" id="gh-branch" placeholder="main" value="main">
+        </div>
+        <div class="form-group">
+          <label>Clé API / Token (PAT)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+      </div>
+      <br>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">Enregistrer & Synchroniser</button>
+        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
+        <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
+      </div>
+
+      <div id="gh-webcal-box" class="info-group" style="display:none; margin-top:0.85rem;">
+        <h3>📅 Abonnement Calendrier (iOS)</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.4;">
+          Copiez ce lien, puis sur l'iPhone : <strong>Réglages > Calendrier > Comptes > Ajouter un compte > Autre > Ajouter un calendrier abonné</strong>. Le planning se mettra ensuite à jour automatiquement (délai variable, non garanti par Apple).
+        </p>
+        <div style="display:flex; gap:0.4rem;">
+          <input type="text" id="gh-webcal-url" readonly style="font-size:0.7rem;">
+          <button class="btn btn-secondary btn-sm" onclick="copierUrlWebcal()">📋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITION JOURNEE -->
+  <div class="modal-overlay" id="modal-day">
+    <div class="modal">
+      <h2 id="modal-date-title" style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">Modifier la journée</h2>
+      <div id="modal-times-container">
+        <div class="grid-2" style="margin-bottom:0.8rem;">
+          <div class="form-group">
+            <label>Arrivée prévue</label>
+            <input type="time" id="modal-arrivee">
+          </div>
+          <div class="form-group">
+            <label>Départ prévu</label>
+            <input type="time" id="modal-depart">
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1.2rem;">
+        <label>Note / Commentaire (optionnel)</label>
+        <input type="text" id="modal-note" placeholder="ex: RTT Parent, Medecin...">
+      </div>
+      <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="fermerModal()">Annuler</button>
+        <button class="btn btn-primary btn-sm" onclick="sauvegarderJourneePlanning()">Enregistrer</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    let enfants = {};
-    let activeEnfantId = null;
+    const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+    const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-    // FONCTIONS DE GESTION DU FORMULAIRE ENGAGEMENT
+    let currentDateState = new Date();
+    let selectedIsoDate = null;
+    let githubFileSha = null;
+    let icsFileSha = null;
+    let syncTimer = null;
+
+    let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
+      user: '', repo: '', path: 'data.json', token: ''
+    };
+
+    let enfants = JSON.parse(localStorage.getItem('assmat_enfants_db')) || {
+      "leo": {
+        contrat: { 
+          prenomEnfant: 'Léo', nomEnfant: 'Dupont', naissance: '', sortiesVoiture: true, moisLisse: true,
+          mere: { nom: 'Dupont', prenom: 'Marie', port: '0611223344', maison: '', bureau: '' },
+          pere: { nom: 'Dupont', prenom: 'Thomas', port: '0622334455', maison: '', bureau: '' },
+          urgence: { nom: '', tel: '' },
+          tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52 
+        },
+        engagement: {
+          dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
+        },
+        semaineType: {
+          0: { actif: true, arrivee: '08:30', depart: '17:30' },
+          1: { actif: true, arrivee: '08:30', depart: '17:30' },
+          2: { actif: false, arrivee: '', depart: '' },
+          3: { actif: true, arrivee: '08:30', depart: '17:30' },
+          4: { actif: true, arrivee: '08:30', depart: '17:30' },
+          5: { actif: false, arrivee: '', depart: '' }, 
+          6: { actif: false, arrivee: '', depart: '' }
+        },
+        planningPrevu: {}, presences: []
+      }
+    };
+    
+    function normaliserEtMigrerDonnees() {
+      Object.keys(enfants).forEach(id => {
+        let c = enfants[id].contrat || {};
+        if(!c.prenomEnfant && c.prenom) c.prenomEnfant = c.prenom;
+        if(!c.nomEnfant && c.nom) c.nomEnfant = c.nom;
+        if(c.moisLisse === undefined) c.moisLisse = true;
+
+        if(!c.mere) { c.mere = { nom: c.nomEnfant || '', prenom: c.parent1 || c.parent || '', port: c.tel1 || c.telephone || '', maison: '', bureau: '' }; }
+        if(!c.pere) { c.pere = { nom: c.nomEnfant || '', prenom: c.parent2 || '', port: c.tel2 || '', maison: '', bureau: '' }; }
+        if(!c.urgence) c.urgence = { nom: '', tel: '' };
+        if(c.jHebdo === undefined) c.jHebdo = 4;
+        if(c.semainesAn === undefined) c.semainesAn = 52;
+
+        enfants[id].contrat = c;
+
+        if(!enfants[id].engagement) {
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), joursSemaine: c.jHebdo || 4, semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
+        }
+        if(enfants[id].engagement.joursSemaine === undefined) enfants[id].engagement.joursSemaine = c.jHebdo || 4;
+        if(enfants[id].engagement.semainesAn === undefined) enfants[id].engagement.semainesAn = c.semainesAn || 52;
+        if(enfants[id].engagement.valide === undefined) enfants[id].engagement.valide = !!(c.tarifNet);
+
+        if (enfants[id].planningPrevu) {
+          Object.keys(enfants[id].planningPrevu).forEach(date => {
+            if (enfants[id].planningPrevu[date].status === 'absent' || enfants[id].planningPrevu[date].type === 'absence') {
+              delete enfants[id].planningPrevu[date];
+            }
+          });
+        }
+      });
+    }
+
+    normaliserEtMigrerDonnees();
+    let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
+
+    const today = new Date();
+    const defaultMonthVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('fp-select-mois').value = defaultMonthVal;
+
+    const prevYear = today.getFullYear() - 1;
+    const currYear = today.getFullYear();
+    document.getElementById('imp-debut').value = `${prevYear}-12`;
+    document.getElementById('imp-fin').value = `${currYear}-12`;
+
+    function ouvrirModalConfigGitHub() { chargerFormulaireGitHub(); document.getElementById('modal-config-gh').classList.add('active'); }
+    function fermerModalConfigGitHub() { document.getElementById('modal-config-gh').classList.remove('active'); }
+    function majStatutSync(status) { const led = document.getElementById('sync-led'); led.className = `sync-led ${status}`; }
+
+    function chargerFormulaireGitHub() {
+      document.getElementById('gh-user').value = githubConfig.user || '';
+      document.getElementById('gh-repo').value = githubConfig.repo || '';
+      document.getElementById('gh-path').value = githubConfig.path || 'data.json';
+      document.getElementById('gh-ics-path').value = githubConfig.icsPath || 'planning.ics';
+      document.getElementById('gh-branch').value = githubConfig.branch || 'main';
+      document.getElementById('gh-token').value = githubConfig.token || '';
+      if(githubConfig.user && githubConfig.repo && githubConfig.token) { majStatutSync('online'); } else { majStatutSync(''); }
+      afficherUrlWebcal();
+    }
+
+    function sauvegarderConfigGitHub() {
+      githubConfig = {
+        user: document.getElementById('gh-user').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        path: document.getElementById('gh-path').value.trim() || 'data.json',
+        icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
+        branch: document.getElementById('gh-branch').value.trim() || 'main',
+        token: document.getElementById('gh-token').value.trim()
+      };
+      localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
+      githubFileSha = null;
+      icsFileSha = null;
+      majStatutSync('online');
+      afficherUrlWebcal();
+      fermerModalConfigGitHub();
+      chargerDepuisGitHub();
+      pousserICSVersGitHub();
+    }
+
+    function afficherUrlWebcal() {
+      const box = document.getElementById('gh-webcal-box');
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) { if(box) box.style.display = 'none'; return; }
+      const branch = githubConfig.branch || 'main';
+      const icsPath = githubConfig.icsPath || 'planning.ics';
+      const rawUrl = `https://raw.githubusercontent.com/${githubConfig.user}/${githubConfig.repo}/${branch}/${icsPath}`;
+      const webcalUrl = rawUrl.replace('https://', 'webcal://');
+      const input = document.getElementById('gh-webcal-url');
+      if(input) input.value = webcalUrl;
+      if(box) box.style.display = 'block';
+    }
+
+    function copierUrlWebcal() {
+      const input = document.getElementById('gh-webcal-url');
+      if (!input || !input.value) return;
+      input.select();
+      input.setSelectionRange(0, 99999);
+      if (navigator.clipboard) { navigator.clipboard.writeText(input.value).catch(() => {}); }
+      alert("Lien copié ! Collez-le dans Réglages > Calendrier > Comptes > Ajouter un compte > Autre > Ajouter un calendrier abonné.");
+    }
+
+    async function chargerDepuisGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) { majStatutSync(''); return; }
+      majStatutSync('syncing');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
+      
+      try {
+        const res = await fetch(url, { headers: { 'Authorization': `token ${githubConfig.token}` } });
+        if (res.status === 200) {
+          const data = await res.json();
+          githubFileSha = data.sha;
+          const jsonString = decodeURIComponent(escape(atob(data.content)));
+          const remoteEnfants = JSON.parse(jsonString);
+          if(remoteEnfants && Object.keys(remoteEnfants).length > 0) {
+            enfants = remoteEnfants;
+            normaliserEtMigrerDonnees();
+            if(!enfants[activeEnfantId]) activeEnfantId = Object.keys(enfants)[0];
+            localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+            rafraichirTouteLInterface();
+            majStatutSync('online');
+          }
+        } else if(res.status === 404) { majStatutSync('online'); } else { majStatutSync('offline'); }
+      } catch (err) { console.error("Erreur chargement GitHub:", err); majStatutSync('offline'); }
+    }
+
+    async function pousserVersGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+      majStatutSync('syncing');
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
+      const jsonString = JSON.stringify(enfants, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+      const bodyData = { message: "Mise à jour automatique - AssMat Flow", content: base64Content };
+      if (githubFileSha) bodyData.sha = githubFileSha;
+
+      try {
+        const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData) });
+        if (res.status === 200 || res.status === 201) {
+          const resData = await res.json();
+          githubFileSha = resData.content.sha;
+          majStatutSync('online');
+        } else { majStatutSync('offline'); }
+      } catch (err) { console.error("Erreur push GitHub:", err); majStatutSync('offline'); }
+    }
+
+    /* --- EXPORT ICS (PLANNING -> AGENDA IOS) --- */
+    function padIcs(n) { return String(n).padStart(2, '0'); }
+
+    function icsEscape(str) {
+      return String(str || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\n/g, '\\n');
+    }
+
+    function genererICS() {
+      const now = new Date();
+      const dtstamp = `${now.getUTCFullYear()}${padIcs(now.getUTCMonth() + 1)}${padIcs(now.getUTCDate())}T${padIcs(now.getUTCHours())}${padIcs(now.getUTCMinutes())}${padIcs(now.getUTCSeconds())}Z`;
+
+      let lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//AssMat Flow//Planning//FR',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        "X-WR-CALNAME:Planning Garde d'enfants",
+        'X-WR-TIMEZONE:Europe/Paris'
+      ];
+
+      Object.keys(enfants).forEach(id => {
+        const enf = enfants[id];
+        const c = enf.contrat || {};
+        const prenom = c.prenomEnfant || c.prenom || 'Enfant';
+        const planning = enf.planningPrevu || {};
+
+        Object.keys(planning).forEach(date => {
+          const p = planning[date];
+          if (!p || !p.arrivee || !p.depart || p.status === 'absent') return;
+          const [y, m, d] = date.split('-');
+          const [hA, mA] = p.arrivee.split(':');
+          const [hD, mD] = p.depart.split(':');
+          const dtStart = `${y}${m}${d}T${padIcs(hA)}${padIcs(mA)}00`;
+          const dtEnd = `${y}${m}${d}T${padIcs(hD)}${padIcs(mD)}00`;
+
+          lines.push('BEGIN:VEVENT');
+          lines.push(`UID:${id}-${date}@assmatflow`);
+          lines.push(`DTSTAMP:${dtstamp}`);
+          lines.push(`DTSTART;TZID=Europe/Paris:${dtStart}`);
+          lines.push(`DTEND;TZID=Europe/Paris:${dtEnd}`);
+          lines.push(`SUMMARY:${icsEscape('👶 ' + prenom + ' - Garde')}`);
+          if (p.note) lines.push(`DESCRIPTION:${icsEscape(p.note)}`);
+          lines.push('END:VEVENT');
+        });
+      });
+
+      lines.push('END:VCALENDAR');
+      return lines.join('\r\n');
+    }
+
+    function telechargerICS() {
+      const ics = genererICS();
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'planning-assmat.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function synchroniserICSMaintenant() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        alert("⚠️ Configure d'abord la synchronisation GitHub (icône ⚙️) pour utiliser l'abonnement calendrier.");
+        return;
+      }
+      majStatutSync('syncing');
+      await pousserICSVersGitHub();
+      majStatutSync('online');
+      alert("🔄 Planning synchronisé sur GitHub. Le calendrier abonné sur iOS se mettra à jour selon son propre délai (jusqu'à quelques heures) — ou tire vers le bas dans l'app Calendrier pour forcer un rafraîchissement immédiat.");
+    }
+
+    async function pousserICSVersGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+      const icsPath = githubConfig.icsPath || 'planning.ics';
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${icsPath}`;
+
+      try {
+        if (icsFileSha === null) {
+          const resCheck = await fetch(url, { headers: { 'Authorization': `token ${githubConfig.token}` } });
+          if (resCheck.status === 200) { const d = await resCheck.json(); icsFileSha = d.sha; }
+        }
+
+        const icsContent = genererICS();
+        const base64Content = btoa(unescape(encodeURIComponent(icsContent)));
+        const bodyData = { message: "Mise à jour automatique du planning (.ics)", content: base64Content };
+        if (icsFileSha) bodyData.sha = icsFileSha;
+
+        const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData) });
+        if (res.status === 200 || res.status === 201) {
+          const resData = await res.json();
+          icsFileSha = resData.content.sha;
+        }
+      } catch (err) { console.error("Erreur push ICS GitHub:", err); }
+    }
+
+    function sauvegarderGlobal() {
+      localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+      localStorage.setItem('assmat_active_id', activeEnfantId);
+      majStatutSync('syncing');
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => { pousserVersGitHub(); pousserICSVersGitHub(); }, 3000);
+    }
+
+    function rafraichirTouteLInterface() {
+      rendreSlider();
+      chargerFormulaireContrat();
+      chargerFormulaireEngagement();
+      afficherPresences();
+      chargerSemaineTypeInterface();
+      rendreCalendrier();
+      chargerHorairePrevuPourDate();
+      
+      if (document.getElementById('paie').style.display === 'block' && document.getElementById('admin').classList.contains('active')) calculerFicheDePaie();
+      if (document.getElementById('impots').style.display === 'block' && document.getElementById('admin').classList.contains('active')) calculerImpotsAnnuel();
+      if (document.getElementById('engagement').style.display === 'block' && document.getElementById('admin').classList.contains('active')) preparerImpressionEngagement();
+    }
+
+    function rendreSlider() {
+      const track = document.getElementById('slider-track');
+      const dots = document.getElementById('slider-dots');
+      track.innerHTML = ''; dots.innerHTML = '';
+
+      const keys = Object.keys(enfants);
+      keys.forEach((id, index) => {
+        const enf = enfants[id];
+        const c = enf.contrat;
+        
+        let subParent = `${c.mere?.prenom || ''} ${c.mere?.prenom && c.pere?.prenom ? '&' : ''} ${c.pere?.prenom || ''}`.trim();
+        if (!subParent) subParent = 'Parents non renseignés';
+
+        let prenomAffiche = c.prenomEnfant || c.prenom || 'Enfant';
+        let nomAffiche = c.nomEnfant || c.nom || '';
+        let ageText = c.naissance ? ` (${calculerAge(c.naissance)})` : '';
+
+        const slide = document.createElement('div');
+        slide.className = 'child-slide';
+        slide.dataset.id = id;
+        slide.innerHTML = `
+          <div class="slide-header">
+            <div>
+              <div class="slide-title">👶 ${prenomAffiche} ${nomAffiche} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+              <span class="badge ${c.hHebdo > 48 ? 'badge-danger' : (c.hHebdo > 45 ? 'badge-warning' : 'badge-primary')}">${c.hHebdo || 0}h / sem</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
+            <span>Tarif: <b>${c.tarifNet || 0}€/h</b></span>
+            <span>Mode: <b>${c.moisLisse ? 'Lissé' : 'Au réel'}</b></span>
+          </div>
+        `;
+        track.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = `dot ${id === activeEnfantId ? 'active' : ''}`;
+        dots.appendChild(dot);
+      });
+
+      const activeIndex = keys.indexOf(activeEnfantId);
+      if(activeIndex >= 0) { setTimeout(() => { track.scrollLeft = activeIndex * track.offsetWidth; }, 50); }
+    }
+
+    function calculerAge(dateNaissance) {
+      if (!dateNaissance) return '';
+      const today = new Date();
+      const birth = new Date(dateNaissance);
+      let months = (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
+      if (months < 0) return 'Naissance prévue';
+      if (months < 24) return `${months} mois`;
+      return `${Math.floor(months / 12)} ans`;
+    }
+
+    function handleSliderScroll() {
+      const track = document.getElementById('slider-track');
+      const index = Math.round(track.scrollLeft / track.offsetWidth);
+      const keys = Object.keys(enfants);
+      if (keys[index] && keys[index] !== activeEnfantId) {
+        activeEnfantId = keys[index];
+        localStorage.setItem('assmat_active_id', activeEnfantId);
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        rafraichirTouteLInterface();
+      }
+    }
+
+    function ajouterNouvelEnfant() {
+      const prenom = prompt("Prénom de l'enfant :");
+      if (!prenom) return;
+      const id = 'enf_' + Date.now();
+      enfants[id] = {
+        contrat: { 
+          prenomEnfant: prenom, nomEnfant: '', naissance: '', sortiesVoiture: true, moisLisse: true,
+          mere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          pere: { nom: '', prenom: '', port: '', maison: '', bureau: '' },
+          urgence: { nom: '', tel: '' },
+          tarifNet: '', majoration: '', ie: '', ir: '', hMensuel: '', hHebdo: '', jHebdo: '', semainesAn: ''
+        },
+        engagement: {
+          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptation: '', tarifBrut: '', joursSemaine: '', semainesAn: '', assmatNom: '', assmatAdresse: '', valide: false
+        },
+        semaineType: { 
+          0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          2: {actif:false, arrivee:'', depart:''}, 3: {actif:true, arrivee:'08:00', depart:'17:00'}, 
+          4: {actif:true, arrivee:'08:00', depart:'17:00'}, 5: {actif:false, arrivee:'', depart:''}, 
+          6: {actif:false, arrivee:'', depart:''} 
+        },
+        planningPrevu: {}, presences: []
+      };
+      activeEnfantId = id;
+      sauvegarderGlobal();
+      rafraichirTouteLInterface();
+      switchMainTab('admin');
+      switchSubTab('engagement');
+    }
+
+    function supprimerEnfantActif() {
+      if (Object.keys(enfants).length <= 1) return alert("Conservez au moins un profil.");
+      let prenom = enfants[activeEnfantId].contrat.prenomEnfant || enfants[activeEnfantId].contrat.prenom || 'cet enfant';
+      if (confirm(`Supprimer le profil de ${prenom} ?`)) {
+        delete enfants[activeEnfantId];
+        activeEnfantId = Object.keys(enfants)[0];
+        sauvegarderGlobal();
+        rafraichirTouteLInterface();
+      }
+    }
+
+    function changerMoisPlanning(delta) {
+      currentDateState.setMonth(currentDateState.getMonth() + delta);
+      rendreCalendrier();
+    }
+
+    function rendreCalendrier() {
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+      document.getElementById('cal-month-title').innerText = `${MOIS[month]} ${year}`;
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+
+      let startingDay = firstDay.getDay() - 1;
+      if (startingDay === -1) startingDay = 6;
+
+      for (let i = 0; i < startingDay; i++) { grid.innerHTML += `<div class="cal-day empty"></div>`; }
+
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dateObj = new Date(year, month, day);
+        let dayOfWeek = dateObj.getDay() - 1;
+        if (dayOfWeek === -1) dayOfWeek = 6;
+
+        const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const prevu = planning[isoDate];
+        let badgeHtml = `<div class="cal-day-badge off">-</div>`;
+        let dayClass = "cal-day";
+
+        if (dayOfWeek === 5 || dayOfWeek === 6) dayClass += " is-weekend";
+
+        if (prevu && prevu.arrivee && prevu.depart) {
+          badgeHtml = `<div class="cal-day-badge-stack"><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
+          dayClass += " has-presence";
+        }
+
+        grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')"><div class="cal-day-num">${day}</div>${badgeHtml}</div>`;
+      }
+    }
+
+    function ouvrirModalJour(isoDate) {
+      selectedIsoDate = isoDate;
+      const prevu = (enfants[activeEnfantId].planningPrevu || {})[isoDate] || {};
+      document.getElementById('modal-date-title').innerText = `Planning du ${isoDate}`;
+      document.getElementById('modal-arrivee').value = prevu.arrivee || '08:30';
+      document.getElementById('modal-depart').value = prevu.depart || '17:30';
+      document.getElementById('modal-note').value = prevu.note || '';
+      document.getElementById('modal-day').classList.add('active');
+    }
+
+    function fermerModal() { document.getElementById('modal-day').classList.remove('active'); }
+
+    function sauvegarderJourneePlanning() {
+      if (!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+      const arrivee = document.getElementById('modal-arrivee').value;
+      const depart = document.getElementById('modal-depart').value;
+      const note = document.getElementById('modal-note').value;
+
+      enfants[activeEnfantId].planningPrevu[selectedIsoDate] = { status: 'prevu', arrivee, depart, note };
+      sauvegarderGlobal();
+      fermerModal();
+      rendreCalendrier();
+      chargerHorairePrevuPourDate();
+    }
+
+    function genererPlanningMoisComplet() {
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      if(!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+
+      for(let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month, day);
+        let dayIdx = dateObj.getDay() - 1;
+        if(dayIdx === -1) dayIdx = 6;
+
+        const isoDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const configJour = st[dayIdx];
+
+        if(configJour && configJour.actif) {
+          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart };
+        }
+      }
+
+      sauvegarderGlobal();
+      rendreCalendrier();
+      alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
+    }
+
+    function calculerTotalHeuresSemaineType() {
+      let total = 0; let nbJoursActifs = 0;
+      JOURS.forEach((_, idx) => {
+        const check = document.getElementById(`st-check-${idx}`);
+        const arrVal = document.getElementById(`st-arr-${idx}`)?.value;
+        const depVal = document.getElementById(`st-dep-${idx}`)?.value;
+
+        if (check && check.checked && arrVal && depVal) {
+          const [hA, mA] = arrVal.split(':').map(Number);
+          const [hD, mD] = depVal.split(':').map(Number);
+          let duree = (hD + mD / 60) - (hA + mA / 60);
+          if (duree < 0) duree += 24;
+          total += duree;
+          nbJoursActifs++;
+        }
+      });
+      return { total, nbJoursActifs };
+    }
+
+    function mettreAJourCalculsSemaineTypeUI() {
+      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
+      const badge = document.getElementById('st-total-badge');
+      const alertBox45 = document.getElementById('st-alert-45h');
+      const legalAlertBox = document.getElementById('st-legal-alert');
+      const legalAlertText = document.getElementById('st-alert-text');
+
+      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an')?.value) || (enfants[activeEnfantId]?.contrat?.semainesAn || 52);
+      const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
+
+      if (badge) {
+        badge.innerText = `${total.toFixed(1)}h / sem`;
+        badge.className = total > 48 ? 'badge badge-danger' : (total > 45 ? 'badge badge-warning' : 'badge badge-primary');
+      }
+
+      let motifsAlerte = [];
+      if (total > 48) motifsAlerte.push(`Durée hebdomadaire de <b>${total.toFixed(2)}h</b> (supérieure à 48h/sem).`);
+      if (hAnnuelles > 2250) motifsAlerte.push(`Volume annuel estimé à <b>${hAnnuelles}h</b> (supérieur au plafond de 2 250h/an).`);
+
+      if (motifsAlerte.length > 0) {
+        if (legalAlertBox && legalAlertText) {
+          legalAlertText.innerHTML = motifsAlerte.map(m => `• ${m}`).join('<br>');
+          legalAlertBox.style.display = 'block';
+        }
+      } else { if (legalAlertBox) legalAlertBox.style.display = 'none'; }
+
+      if (total > 45) {
+        if (alertBox45) alertBox45.style.display = 'block';
+        const chkLisse = document.getElementById('cfg-mois-lisse');
+        if (chkLisse && chkLisse.checked) chkLisse.checked = false;
+      } else { if (alertBox45) alertBox45.style.display = 'none'; }
+
+      if (document.getElementById('cfg-h-hebdo')) document.getElementById('cfg-h-hebdo').value = total.toFixed(1);
+      if (document.getElementById('cfg-j-hebdo')) document.getElementById('cfg-j-hebdo').value = nbJoursActifs;
+      if (document.getElementById('cfg-h-mensuel')) document.getElementById('cfg-h-mensuel').value = Math.round((total * semainesAn) / 12);
+      
+      calculerIndemniteEngagement();
+    }
+
+    function chargerSemaineTypeInterface() {
+      const grid = document.getElementById('week-schedule-grid');
+      grid.innerHTML = '';
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      JOURS.forEach((jour, idx) => {
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
+        const isWeekend = (idx === 5 || idx === 6);
+        grid.innerHTML += `
+          <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx})">
+              <label for="st-check-${idx}">${jour}</label>
+            </div>
+            <div style="display:flex; gap:0.3rem;">
+              <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="autoCheckSemaineType(${idx})">
+              <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="autoCheckSemaineType(${idx})">
+            </div>
+          </div>
+        `;
+      });
+      mettreAJourCalculsSemaineTypeUI();
+    }
+
+    function autoCheckSemaineType(idx) {
+      const check = document.getElementById(`st-check-${idx}`);
+      if (check && !check.checked && event.type === 'input') check.checked = true;
+      mettreAJourCalculsSemaineTypeUI();
+    }
+
+    function sauvegarderSemaineType() {
+      const { total } = calculerTotalHeuresSemaineType();
+      const semainesAn = enfants[activeEnfantId]?.contrat?.semainesAn || 52;
+      const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
+
+      if (total > 48 || hAnnuelles > 2250) {
+        if (!confirm(`⚠️ Planning hors plafonds légaux (${total.toFixed(2)}h/sem, ~${hAnnuelles}h/an).\nEnregistrer tout de même ?`)) return;
+      }
+
+      const st = {};
+      JOURS.forEach((_, idx) => {
+        st[idx] = {
+          actif: document.getElementById(`st-check-${idx}`).checked,
+          arrivee: document.getElementById(`st-arr-${idx}`).value,
+          depart: document.getElementById(`st-dep-${idx}`).value
+        };
+      });
+      enfants[activeEnfantId].semaineType = st;
+      enfants[activeEnfantId].contrat.hHebdo = total;
+      if (total > 45) enfants[activeEnfantId].contrat.moisLisse = false;
+
+      sauvegarderGlobal();
+      rendreSlider();
+      alert("Semaine type enregistrée !");
+    }
+
+    function toggleLissageState() {
+      const totalH = parseFloat(document.getElementById('cfg-h-hebdo').value) || 0;
+      const chkLisse = document.getElementById('cfg-mois-lisse');
+      if (totalH > 45 && chkLisse.checked) {
+        alert("Attention : Un contrat > 45h/semaine ne peut pas être lissé.");
+        chkLisse.checked = false;
+      }
+    }
+
+    function chargerHorairePrevuPourDate() {
+      const date = document.getElementById('input-date').value;
+      const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
+      if(prev) {
+        document.getElementById('input-arrivee').value = prev.arrivee || "08:30";
+        document.getElementById('input-depart').value = prev.depart || "17:30";
+      } else {
+        document.getElementById('input-arrivee').value = "08:30";
+        document.getElementById('input-depart').value = "17:30";
+      }
+    }
+
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.main-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.main-nav .tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      
+      const activeBtn = Array.from(document.querySelectorAll('.main-nav .tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if(activeBtn) activeBtn.classList.add('active');
+
+      if(tabId === 'planning') { 
+        chargerSemaineTypeInterface(); 
+        rendreCalendrier(); 
+      }
+      if(tabId === 'admin') {
+        let activeSub = document.querySelector('.sub-nav .tab-btn.active');
+        let targetSub = 'contrat';
+        if (activeSub) {
+          const onclickText = activeSub.getAttribute('onclick');
+          const match = onclickText.match(/'([^']+)'/);
+          if(match) targetSub = match[1];
+        }
+        switchSubTab(targetSub);
+      }
+    }
+
+    function switchSubTab(tabId) {
+      document.querySelectorAll('.sub-tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.sub-nav .tab-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(tabId).style.display = 'block';
+      const activeBtn = Array.from(document.querySelectorAll('.sub-nav .tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if(activeBtn) activeBtn.classList.add('active');
+
+      if(tabId === 'paie') calculerFicheDePaie();
+      if(tabId === 'impots') calculerImpotsAnnuel();
+      if(tabId === 'engagement') { chargerFormulaireEngagement(); preparerImpressionEngagement(); }
+    }
+
+    document.getElementById('input-date').valueAsDate = new Date();
+
+    function ajouterPresence() {
+      const date = document.getElementById('input-date').value;
+      const arrivee = document.getElementById('input-arrivee').value;
+      const depart = document.getElementById('input-depart').value;
+      const repas = document.getElementById('input-repas').value;
+      const contrat = enfants[activeEnfantId].contrat;
+
+      if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
+
+      const [hA, mA] = arrivee.split(':').map(Number);
+      const [hD, mD] = depart.split(':').map(Number);
+      let duree = (hD + mD/60) - (hA + mA/60);
+      if (duree < 0) duree += 24;
+
+      let maxJourNorm = 45 / (contrat.jHebdo || 5);
+      let hNorm = Math.min(duree, maxJourNorm);
+      let hComp = 0, hSup = 0;
+
+      if (duree > maxJourNorm) {
+        if (duree > 9) {
+          hComp = Math.max(0, 9 - maxJourNorm);
+          hSup = duree - 9;
+        } else { hComp = duree - maxJourNorm; }
+      }
+
+      enfants[activeEnfantId].presences = (enfants[activeEnfantId].presences || []).filter(p => p.date !== date);
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      sauvegarderGlobal();
+      afficherPresences();
+      alert("Journée validée !");
+    }
+
+    function supprimerPresence(id) {
+      enfants[activeEnfantId].presences = enfants[activeEnfantId].presences.filter(p => p.id !== id);
+      sauvegarderGlobal();
+      afficherPresences();
+    }
+
+    function afficherPresences() {
+      const tbody = document.querySelector('#table-presences tbody');
+      tbody.innerHTML = '';
+      const list = enfants[activeEnfantId].presences || [];
+      list.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${p.date}</strong></td>
+            <td><span class="badge badge-primary">${p.arrivee}-${p.depart}</span></td>
+            <td>${p.duree.toFixed(2)}h</td>
+            <td>${p.hNorm.toFixed(2)}h</td>
+            <td>${p.hComp.toFixed(2)}h</td>
+            <td>${p.hSup > 0 ? `<span class="badge badge-success">${p.hSup.toFixed(2)}h</span>` : '0h'}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="supprimerPresence(${p.id})">🗑️</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    /* --- GESTION DU CONTRAT --- */
+    function chargerFormulaireContrat() {
+      const c = enfants[activeEnfantId].contrat || {};
+      const eng = enfants[activeEnfantId].engagement || {};
+      document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || c.prenom || '';
+      document.getElementById('cfg-nom-enfant').value = c.nomEnfant || c.nom || '';
+      document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
+      document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
+      document.getElementById('cfg-mois-lisse').checked = c.moisLisse !== false;
+
+      document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
+      document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
+      document.getElementById('cfg-mere-port').value = c.mere?.port || '';
+      document.getElementById('cfg-mere-maison').value = c.mere?.maison || '';
+      document.getElementById('cfg-mere-bureau').value = c.mere?.bureau || '';
+
+      document.getElementById('cfg-pere-nom').value = c.pere?.nom || '';
+      document.getElementById('cfg-pere-prenom').value = c.pere?.prenom || '';
+      document.getElementById('cfg-pere-port').value = c.pere?.port || '';
+      document.getElementById('cfg-pere-maison').value = c.pere?.maison || '';
+      document.getElementById('cfg-pere-bureau').value = c.pere?.bureau || '';
+
+      document.getElementById('cfg-urgence-nom').value = c.urgence?.nom || '';
+      document.getElementById('cfg-urgence-tel').value = c.urgence?.tel || '';
+
+      document.getElementById('cfg-tarif-net').value = c.tarifNet || '';
+      document.getElementById('cfg-majoration').value = c.majoration || '';
+      document.getElementById('cfg-ie').value = c.ie || '';
+      document.getElementById('cfg-ir').value = c.ir || '';
+      document.getElementById('cfg-h-mensuel').value = c.hMensuel || '';
+      document.getElementById('cfg-h-hebdo').value = c.hHebdo || '';
+      document.getElementById('cfg-j-hebdo').value = c.jHebdo || '';
+      document.getElementById('cfg-semaines-an').value = c.semainesAn || '';
+
+      const notice = document.getElementById('contrat-eng-notice');
+      if (notice) notice.style.display = eng.valide ? 'none' : 'block';
+    }
+
+    function sauvegarderContrat() {
+      const hHebdo = parseFloat(document.getElementById('cfg-h-hebdo').value) || 0;
+      const semainesAn = parseFloat(document.getElementById('cfg-semaines-an').value) || 52;
+      let moisLisse = document.getElementById('cfg-mois-lisse').checked;
+      const hAnnuelles = Math.round(hHebdo * (semainesAn === 52 ? 47 : semainesAn));
+
+      if (hHebdo > 48 || hAnnuelles > 2250) {
+        if (!confirm(`⚠️ Ce contrat (${hHebdo}h/sem, ~${hAnnuelles}h/an) dépasse le cadre légal.\nEnregistrer tout de même ?`)) return;
+      }
+      if (hHebdo > 45) moisLisse = false;
+
+      enfants[activeEnfantId].contrat = {
+        prenomEnfant: document.getElementById('cfg-prenom-enfant').value,
+        nomEnfant: document.getElementById('cfg-nom-enfant').value,
+        naissance: document.getElementById('cfg-naissance-enfant').value,
+        sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
+        moisLisse: moisLisse,
+        mere: { nom: document.getElementById('cfg-mere-nom').value, prenom: document.getElementById('cfg-mere-prenom').value, port: document.getElementById('cfg-mere-port').value, maison: document.getElementById('cfg-mere-maison').value, bureau: document.getElementById('cfg-mere-bureau').value },
+        pere: { nom: document.getElementById('cfg-pere-nom').value, prenom: document.getElementById('cfg-pere-prenom').value, port: document.getElementById('cfg-pere-port').value, maison: document.getElementById('cfg-pere-maison').value, bureau: document.getElementById('cfg-pere-bureau').value },
+        urgence: { nom: document.getElementById('cfg-urgence-nom').value, tel: document.getElementById('cfg-urgence-tel').value },
+        tarifNet: parseFloat(document.getElementById('cfg-tarif-net').value) || 0,
+        majoration: parseFloat(document.getElementById('cfg-majoration').value) || 0,
+        ie: parseFloat(document.getElementById('cfg-ie').value) || 0,
+        ir: parseFloat(document.getElementById('cfg-ir').value) || 0,
+        hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
+        hHebdo: hHebdo,
+        jHebdo: parseFloat(document.getElementById('cfg-j-hebdo').value) || 4,
+        semainesAn: semainesAn
+      };
+      
+      sauvegarderGlobal();
+      rendreSlider();
+      alert("Contrat mis à jour avec succès !");
+    }
+
+    /* --- GESTION DE L'ENGAGEMENT RECIPROQUE --- */
     function chargerFormulaireEngagement() {
       const eng = enfants[activeEnfantId]?.engagement || {};
       const c = enfants[activeEnfantId]?.contrat || {};
@@ -464,103 +1664,95 @@
       document.getElementById('eng-date-effet').value = eng.dateEffet || '';
       document.getElementById('eng-adaptation').value = eng.adaptation || '';
       document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
-      
-      // Utilisation des heures par semaine au lieu des jours par semaine
-      document.getElementById('eng-heures-semaine').value = eng.heuresSemaine || c.hHebdo || 35;
+      document.getElementById('eng-jours-semaine').value = eng.joursSemaine || c.jHebdo || 4;
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
       document.getElementById('eng-assmat-nom').value = eng.assmatNom || '';
       document.getElementById('eng-assmat-adresse').value = eng.assmatAdresse || '';
 
       const badge = document.getElementById('eng-statut-badge');
       if (badge) {
-        badge.innerHTML = eng.valide ? 
-          `<span class="badge badge-primary">✅ Engagement validé — le contrat a été pré-rempli</span>` : 
-          `<span class="badge badge-warning">⏳ Engagement non validé — le contrat reste vierge</span>`;
+        badge.innerHTML = eng.valide
+          ? `<span class="badge badge-primary">✅ Engagement validé — le contrat a été pré-rempli</span>`
+          : `<span class="badge badge-warning">⏳ Engagement non validé — le contrat reste vierge</span>`;
       }
+
       calculerIndemniteEngagement();
     }
 
     function sauvegarderEngagementForm() {
-      if (!activeEnfantId || !enfants[activeEnfantId]) return;
-      const eng = enfants[activeEnfantId].engagement || {};
-      enfants[activeEnfantId].engagement = {
-        dateSignature: document.getElementById('eng-date-signature').value,
-        dateEffet: document.getElementById('eng-date-effet').value,
-        adaptation: document.getElementById('eng-adaptation').value,
-        tarifBrut: parseFloat(document.getElementById('eng-tarif-brut').value) || 0,
-        heuresSemaine: parseFloat(document.getElementById('eng-heures-semaine').value) || 35,
-        semainesAn: parseFloat(document.getElementById('eng-semaines-an').value) || 52,
-        assmatNom: document.getElementById('eng-assmat-nom').value,
-        assmatAdresse: document.getElementById('eng-assmat-adresse').value,
-        valide: !!eng.valide
-      };
+      if (!enfants[activeEnfantId].engagement) enfants[activeEnfantId].engagement = {};
+      const eng = enfants[activeEnfantId].engagement;
+      eng.dateSignature = document.getElementById('eng-date-signature').value;
+      eng.dateEffet = document.getElementById('eng-date-effet').value;
+      eng.adaptation = document.getElementById('eng-adaptation').value;
+      eng.tarifBrut = parseFloat(document.getElementById('eng-tarif-brut').value) || 0;
+      eng.joursSemaine = parseFloat(document.getElementById('eng-jours-semaine').value) || 4;
+      eng.semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 52;
+      eng.assmatNom = document.getElementById('eng-assmat-nom').value;
+      eng.assmatAdresse = document.getElementById('eng-assmat-adresse').value;
       sauvegarderGlobal();
     }
 
     function calculerIndemniteEngagement() {
-      const tarifBrut = parseFloat(document.getElementById('eng-tarif-brut').value) || 0;
-      const heuresSemaine = parseFloat(document.getElementById('eng-heures-semaine').value) || 0;
-      const semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 0;
+      const tBrut = parseFloat(document.getElementById('eng-tarif-brut')?.value) || 0;
+      const hHebdo = parseFloat(document.getElementById('cfg-h-hebdo')?.value) || 0;
+      const semainesAn = parseFloat(document.getElementById('eng-semaines-an')?.value) || 52;
 
-      // Calcul des heures mensuelles lissées d'après le nombre d'heures par semaine
-      const hMensuelles = (heuresSemaine * semainesAn) / 12;
-      const brutMensuel = hMensuelles * tarifBrut;
+      const brutMensuel = (tBrut * hHebdo * semainesAn) / 12;
       const indemnite = brutMensuel / 2;
 
-      document.getElementById('eng-val-h-mensuelles').innerText = `${hMensuelles.toFixed(1)} h`;
-      document.getElementById('eng-val-brut-mensuel').innerText = `${brutMensuel.toFixed(2)} €`;
-      document.getElementById('eng-val-indemnite').innerText = `${indemnite.toFixed(2)} €`;
-
-      return { brutMensuel, indemnite, hMensuelles, heuresSemaine, semainesAn };
+      document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} €`;
+      document.getElementById('eng-indemnite-val').innerText = `${indemnite.toFixed(2)} €`;
+      document.getElementById('eng-print-indemnite-texte').innerText = `${indemnite.toFixed(2)} €`;
     }
 
-    function validerEtAppliquerEngagement() {
-      if (!activeEnfantId || !enfants[activeEnfantId]) return;
+    function validerEngagementEtPreremplirContrat() {
       sauvegarderEngagementForm();
-      enfants[activeEnfantId].engagement.valide = true;
-      
       const eng = enfants[activeEnfantId].engagement;
-      if (!enfants[activeEnfantId].contrat) enfants[activeEnfantId].contrat = {};
-      
-      // Auto-complétion du contrat avec le taux net estimé
-      enfants[activeEnfantId].contrat.tarifNet = (eng.tarifBrut / 1.28).toFixed(2);
-      enfants[activeEnfantId].contrat.hHebdo = eng.heuresSemaine;
-      enfants[activeEnfantId].contrat.semainesAn = eng.semainesAn;
-      
+      const c = enfants[activeEnfantId].contrat;
+
+      eng.valide = true;
+      if (eng.tarifBrut && !c.tarifNet) {
+        c.tarifNet = parseFloat((eng.tarifBrut / 1.2816).toFixed(2));
+      }
+      if (eng.joursSemaine) c.jHebdo = eng.joursSemaine;
+      if (eng.semainesAn) c.semainesAn = eng.semainesAn;
+
       sauvegarderGlobal();
+      chargerFormulaireContrat();
       chargerFormulaireEngagement();
-      alert("L'engagement réciproque a été validé !");
+      alert("✅ Engagement validé ! Les informations principales ont été propagées dans la configuration du contrat.");
     }
 
     function preparerImpressionEngagement() {
-      const c = enfants[activeEnfantId]?.contrat || {};
-      const eng = enfants[activeEnfantId]?.engagement || {};
-      const { brutMensuel, indemnite, hMensuelles, heuresSemaine, semainesAn } = calculerIndemniteEngagement();
+      const c = enfants[activeEnfantId].contrat || {};
+      const eng = enfants[activeEnfantId].engagement || {};
 
-      let dtSig = eng.dateSignature ? new Date(eng.dateSignature).toLocaleDateString('fr-FR') : '____/____/________';
-      document.getElementById('eng-print-date-sig').innerText = `Fait le : ${dtSig}`;
-
-      let parentsHtml = `<strong>Parents de l'enfant</strong>`;
-      document.getElementById('eng-print-parents').innerHTML = parentsHtml;
+      document.getElementById('eng-print-date-sig').innerText = `Fait le : ${eng.dateSignature || '--/--/----'}`;
+      
+      let pText = "";
+      if (c.mere?.nom || c.mere?.prenom) pText += `Mme ${c.mere.prenom} ${c.mere.nom} (${c.mere.port || 'Tél N/C'})<br>`;
+      if (c.pere?.nom || c.pere?.prenom) pText += `M. ${c.pere.prenom} ${c.pere.nom} (${c.pere.port || 'Tél N/C'})<br>`;
+      document.getElementById('eng-print-parents').innerHTML = pText || "Parents non renseignés";
 
       document.getElementById('eng-print-assmat').innerHTML = `
-        <strong>${eng.assmatNom || 'Assistante Maternelle'}</strong><br>
-        Adresse d'accueil : ${eng.assmatAdresse || 'Non renseignée'}
+        <strong>${eng.assmatNom || 'Assmat N/C'}</strong><br>
+        ${eng.assmatAdresse || 'Adresse N/C'}
       `;
 
-      let prenom = c.prenomEnfant || c.prenom || 'Enfant';
-      let nom = c.nomEnfant || c.nom || '';
       document.getElementById('eng-print-enfant-info').innerHTML = `
-        Enfant : <strong>${prenom} ${nom}</strong>
+        Enfant : <strong>${c.prenomEnfant || 'N/C'} ${c.nomEnfant || ''}</strong> 
+        ${c.naissance ? `(Né(e) / Prévu(e) le ${c.naissance})` : ''}
       `;
 
-      let dtEffet = eng.dateEffet ? new Date(eng.dateEffet).toLocaleDateString('fr-FR') : '____/____/________';
+      const tBrut = eng.tarifBrut || 0;
+      const tNet = (tBrut / 1.2816).toFixed(2);
       document.getElementById('eng-print-conditions').innerHTML = `
-        • Date de début d'accueil prévue : <strong>${dtEffet}</strong><br>
-        • Volume horaire hebdomadaire : <strong>${heuresSemaine} heures / semaine</strong> (${semainesAn} semaines/an)<br>
-        • Tarif horaire brut : <strong>${eng.tarifBrut ? eng.tarifBrut.toFixed(2) : '0.00'} €</strong><br>
-        • Salaire mensuel brut estimé : <strong>${brutMensuel.toFixed(2)} €</strong> (${hMensuelles.toFixed(1)} h/mois)<br>
-        • Montant de la garantie / indemnité en cas de dédit : <strong>${indemnite.toFixed(2)} €</strong>
+        • Date d'effet (début d'accueil) : <strong>${eng.dateEffet || 'N/C'}</strong><br>
+        • Période d'adaptation : ${eng.adaptation || 'Non spécifiée'}<br>
+        • Horaire hebdo prévu : <strong>${c.hHebdo || 0}h / sem</strong> (${eng.joursSemaine || 4} j/sem)<br>
+        • Périodicités : ${eng.semainesAn || 52} semaines / an<br>
+        • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)
       `;
     }
 
@@ -570,22 +1762,205 @@
       window.print();
     }
 
-    function switchSubTab(tabId) {
-      document.querySelectorAll('.sub-tab-content').forEach(t => t.style.display = 'none');
-      document.querySelectorAll('.sub-nav .tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).style.display = 'block';
-      if (tabId === 'engagement') chargerFormulaireEngagement();
+    /* --- CALCUL DE LA FICHE DE PAIE & DÉCLARATION PAJEMPLOI --- */
+    function calculerFicheDePaie() {
+      const moisVal = document.getElementById('fp-select-mois').value;
+      if (!moisVal) return;
+      const [annee, mois] = moisVal.split('-').map(Number);
+
+      const enf = enfants[activeEnfantId];
+      const c = enf.contrat || {};
+      const presences = (enf.presences || []).filter(p => p.date.startsWith(moisVal));
+
+      let totalHN = 0, totalHC = 0, totalHS = 0, totalIE = 0, totalIR = 0, nbJoursPresents = presences.length;
+
+      presences.forEach(p => {
+        totalHN += p.hNorm || 0;
+        totalHC += p.hComp || 0;
+        totalHS += p.hSup || 0;
+        if (c.ie) totalIE += c.ie;
+        if (p.repas === 'oui' && c.ir) totalIR += c.ir;
+      });
+
+      const tarifNet = c.tarifNet || 0;
+      const majoration = 1 + ((c.majoration || 0) / 100);
+
+      let salBase = c.moisLisse ? ((c.hMensuel || 0) * tarifNet) : (totalHN * tarifNet);
+      let salHC = totalHC * tarifNet;
+      let salHS = totalHS * tarifNet * majoration;
+      let salHS_Total = salHC + salHS;
+      let totalIndemnites = totalIE + totalIR;
+      let netAPayer = salBase + salHS_Total + totalIndemnites;
+
+      // Update UI
+      document.getElementById('fp-periode').innerText = `${MOIS[mois - 1]} ${annee}`;
+      document.getElementById('fp-enfant').innerText = `${c.prenomEnfant || ''} ${c.nomEnfant || ''}`;
+      document.getElementById('fp-parent').innerText = `Parents: ${c.mere?.prenom || ''} ${c.pere?.prenom || ''}`;
+
+      let bodyHtml = `
+        <tr>
+          <td style="text-align:left;">Salaire de base (${c.moisLisse ? 'Lissé' : 'Réel'})</td>
+          <td>${c.moisLisse ? (c.hMensuel || 0) : totalHN.toFixed(2)} h</td>
+          <td>${tarifNet.toFixed(2)} €</td>
+          <td style="text-align:right;">${salBase.toFixed(2)} €</td>
+        </tr>
+      `;
+      if (totalHC > 0) {
+        bodyHtml += `
+          <tr>
+            <td style="text-align:left;">Heures Complémentaires</td>
+            <td>${totalHC.toFixed(2)} h</td>
+            <td>${tarifNet.toFixed(2)} €</td>
+            <td style="text-align:right;">${salHC.toFixed(2)} €</td>
+          </tr>
+        `;
+      }
+      if (totalHS > 0) {
+        bodyHtml += `
+          <tr>
+            <td style="text-align:left;">Heures Majores (${c.majoration || 0}%)</td>
+            <td>${totalHS.toFixed(2)} h</td>
+            <td>${(tarifNet * majoration).toFixed(2)} €</td>
+            <td style="text-align:right;">${salHS.toFixed(2)} €</td>
+          </tr>
+        `;
+      }
+      if (totalIE > 0) {
+        bodyHtml += `
+          <tr>
+            <td style="text-align:left;">Indemnités d'Entretien</td>
+            <td>${nbJoursPresents} j</td>
+            <td>${(c.ie || 0).toFixed(2)} €</td>
+            <td style="text-align:right;">${totalIE.toFixed(2)} €</td>
+          </tr>
+        `;
+      }
+      if (totalIR > 0) {
+        bodyHtml += `
+          <tr>
+            <td style="text-align:left;">Indemnités de Repas</td>
+            <td>${presences.filter(p=>p.repas==='oui').length} j</td>
+            <td>${(c.ir || 0).toFixed(2)} €</td>
+            <td style="text-align:right;">${totalIR.toFixed(2)} €</td>
+          </tr>
+        `;
+      }
+      document.getElementById('fp-body').innerHTML = bodyHtml;
+
+      document.getElementById('fp-salaire-base').innerText = `${salBase.toFixed(2)} €`;
+      document.getElementById('fp-total-hs').innerText = `${salHS_Total.toFixed(2)} €`;
+      document.getElementById('fp-total-indemnites').innerText = `${totalIndemnites.toFixed(2)} €`;
+      document.getElementById('fp-net-a-payer').innerText = `${netAPayer.toFixed(2)} €`;
+
+      // Pajemploi elements
+      const hNormPaje = c.moisLisse ? Math.round(c.hMensuel || 0) : Math.round(totalHN);
+      const jActPaje = c.moisLisse ? Math.ceil((c.hMensuel || 0) / 8) : nbJoursPresents;
+
+      document.getElementById('paje-h-normales').innerText = `${hNormPaje} h`;
+      document.getElementById('paje-j-activite').innerText = `${jActPaje} j`;
+      document.getElementById('paje-h-supp').innerText = `${Math.round(totalHC + totalHS)} h`;
+      document.getElementById('paje-cp').innerText = `0 j`;
+      document.getElementById('paje-salaire-net').innerText = `${(salBase + salHS_Total).toFixed(2)} €`;
+      document.getElementById('paje-indemnites').innerText = `${totalIndemnites.toFixed(2)} €`;
+
+      // Print elements
+      document.getElementById('fp-print-date').innerText = `Édité le ${new Date().toLocaleDateString('fr-FR')}`;
+      document.getElementById('fp-print-periode').innerText = `${MOIS[mois - 1]} ${annee}`;
+      document.getElementById('fp-print-enfant').innerText = `${c.prenomEnfant || ''} ${c.nomEnfant || ''}`;
+      
+      let pText = "";
+      if (c.mere?.nom) pText += `Mme ${c.mere.prenom} ${c.mere.nom}<br>`;
+      if (c.pere?.nom) pText += `M. ${c.pere.prenom} ${c.pere.nom}<br>`;
+      document.getElementById('fp-print-parents').innerHTML = pText || "Non renseigné";
     }
 
-    function switchMainTab(tabId) {
-      document.querySelectorAll('.main-content').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.main-nav .tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+    function imprimerPaie() {
+      calculerFicheDePaie();
+      document.body.className = "print-mode-paie";
+      window.print();
     }
 
-    function sauvegarderGlobal() {
-      localStorage.setItem('assmat_flow_data', JSON.stringify(enfants));
+    /* --- CALCUL DE LA DÉCLARATION FISCALE / IMPÔTS --- */
+    function calculerImpotsAnnuel() {
+      const debutVal = document.getElementById('imp-debut').value;
+      const finVal = document.getElementById('imp-fin').value;
+      const smicVal = parseFloat(document.getElementById('imp-smic').value) || 9.27;
+      const tousEnfants = document.getElementById('imp-tous-enfants').checked;
+
+      if (!debutVal || !finVal) return;
+
+      const listEnfants = tousEnfants ? Object.values(enfants) : [enfants[activeEnfantId]];
+
+      let totalSalairesNets = 0;
+      let totalIndemnites = 0;
+      let totalJoursPlus3h = 0;
+      let totalHeuresMoins3h = 0;
+      let countMois = 0;
+
+      let current = new Date(debutVal + '-01');
+      const end = new Date(finVal + '-01');
+
+      while (current <= end) {
+        countMois++;
+        const isoMois = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+
+        listEnfants.forEach(enf => {
+          const c = enf.contrat || {};
+          const pres = (enf.presences || []).filter(p => p.date.startsWith(isoMois));
+
+          let totalHN = 0, totalHC = 0, totalHS = 0, totalIE = 0, totalIR = 0;
+
+          pres.forEach(p => {
+            totalHN += p.hNorm || 0;
+            totalHC += p.hComp || 0;
+            totalHS += p.hSup || 0;
+            if (c.ie) totalIE += c.ie;
+            if (p.repas === 'oui' && c.ir) totalIR += c.ir;
+
+            if (p.duree >= 3) {
+              totalJoursPlus3h++;
+            } else {
+              totalHeuresMoins3h += p.duree;
+            }
+          });
+
+          const tNet = c.tarifNet || 0;
+          const maj = 1 + ((c.majoration || 0) / 100);
+
+          let salBase = c.moisLisse ? ((c.hMensuel || 0) * tNet) : (totalHN * tNet);
+          let salHS = (totalHC * tNet) + (totalHS * tNet * maj);
+
+          totalSalairesNets += salBase + salHS;
+          totalIndemnites += totalIE + totalIR;
+        });
+
+        current.setMonth(current.getMonth() + 1);
+      }
+
+      const totalBrutImposable = totalSalairesNets + totalIndemnites;
+      const abattementJours = totalJoursPlus3h * (3 * smicVal);
+      const abattementHeures = totalHeuresMoins3h * (smicVal / 8) * 3;
+      const abattementTotal = abattementJours + abattementHeures;
+
+      const netImposable = Math.max(0, totalBrutImposable - abattementTotal);
+
+      document.getElementById('imp-nb-mois').innerText = countMois;
+      document.getElementById('imp-val-salaires').innerText = `${totalSalairesNets.toFixed(2)} €`;
+      document.getElementById('imp-val-indemnites').innerText = `${totalIndemnites.toFixed(2)} €`;
+      document.getElementById('imp-val-brut').innerText = `${totalBrutImposable.toFixed(2)} €`;
+
+      document.getElementById('imp-val-j-plus3').innerText = `${totalJoursPlus3h} j`;
+      document.getElementById('imp-val-h-moins3').innerText = `${totalHeuresMoins3h.toFixed(2)} h`;
+      document.getElementById('imp-val-abattement').innerText = `${abattementTotal.toFixed(2)} €`;
+      document.getElementById('imp-net-imposable').innerText = `${netImposable.toFixed(2)} €`;
     }
+
+    // INITIALISATION GENERALE AU CHARGEMENT
+    window.addEventListener('DOMContentLoaded', () => {
+      normaliserEtMigrerDonnees();
+      chargerFormulaireGitHub();
+      rafraichirTouteLInterface();
+    });
   </script>
 </body>
 </html>
