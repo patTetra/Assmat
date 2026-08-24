@@ -494,14 +494,14 @@
         "nom": "",
         "tel": ""
       },
-      "tarifNet": "",
-      "majoration": "",
-      "ie": "",
-      "ir": "",
-      "hMensuel": "",
-      "hHebdo": "",
-      "jHebdo": "",
-      "semainesAn": ""
+      "tarifNet": 0,
+      "majoration": 0,
+      "ie": 0,
+      "ir": 0,
+      "hMensuel": 156,
+      "hHebdo": 36,
+      "jHebdo": 4,
+      "semainesAn": 52
     },
     "engagement": {
       "dateSignature": "2026-08-24",
