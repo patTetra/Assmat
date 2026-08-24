@@ -445,7 +445,19 @@
         "depart": "17:00"
       }
     },
-    "presences": []
+    "presences": [
+      {
+        "id": 1787586596584,
+        "date": "2026-08-24",
+        "arrivee": "08:00",
+        "depart": "15:00",
+        "duree": 7,
+        "hNorm": 7,
+        "hComp": 0,
+        "hSup": 0,
+        "repas": "oui"
+      }
+    ]
   },
   "enf_1787581503123": {
     "contrat": {
