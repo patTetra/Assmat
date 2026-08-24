@@ -207,14 +207,14 @@
         "nom": "",
         "tel": ""
       },
-      "tarifNet": "",
-      "majoration": "",
-      "ie": "",
-      "ir": "",
+      "tarifNet": 4,
+      "majoration": 10,
+      "ie": 3.5,
+      "ir": 4,
       "hMensuel": "",
       "hHebdo": "",
-      "jHebdo": "",
-      "semainesAn": ""
+      "jHebdo": 4,
+      "semainesAn": 52
     },
     "engagement": {
       "dateSignature": "2026-08-24",
@@ -225,7 +225,7 @@
       "semainesAn": 52,
       "assmatNom": "Gaël Desaegher ",
       "assmatAdresse": "1071 route de Plouegat Guerrand 29610 Plouigneau ",
-      "valide": false
+      "valide": true
     },
     "semaineType": {
       "0": {
