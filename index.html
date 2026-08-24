@@ -499,6 +499,14 @@
               <label>Taux Brut (€/h estimé)</label>
               <input type="number" step="0.01" id="eng-tarif-brut" placeholder="ex: 5.12" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
             </div>
+            <div class="form-group">
+              <label>Jours d'accueil / semaine</label>
+              <input type="number" step="1" min="1" max="7" id="eng-jours-semaine" placeholder="ex: 4" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+            </div>
+            <div class="form-group">
+              <label>Semaines de travail / an</label>
+              <input type="number" step="1" min="1" max="52" id="eng-semaines-an" placeholder="ex: 52" oninput="calculerIndemniteEngagement(); sauvegarderEngagementForm();">
+            </div>
           </div>
 
           <div class="info-group">
@@ -859,8 +867,10 @@
         enfants[id].contrat = c;
 
         if(!enfants[id].engagement) {
-          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), assmatNom: '', assmatAdresse: '' };
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), joursSemaine: c.jHebdo || 4, semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
         }
+        if(enfants[id].engagement.joursSemaine === undefined) enfants[id].engagement.joursSemaine = c.jHebdo || 4;
+        if(enfants[id].engagement.semainesAn === undefined) enfants[id].engagement.semainesAn = c.semainesAn || 52;
 
         if (enfants[id].planningPrevu) {
           Object.keys(enfants[id].planningPrevu).forEach(date => {
@@ -1056,7 +1066,7 @@
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52
         },
         engagement: {
-          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptation: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
+          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptation: '', tarifBrut: 5.12, joursSemaine: 4, semainesAn: 52, assmatNom: '', assmatAdresse: ''
         },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -1488,6 +1498,8 @@
       document.getElementById('eng-date-effet').value = eng.dateEffet || '';
       document.getElementById('eng-adaptation').value = eng.adaptation || '';
       document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
+      document.getElementById('eng-jours-semaine').value = eng.joursSemaine || c.jHebdo || 4;
+      document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
       document.getElementById('eng-assmat-nom').value = eng.assmatNom || '';
       document.getElementById('eng-assmat-adresse').value = eng.assmatAdresse || '';
 
@@ -1500,6 +1512,8 @@
         dateEffet: document.getElementById('eng-date-effet').value,
         adaptation: document.getElementById('eng-adaptation').value,
         tarifBrut: parseFloat(document.getElementById('eng-tarif-brut').value) || 0,
+        joursSemaine: parseFloat(document.getElementById('eng-jours-semaine').value) || 4,
+        semainesAn: parseFloat(document.getElementById('eng-semaines-an').value) || 52,
         assmatNom: document.getElementById('eng-assmat-nom').value,
         assmatAdresse: document.getElementById('eng-assmat-adresse').value
       };
@@ -1508,23 +1522,27 @@
 
     function calculerIndemniteEngagement() {
       const c = enfants[activeEnfantId]?.contrat || {};
+      const eng = enfants[activeEnfantId]?.engagement || {};
       const tarifBrut = parseFloat(document.getElementById('eng-tarif-brut')?.value) || 0;
-      const hMensuelles = c.hMensuel || Math.round(((c.hHebdo || 35) * (c.semainesAn || 52)) / 12);
+      const joursSemaine = parseFloat(document.getElementById('eng-jours-semaine')?.value) || eng.joursSemaine || c.jHebdo || 4;
+      const semainesAn = parseFloat(document.getElementById('eng-semaines-an')?.value) || eng.semainesAn || c.semainesAn || 52;
+      const hHebdo = c.hHebdo || 35;
+      const hMensuelles = c.hMensuel || Math.round((hHebdo * semainesAn) / 12);
 
       const brutMensuel = hMensuelles * tarifBrut;
       const indemnite = brutMensuel / 2;
 
-      if(document.getElementById('eng-brut-mensuel-val')) document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} € (${hMensuelles}h x ${tarifBrut.toFixed(2)}€)`;
+      if(document.getElementById('eng-brut-mensuel-val')) document.getElementById('eng-brut-mensuel-val').innerText = `${brutMensuel.toFixed(2)} € (${hMensuelles}h x ${tarifBrut.toFixed(2)}€, sur ${joursSemaine}j/sem - ${semainesAn} sem/an)`;
       if(document.getElementById('eng-indemnite-val')) document.getElementById('eng-indemnite-val').innerText = `${indemnite.toFixed(2)} €`;
       if(document.getElementById('eng-print-indemnite-texte')) document.getElementById('eng-print-indemnite-texte').innerText = `${indemnite.toFixed(2)} €`;
 
-      return { brutMensuel, indemnite, hMensuelles };
+      return { brutMensuel, indemnite, hMensuelles, joursSemaine, semainesAn };
     }
 
     function preparerImpressionEngagement() {
       const c = enfants[activeEnfantId].contrat;
       const eng = enfants[activeEnfantId].engagement || {};
-      const { brutMensuel, indemnite, hMensuelles } = calculerIndemniteEngagement();
+      const { brutMensuel, indemnite, hMensuelles, joursSemaine, semainesAn } = calculerIndemniteEngagement();
 
       // Date signature
       let dtSig = eng.dateSignature ? new Date(eng.dateSignature).toLocaleDateString('fr-FR') : '____/____/________';
@@ -1556,7 +1574,7 @@
       document.getElementById('eng-print-conditions').innerHTML = `
         • Date de début d'accueil prévue : <strong>${dtEffet}</strong><br>
         • Période d'adaptation prévue : <strong>${eng.adaptation || 'Aucune / À définir'}</strong><br>
-        • Volume d'accueil prévu : <strong>${c.hHebdo || 0}h / semaine</strong> sur <strong>${c.semainesAn || 52} semaines/an</strong> (soit <strong>${hMensuelles}h mensualisées</strong>)<br>
+        • Volume d'accueil prévu : <strong>${c.hHebdo || 0}h / semaine</strong> sur <strong>${joursSemaine} jours/semaine</strong>, <strong>${semainesAn} semaines/an</strong> (soit <strong>${hMensuelles}h mensualisées</strong>)<br>
         • Tarif horaire brut : <strong>${(parseFloat(eng.tarifBrut)||0).toFixed(2)} € / h</strong> (Tarif net estimé : ${c.tarifNet || 0} €/h)<br>
         • Salaire mensuel brut de base prévisible : <strong>${brutMensuel.toFixed(2)} €</strong>
       `;
