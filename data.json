@@ -212,7 +212,7 @@
       "ie": 3.5,
       "ir": 4,
       "hMensuel": 156,
-      "hHebdo": 36,
+      "hHebdo": 45,
       "jHebdo": 4,
       "semainesAn": 52
     },
@@ -239,9 +239,9 @@
         "depart": "17:00"
       },
       "2": {
-        "actif": false,
-        "arrivee": "",
-        "depart": ""
+        "actif": true,
+        "arrivee": "08:30",
+        "depart": "17:30"
       },
       "3": {
         "actif": true,
@@ -255,13 +255,13 @@
       },
       "5": {
         "actif": false,
-        "arrivee": "",
-        "depart": ""
+        "arrivee": "08:30",
+        "depart": "17:30"
       },
       "6": {
         "actif": false,
-        "arrivee": "",
-        "depart": ""
+        "arrivee": "08:30",
+        "depart": "17:30"
       }
     },
     "planningPrevu": {},
