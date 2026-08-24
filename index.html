@@ -299,7 +299,8 @@
 
       <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <button class="btn btn-primary btn-sm" onclick="genererPlanningMoisComplet()">⚡ Appliquer la semaine type</button>
-        <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📤 Exporter le planning (.ics)</button>
+        <button class="btn btn-secondary btn-sm" onclick="synchroniserICSMaintenant()">🔄 Forcer la synchro calendrier</button>
+        <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📥 Télécharger le .ics</button>
       </div>
 
       <div class="calendar-days-header">
@@ -1087,10 +1088,17 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    }
 
-      // Pousse aussi immédiatement la version à jour sur GitHub, pour que
-      // l'abonnement webcal (option automatique) reflète sans attendre les derniers changements.
-      pousserICSVersGitHub();
+    async function synchroniserICSMaintenant() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        alert("⚠️ Configure d'abord la synchronisation GitHub (icône ⚙️) pour utiliser l'abonnement calendrier.");
+        return;
+      }
+      majStatutSync('syncing');
+      await pousserICSVersGitHub();
+      majStatutSync('online');
+      alert("🔄 Planning synchronisé sur GitHub. Le calendrier abonné sur iOS se mettra à jour selon son propre délai (jusqu'à quelques heures) — ou tire vers le bas dans l'app Calendrier pour forcer un rafraîchissement immédiat.");
     }
 
     async function pousserICSVersGitHub() {
