@@ -500,8 +500,12 @@
               <input type="date" id="eng-date-effet" onchange="sauvegarderEngagementForm()">
             </div>
             <div class="form-group">
-              <label>Période d'adaptation</label>
-              <input type="text" id="eng-adaptation" placeholder="ex: Du 01/09 au 15/09 (optionnel)" onchange="sauvegarderEngagementForm()">
+              <label>Adaptation - Date de début</label>
+              <input type="date" id="eng-adaptation-debut" onchange="sauvegarderEngagementForm()">
+            </div>
+            <div class="form-group">
+              <label>Adaptation - Date de fin</label>
+              <input type="date" id="eng-adaptation-fin" onchange="sauvegarderEngagementForm()">
             </div>
             <div class="form-group">
               <label>Taux Brut (€/h estimé)</label>
@@ -556,6 +560,11 @@
           <div class="print-box" style="margin-bottom: 10px;">
             <div class="print-box-title">Conditions de l'accueil prévues</div>
             <div class="print-box-content" id="eng-print-conditions"></div>
+          </div>
+
+          <div class="print-box" style="margin-bottom: 10px;">
+            <div class="print-box-title">Détail du calcul du salaire brut mensuel estimé</div>
+            <div class="print-box-content" id="eng-print-calcul-salaire"></div>
           </div>
 
           <div class="legal-print-clause">
@@ -960,7 +969,7 @@
           tarifNet: 4.00, majoration: 10, ie: 3.50, ir: 4.00, hMensuel: 120, hHebdo: 35, jHebdo: 4, semainesAn: 52 
         },
         engagement: {
-          dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
+          dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: 5.12, assmatNom: '', assmatAdresse: ''
         },
         semaineType: {
           0: { actif: true, arrivee: '08:30', depart: '17:30' },
@@ -991,8 +1000,10 @@
         enfants[id].contrat = c;
 
         if(!enfants[id].engagement) {
-          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptation: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), heuresSemaine: c.hHebdo || 35, semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
+          enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12), heuresSemaine: c.hHebdo || 35, semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
         }
+        if(enfants[id].engagement.adaptationDebut === undefined) enfants[id].engagement.adaptationDebut = '';
+        if(enfants[id].engagement.adaptationFin === undefined) enfants[id].engagement.adaptationFin = '';
         if(enfants[id].engagement.heuresSemaine === undefined) enfants[id].engagement.heuresSemaine = c.hHebdo || 35;
         delete enfants[id].engagement.joursSemaine;
         if(enfants[id].engagement.semainesAn === undefined) enfants[id].engagement.semainesAn = c.semainesAn || 52;
@@ -1350,7 +1361,7 @@
           tarifNet: '', majoration: '', ie: '', ir: '', hMensuel: '', hHebdo: '', jHebdo: '', semainesAn: ''
         },
         engagement: {
-          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptation: '', tarifBrut: '', heuresSemaine: '', semainesAn: '', assmatNom: '', assmatAdresse: '', valide: false
+          dateSignature: new Date().toISOString().split('T')[0], dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: '', heuresSemaine: '', semainesAn: '', assmatNom: '', assmatAdresse: '', valide: false
         },
         semaineType: { 
           0: {actif:true, arrivee:'08:00', depart:'17:00'}, 1: {actif:true, arrivee:'08:00', depart:'17:00'}, 
@@ -1783,7 +1794,8 @@
 
       document.getElementById('eng-date-signature').value = eng.dateSignature || new Date().toISOString().split('T')[0];
       document.getElementById('eng-date-effet').value = eng.dateEffet || '';
-      document.getElementById('eng-adaptation').value = eng.adaptation || '';
+      document.getElementById('eng-adaptation-debut').value = eng.adaptationDebut || '';
+      document.getElementById('eng-adaptation-fin').value = eng.adaptationFin || '';
       document.getElementById('eng-tarif-brut').value = eng.tarifBrut || (c.tarifNet ? (c.tarifNet * 1.28).toFixed(2) : 5.12);
       document.getElementById('eng-heures-semaine').value = eng.heuresSemaine || c.hHebdo || 35;
       document.getElementById('eng-semaines-an').value = eng.semainesAn || c.semainesAn || 52;
@@ -1805,7 +1817,8 @@
       const eng = enfants[activeEnfantId].engagement;
       eng.dateSignature = document.getElementById('eng-date-signature').value;
       eng.dateEffet = document.getElementById('eng-date-effet').value;
-      eng.adaptation = document.getElementById('eng-adaptation').value;
+      eng.adaptationDebut = document.getElementById('eng-adaptation-debut').value;
+      eng.adaptationFin = document.getElementById('eng-adaptation-fin').value;
       eng.tarifBrut = parseFloat(document.getElementById('eng-tarif-brut').value) || 0;
       eng.heuresSemaine = parseFloat(document.getElementById('eng-heures-semaine').value) || 35;
       eng.semainesAn = parseFloat(document.getElementById('eng-semaines-an').value) || 52;
@@ -1845,11 +1858,18 @@
       alert("✅ Engagement validé ! Les informations principales ont été propagées dans la configuration du contrat.");
     }
 
+    function formaterDateFr(isoStr) {
+      if (!isoStr) return '';
+      const [y, m, d] = isoStr.split('-');
+      if (!y || !m || !d) return isoStr;
+      return `${d}/${m}/${y}`;
+    }
+
     function preparerImpressionEngagement() {
       const c = enfants[activeEnfantId].contrat || {};
       const eng = enfants[activeEnfantId].engagement || {};
 
-      document.getElementById('eng-print-date-sig').innerText = `Fait le : ${eng.dateSignature || '--/--/----'}`;
+      document.getElementById('eng-print-date-sig').innerText = `Fait le : ${formaterDateFr(eng.dateSignature) || '--/--/----'}`;
       
       let pText = "";
       if (c.mere?.nom || c.mere?.prenom) pText += `Mme ${c.mere.prenom} ${c.mere.nom} (${c.mere.port || 'Tél N/C'})<br>`;
@@ -1872,14 +1892,36 @@
         ${c.naissance ? `(Né(e) / Prévu(e) le ${c.naissance})` : ''}
       `;
 
+      let adaptationTexte = 'Non spécifiée';
+      if (eng.adaptationDebut && eng.adaptationFin) {
+        adaptationTexte = `Du ${formaterDateFr(eng.adaptationDebut)} au ${formaterDateFr(eng.adaptationFin)}`;
+      } else if (eng.adaptationDebut) {
+        adaptationTexte = `À partir du ${formaterDateFr(eng.adaptationDebut)}`;
+      }
+
       const tBrut = eng.tarifBrut || 0;
       const tNet = (tBrut / 1.2816).toFixed(2);
       document.getElementById('eng-print-conditions').innerHTML = `
-        • Date d'effet (début d'accueil) : <strong>${eng.dateEffet || 'N/C'}</strong><br>
-        • Période d'adaptation : ${eng.adaptation || 'Non spécifiée'}<br>
+        • Date d'effet (début d'accueil) : <strong>${formaterDateFr(eng.dateEffet) || 'N/C'}</strong><br>
+        • Période d'adaptation : ${adaptationTexte}<br>
         • Horaire hebdo prévu : <strong>${eng.heuresSemaine || 0}h / sem</strong><br>
         • Périodicités : ${eng.semainesAn || 52} semaines / an<br>
         • Tarif Horaire Brut estimé : <strong>${tBrut.toFixed(2)} €/h</strong> (soit ~${tNet} €/h Net)
+      `;
+
+      const hHebdo = eng.heuresSemaine || 0;
+      const semainesAn = eng.semainesAn || 52;
+      const hMensuelles = (hHebdo * semainesAn) / 12;
+      const brutMensuel = tBrut * hMensuelles;
+      const indemnite = brutMensuel / 2;
+
+      document.getElementById('eng-print-calcul-salaire').innerHTML = `
+        1. Volume horaire mensualisé (lissé sur l'année) :<br>
+        <span style="padding-left:10px;">${hHebdo}h/semaine × ${semainesAn} semaines/an ÷ 12 mois = <strong>${hMensuelles.toFixed(2)} h/mois</strong></span><br><br>
+        2. Salaire brut mensuel prévisible :<br>
+        <span style="padding-left:10px;">${hMensuelles.toFixed(2)} h/mois × ${tBrut.toFixed(2)} €/h brut = <strong>${brutMensuel.toFixed(2)} € brut/mois</strong></span><br><br>
+        3. Indemnité de dédit en cas de non-respect de l'engagement (1/2 mois de salaire brut) :<br>
+        <span style="padding-left:10px;">${brutMensuel.toFixed(2)} € ÷ 2 = <strong>${indemnite.toFixed(2)} €</strong></span>
       `;
     }
 
