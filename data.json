@@ -257,14 +257,14 @@
       }
     ],
     "engagement": {
-      "dateSignature": "",
-      "dateEffet": "",
+      "dateSignature": "2026-08-24",
+      "dateEffet": "2026-08-24",
       "adaptation": "",
-      "tarifBrut": "5.12",
-      "assmatNom": "",
-      "assmatAdresse": "",
+      "tarifBrut": 5.12,
       "joursSemaine": 4,
       "semainesAn": 52,
+      "assmatNom": "",
+      "assmatAdresse": "",
       "valide": true
     }
   },
