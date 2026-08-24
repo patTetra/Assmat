@@ -299,6 +299,7 @@
 
       <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <button class="btn btn-primary btn-sm" onclick="genererPlanningMoisComplet()">⚡ Appliquer la semaine type</button>
+        <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📤 Exporter le planning (.ics)</button>
       </div>
 
       <div class="calendar-days-header">
@@ -780,6 +781,14 @@
           <input type="text" id="gh-path" placeholder="data.json" value="data.json">
         </div>
         <div class="form-group">
+          <label>Fichier ICS (Planning)</label>
+          <input type="text" id="gh-ics-path" placeholder="planning.ics" value="planning.ics">
+        </div>
+        <div class="form-group">
+          <label>Branche</label>
+          <input type="text" id="gh-branch" placeholder="main" value="main">
+        </div>
+        <div class="form-group">
           <label>Clé API / Token (PAT)</label>
           <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
         </div>
@@ -789,6 +798,17 @@
         <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">Enregistrer & Synchroniser</button>
         <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
         <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
+      </div>
+
+      <div id="gh-webcal-box" class="info-group" style="display:none; margin-top:0.85rem;">
+        <h3>📅 Abonnement Calendrier (iOS)</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.4;">
+          Copiez ce lien, puis sur l'iPhone : <strong>Réglages > Calendrier > Comptes > Ajouter un compte > Autre > Ajouter un calendrier abonné</strong>. Le planning se mettra ensuite à jour automatiquement (délai variable, non garanti par Apple).
+        </p>
+        <div style="display:flex; gap:0.4rem;">
+          <input type="text" id="gh-webcal-url" readonly style="font-size:0.7rem;">
+          <button class="btn btn-secondary btn-sm" onclick="copierUrlWebcal()">📋</button>
+        </div>
       </div>
     </div>
   </div>
@@ -827,6 +847,7 @@
     let currentDateState = new Date();
     let selectedIsoDate = null;
     let githubFileSha = null;
+    let icsFileSha = null;
     let syncTimer = null;
 
     let githubConfig = JSON.parse(localStorage.getItem('assmat_gh_config')) || {
@@ -910,8 +931,11 @@
       document.getElementById('gh-user').value = githubConfig.user || '';
       document.getElementById('gh-repo').value = githubConfig.repo || '';
       document.getElementById('gh-path').value = githubConfig.path || 'data.json';
+      document.getElementById('gh-ics-path').value = githubConfig.icsPath || 'planning.ics';
+      document.getElementById('gh-branch').value = githubConfig.branch || 'main';
       document.getElementById('gh-token').value = githubConfig.token || '';
       if(githubConfig.user && githubConfig.repo && githubConfig.token) { majStatutSync('online'); } else { majStatutSync(''); }
+      afficherUrlWebcal();
     }
 
     function sauvegarderConfigGitHub() {
@@ -919,12 +943,39 @@
         user: document.getElementById('gh-user').value.trim(),
         repo: document.getElementById('gh-repo').value.trim(),
         path: document.getElementById('gh-path').value.trim() || 'data.json',
+        icsPath: document.getElementById('gh-ics-path').value.trim() || 'planning.ics',
+        branch: document.getElementById('gh-branch').value.trim() || 'main',
         token: document.getElementById('gh-token').value.trim()
       };
       localStorage.setItem('assmat_gh_config', JSON.stringify(githubConfig));
+      githubFileSha = null;
+      icsFileSha = null;
       majStatutSync('online');
+      afficherUrlWebcal();
       fermerModalConfigGitHub();
       chargerDepuisGitHub();
+      pousserICSVersGitHub();
+    }
+
+    function afficherUrlWebcal() {
+      const box = document.getElementById('gh-webcal-box');
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) { if(box) box.style.display = 'none'; return; }
+      const branch = githubConfig.branch || 'main';
+      const icsPath = githubConfig.icsPath || 'planning.ics';
+      const rawUrl = `https://raw.githubusercontent.com/${githubConfig.user}/${githubConfig.repo}/${branch}/${icsPath}`;
+      const webcalUrl = rawUrl.replace('https://', 'webcal://');
+      const input = document.getElementById('gh-webcal-url');
+      if(input) input.value = webcalUrl;
+      if(box) box.style.display = 'block';
+    }
+
+    function copierUrlWebcal() {
+      const input = document.getElementById('gh-webcal-url');
+      if (!input || !input.value) return;
+      input.select();
+      input.setSelectionRange(0, 99999);
+      if (navigator.clipboard) { navigator.clipboard.writeText(input.value).catch(() => {}); }
+      alert("Lien copié ! Collez-le dans Réglages > Calendrier > Comptes > Ajouter un compte > Autre > Ajouter un calendrier abonné.");
     }
 
     async function chargerDepuisGitHub() {
@@ -970,12 +1021,108 @@
       } catch (err) { console.error("Erreur push GitHub:", err); majStatutSync('offline'); }
     }
 
+    /* --- EXPORT ICS (PLANNING -> AGENDA IOS) --- */
+    function padIcs(n) { return String(n).padStart(2, '0'); }
+
+    function icsEscape(str) {
+      return String(str || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\n/g, '\\n');
+    }
+
+    function genererICS() {
+      const now = new Date();
+      const dtstamp = `${now.getUTCFullYear()}${padIcs(now.getUTCMonth() + 1)}${padIcs(now.getUTCDate())}T${padIcs(now.getUTCHours())}${padIcs(now.getUTCMinutes())}${padIcs(now.getUTCSeconds())}Z`;
+
+      let lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//AssMat Flow//Planning//FR',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        "X-WR-CALNAME:Planning Garde d'enfants",
+        'X-WR-TIMEZONE:Europe/Paris'
+      ];
+
+      Object.keys(enfants).forEach(id => {
+        const enf = enfants[id];
+        const c = enf.contrat || {};
+        const prenom = c.prenomEnfant || c.prenom || 'Enfant';
+        const planning = enf.planningPrevu || {};
+
+        Object.keys(planning).forEach(date => {
+          const p = planning[date];
+          if (!p || !p.arrivee || !p.depart || p.status === 'absent') return;
+          const [y, m, d] = date.split('-');
+          const [hA, mA] = p.arrivee.split(':');
+          const [hD, mD] = p.depart.split(':');
+          const dtStart = `${y}${m}${d}T${padIcs(hA)}${padIcs(mA)}00`;
+          const dtEnd = `${y}${m}${d}T${padIcs(hD)}${padIcs(mD)}00`;
+
+          lines.push('BEGIN:VEVENT');
+          lines.push(`UID:${id}-${date}@assmatflow`);
+          lines.push(`DTSTAMP:${dtstamp}`);
+          lines.push(`DTSTART;TZID=Europe/Paris:${dtStart}`);
+          lines.push(`DTEND;TZID=Europe/Paris:${dtEnd}`);
+          lines.push(`SUMMARY:${icsEscape('👶 ' + prenom + ' - Garde')}`);
+          if (p.note) lines.push(`DESCRIPTION:${icsEscape(p.note)}`);
+          lines.push('END:VEVENT');
+        });
+      });
+
+      lines.push('END:VCALENDAR');
+      return lines.join('\r\n');
+    }
+
+    function telechargerICS() {
+      const ics = genererICS();
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'planning-assmat.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Pousse aussi immédiatement la version à jour sur GitHub, pour que
+      // l'abonnement webcal (option automatique) reflète sans attendre les derniers changements.
+      pousserICSVersGitHub();
+    }
+
+    async function pousserICSVersGitHub() {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) return;
+      const icsPath = githubConfig.icsPath || 'planning.ics';
+      const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${icsPath}`;
+
+      try {
+        if (icsFileSha === null) {
+          const resCheck = await fetch(url, { headers: { 'Authorization': `token ${githubConfig.token}` } });
+          if (resCheck.status === 200) { const d = await resCheck.json(); icsFileSha = d.sha; }
+        }
+
+        const icsContent = genererICS();
+        const base64Content = btoa(unescape(encodeURIComponent(icsContent)));
+        const bodyData = { message: "Mise à jour automatique du planning (.ics)", content: base64Content };
+        if (icsFileSha) bodyData.sha = icsFileSha;
+
+        const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData) });
+        if (res.status === 200 || res.status === 201) {
+          const resData = await res.json();
+          icsFileSha = resData.content.sha;
+        }
+      } catch (err) { console.error("Erreur push ICS GitHub:", err); }
+    }
+
     function sauvegarderGlobal() {
       localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       localStorage.setItem('assmat_active_id', activeEnfantId);
       majStatutSync('syncing');
       clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => { pousserVersGitHub(); }, 3000);
+      syncTimer = setTimeout(() => { pousserVersGitHub(); pousserICSVersGitHub(); }, 3000);
     }
 
     function rafraichirTouteLInterface() {
