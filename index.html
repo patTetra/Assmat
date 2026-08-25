@@ -114,12 +114,15 @@
     .calendar-days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     
-    .cal-day { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-sm); min-height: 70px; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.15s ease; width: 100%; }
+    .cal-day { position: relative; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-sm); min-height: 70px; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.15s ease; width: 100%; }
     .cal-day:active { transform: scale(0.95); }
     .cal-day.empty { background: transparent; border: none; cursor: default; }
     .cal-day.is-weekend { background: rgba(15, 23, 42, 0.45); border-color: rgba(255, 255, 255, 0.04); opacity: 0.75; }
     .cal-day.has-presence { background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(129, 140, 248, 0.4); opacity: 1; }
+    .cal-day.is-today { border: 2px solid var(--accent-light); box-shadow: 0 0 0 1px var(--accent-light), 0 0 10px var(--accent-glow); }
+    .cal-day.is-today .cal-day-num { color: var(--accent-light); }
     .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
+    .cal-day-check { position: absolute; bottom: 2px; right: 3px; font-size: 0.55rem; line-height: 1; color: var(--success); font-weight: 900; }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
@@ -255,11 +258,11 @@
   <div id="presence" class="tab-content main-content active">
     <div class="card no-print">
       <h2>Saisie / Validation rapide du jour</h2>
-      <div class="grid-2">
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
-        </div>
+      <div class="form-group" style="margin-bottom: 0.85rem;">
+        <label>Date</label>
+        <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
+      </div>
+      <div class="grid-2" style="margin-bottom: 0.85rem;">
         <div class="form-group">
           <label>Arrivée réelle</label>
           <input type="time" id="input-arrivee">
@@ -268,11 +271,38 @@
           <label>Départ réel</label>
           <input type="time" id="input-depart">
         </div>
+      </div>
+      <div class="grid-2">
         <div class="form-group">
-          <label>Repas fourni ?</label>
-          <select id="input-repas">
-            <option value="oui">Oui</option>
+          <label>🥐 Petit-déjeuner</label>
+          <select id="input-repas-petitdej">
             <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍽️ Déjeuner</label>
+          <select id="input-repas-dejeuner">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍪 Goûter</label>
+          <select id="input-repas-gouter">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍲 Dîner</label>
+          <select id="input-repas-diner">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
           </select>
         </div>
       </div>
@@ -1117,6 +1147,18 @@
             if (enfants[id].planningPrevu[date].status === 'absent' || enfants[id].planningPrevu[date].type === 'absence') {
               delete enfants[id].planningPrevu[date];
             }
+            delete enfants[id].planningPrevu[date].repasParents;
+          });
+        }
+
+        if (enfants[id].presences) {
+          enfants[id].presences.forEach(p => {
+            if (typeof p.repas === 'string') {
+              const valMigre = p.repas === 'oui' ? 'assmat' : 'parent';
+              p.repas = { petitDej: valMigre, dejeuner: valMigre, gouter: valMigre, diner: valMigre };
+            } else if (!p.repas || typeof p.repas !== 'object') {
+              p.repas = { petitDej: 'non', dejeuner: 'non', gouter: 'non', diner: 'non' };
+            }
           });
         }
       });
@@ -1541,6 +1583,10 @@
       for (let i = 0; i < startingDay; i++) { grid.innerHTML += `<div class="cal-day empty"></div>`; }
 
       const planning = enfants[activeEnfantId].planningPrevu || {};
+      const joursValides = new Set((enfants[activeEnfantId].presences || []).map(p => p.date));
+
+      const todayObj = new Date();
+      const todayIso = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
       for (let day = 1; day <= lastDay.getDate(); day++) {
         const dateObj = new Date(year, month, day);
@@ -1553,13 +1599,16 @@
         let dayClass = "cal-day";
 
         if (dayOfWeek === 5 || dayOfWeek === 6) dayClass += " is-weekend";
+        if (isoDate === todayIso) dayClass += " is-today";
 
         if (prevu && prevu.arrivee && prevu.depart) {
           badgeHtml = `<div class="cal-day-badge-stack"><span class="cal-day-del" onclick="event.stopPropagation(); supprimerJourPlanning('${isoDate}')" title="Effacer cette journée">🗑</span><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
           dayClass += " has-presence";
         }
 
-        grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')"><div class="cal-day-num">${day}</div>${badgeHtml}</div>`;
+        const checkHtml = joursValides.has(isoDate) ? `<span class="cal-day-check" title="Journée validée">✓</span>` : '';
+
+        grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')"><div class="cal-day-num">${day}</div>${badgeHtml}${checkHtml}</div>`;
       }
 
       mettreAJourTotalMoisPlanning();
@@ -1659,7 +1708,7 @@
         const configJour = st[dayIdx];
 
         if(configJour && configJour.actif) {
-          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart, repasParents: !!configJour.repasParents };
+          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart };
         }
       }
 
@@ -1732,7 +1781,7 @@
       const st = enfants[activeEnfantId].semaineType || {};
 
       JOURS.forEach((jour, idx) => {
-        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30', repasParents: false };
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
         const isWeekend = (idx === 5 || idx === 6);
         const autresJours = JOURS.map((j2, idx2) => idx2 === idx ? '' : `
               <label class="dup-day-chip">
@@ -1751,10 +1800,6 @@
                 <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx})">
               </div>
             </div>
-            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; color:var(--text-muted); text-transform:none; font-weight:600; cursor:pointer;">
-              <input type="checkbox" id="st-repas-${idx}" ${item.repasParents ? 'checked' : ''} style="width:14px; height:14px; accent-color: var(--accent);">
-              🍽️ Repas fourni par les parents
-            </label>
           </div>
           <div class="dup-panel" id="dup-panel-${idx}">
             <p>Appliquer ces horaires (${item.arrivee || '08:30'} - ${item.depart || '17:30'}) à d'autres jours ?</p>
@@ -1833,8 +1878,7 @@
         st[idx] = {
           actif: document.getElementById(`st-check-${idx}`).checked,
           arrivee: document.getElementById(`st-arr-${idx}`).value,
-          depart: document.getElementById(`st-dep-${idx}`).value,
-          repasParents: document.getElementById(`st-repas-${idx}`)?.checked || false
+          depart: document.getElementById(`st-dep-${idx}`).value
         };
       });
       enfants[activeEnfantId].semaineType = st;
@@ -1857,16 +1901,29 @@
 
     function chargerHorairePrevuPourDate() {
       const date = document.getElementById('input-date').value;
+      const existant = (enfants[activeEnfantId].presences || []).find(p => p.date === date);
       const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
-      const selectRepas = document.getElementById('input-repas');
-      if(prev) {
-        document.getElementById('input-arrivee').value = prev.arrivee || "08:30";
-        document.getElementById('input-depart').value = prev.depart || "17:30";
-        if (selectRepas) selectRepas.value = prev.repasParents ? 'non' : 'oui';
+
+      const rPetitDej = document.getElementById('input-repas-petitdej');
+      const rDejeuner = document.getElementById('input-repas-dejeuner');
+      const rGouter = document.getElementById('input-repas-gouter');
+      const rDiner = document.getElementById('input-repas-diner');
+
+      if (existant) {
+        document.getElementById('input-arrivee').value = existant.arrivee || "08:30";
+        document.getElementById('input-depart').value = existant.depart || "17:30";
+        const r = (existant.repas && typeof existant.repas === 'object') ? existant.repas : {};
+        if (rPetitDej) rPetitDej.value = r.petitDej || 'non';
+        if (rDejeuner) rDejeuner.value = r.dejeuner || 'non';
+        if (rGouter) rGouter.value = r.gouter || 'non';
+        if (rDiner) rDiner.value = r.diner || 'non';
       } else {
-        document.getElementById('input-arrivee').value = "08:30";
-        document.getElementById('input-depart').value = "17:30";
-        if (selectRepas) selectRepas.value = 'oui';
+        document.getElementById('input-arrivee').value = prev?.arrivee || "08:30";
+        document.getElementById('input-depart').value = prev?.depart || "17:30";
+        if (rPetitDej) rPetitDej.value = 'non';
+        if (rDejeuner) rDejeuner.value = 'non';
+        if (rGouter) rGouter.value = 'non';
+        if (rDiner) rDiner.value = 'non';
       }
     }
 
@@ -1913,7 +1970,12 @@
       const date = document.getElementById('input-date').value;
       const arrivee = document.getElementById('input-arrivee').value;
       const depart = document.getElementById('input-depart').value;
-      const repas = document.getElementById('input-repas').value;
+      const repas = {
+        petitDej: document.getElementById('input-repas-petitdej').value,
+        dejeuner: document.getElementById('input-repas-dejeuner').value,
+        gouter: document.getElementById('input-repas-gouter').value,
+        diner: document.getElementById('input-repas-diner').value
+      };
       const contrat = enfants[activeEnfantId].contrat;
 
       if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
@@ -1938,6 +2000,7 @@
       enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
       sauvegarderGlobal();
       afficherPresences();
+      if (document.getElementById('calendar-grid')) rendreCalendrier();
       alert("Journée validée !");
     }
 
@@ -1945,6 +2008,7 @@
       enfants[activeEnfantId].presences = enfants[activeEnfantId].presences.filter(p => p.id !== id);
       sauvegarderGlobal();
       afficherPresences();
+      if (document.getElementById('calendar-grid')) rendreCalendrier();
     }
 
     function afficherPresences() {
@@ -2359,6 +2423,17 @@
     }
 
     /* --- CALCUL DE LA FICHE DE PAIE & DÉCLARATION PAJEMPLOI --- */
+    function calculerIndemniteRepasPresence(p, eng) {
+      const r = (p.repas && typeof p.repas === 'object') ? p.repas : {};
+      const ir = eng?.indemnitesRepas || {};
+      let total = 0;
+      if (r.petitDej === 'assmat') total += ir.petitDej || 0;
+      if (r.dejeuner === 'assmat') total += ir.dejeuner || 0;
+      if (r.gouter === 'assmat') total += ir.gouter || 0;
+      if (r.diner === 'assmat') total += ir.diner || 0;
+      return total;
+    }
+
     function calculerFicheDePaie() {
       const moisVal = document.getElementById('fp-select-mois').value;
       if (!moisVal) return;
@@ -2366,6 +2441,7 @@
 
       const enf = enfants[activeEnfantId];
       const c = enf.contrat || {};
+      const eng = enf.engagement || {};
       const presences = (enf.presences || []).filter(p => p.date.startsWith(moisVal));
 
       let totalHN = 0, totalHC = 0, totalHS = 0, totalIE = 0, totalIR = 0, nbJoursPresents = presences.length;
@@ -2375,7 +2451,7 @@
         totalHC += p.hComp || 0;
         totalHS += p.hSup || 0;
         if (c.ie) totalIE += c.ie;
-        if (p.repas === 'oui' && c.ir) totalIR += c.ir;
+        totalIR += calculerIndemniteRepasPresence(p, eng);
       });
 
       const tarifNet = c.tarifNet || 0;
@@ -2432,11 +2508,12 @@
         `;
       }
       if (totalIR > 0) {
+        const joursAvecRepasAssmat = presences.filter(p => calculerIndemniteRepasPresence(p, eng) > 0).length;
         bodyHtml += `
           <tr>
             <td style="text-align:left;">Indemnités de Repas</td>
-            <td>${presences.filter(p=>p.repas==='oui').length} j</td>
-            <td>${(c.ir || 0).toFixed(2)} €</td>
+            <td>${joursAvecRepasAssmat} j</td>
+            <td>Variable</td>
             <td style="text-align:right;">${totalIR.toFixed(2)} €</td>
           </tr>
         `;
@@ -2513,6 +2590,7 @@
 
         listEnfants.forEach(enf => {
           const c = enf.contrat || {};
+          const eng = enf.engagement || {};
           const pres = (enf.presences || []).filter(p => p.date.startsWith(isoMois));
 
           let totalHN = 0, totalHC = 0, totalHS = 0, totalIE = 0, totalIR = 0;
@@ -2522,7 +2600,7 @@
             totalHC += p.hComp || 0;
             totalHS += p.hSup || 0;
             if (c.ie) totalIE += c.ie;
-            if (p.repas === 'oui' && c.ir) totalIR += c.ir;
+            totalIR += calculerIndemniteRepasPresence(p, eng);
 
             if (p.duree >= 3) {
               totalJoursPlus3h++;
