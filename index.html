@@ -320,7 +320,8 @@
             <tr>
               <th>Date</th>
               <th>Horaires</th>
-              <th>Durée</th>
+              <th>Durée prévue</th>
+              <th>Durée réelle</th>
               <th>H. Norm.</th>
               <th>H. Comp.</th>
               <th>H. Sup.</th>
@@ -2121,11 +2122,28 @@
       const tbody = document.querySelector('#table-presences tbody');
       tbody.innerHTML = '';
       const list = enfants[activeEnfantId].presences || [];
+      const planning = enfants[activeEnfantId].planningPrevu || {};
       list.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        const prevu = planning[p.date];
+        let dureePrevueHtml = '<span style="color:var(--text-muted);">-</span>';
+        if (prevu && prevu.arrivee && prevu.depart) {
+          const [hA, mA] = prevu.arrivee.split(':').map(Number);
+          const [hD, mD] = prevu.depart.split(':').map(Number);
+          let dureePrevue = (hD + mD/60) - (hA + mA/60);
+          if (dureePrevue < 0) dureePrevue += 24;
+          const ecart = p.duree - dureePrevue;
+          let ecartHtml = '';
+          if (Math.abs(ecart) >= 0.01) {
+            const signe = ecart > 0 ? '+' : '';
+            ecartHtml = ` <span style="font-size:0.72rem; color:${ecart > 0 ? 'var(--success)' : 'var(--danger)'};">(${signe}${ecart.toFixed(2)}h)</span>`;
+          }
+          dureePrevueHtml = `${dureePrevue.toFixed(2)}h${ecartHtml}`;
+        }
         tbody.innerHTML += `
           <tr>
             <td><strong>${p.date}</strong></td>
             <td><span class="badge badge-primary">${p.arrivee}-${p.depart}</span></td>
+            <td>${dureePrevueHtml}</td>
             <td>${p.duree.toFixed(2)}h</td>
             <td>${p.hNorm.toFixed(2)}h</td>
             <td>${p.hComp.toFixed(2)}h</td>
