@@ -326,6 +326,22 @@
             "gouter": "non",
             "diner": "non"
           }
+        },
+        {
+          "id": 1787648197712,
+          "date": "2026-08-06",
+          "arrivee": "09:00",
+          "depart": "17:20",
+          "duree": 8.333333333333332,
+          "hNorm": 8.333333333333332,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "non",
+            "diner": "non"
+          }
         }
       ],
       "engagement": {
