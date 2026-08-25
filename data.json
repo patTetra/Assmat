@@ -724,7 +724,24 @@
           "note": ""
         }
       },
-      "presences": []
+      "presences": [
+        {
+          "id": 1787653774928,
+          "date": "2026-08-24",
+          "arrivee": "08:00",
+          "depart": "17:15",
+          "duree": 9.25,
+          "hNorm": 9.25,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
+        }
+      ]
     }
   }
 }
