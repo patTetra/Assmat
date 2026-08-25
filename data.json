@@ -264,17 +264,17 @@
       },
       "presences": [
         {
-          "id": 1787661417163,
+          "id": 1787673983894,
           "date": "2026-08-25",
           "arrivee": "08:01",
-          "depart": "17:00",
-          "duree": 8.983333333333333,
-          "hNorm": 8.983333333333333,
+          "depart": "17:10",
+          "duree": 9.15,
+          "hNorm": 9.15,
           "hComp": 0,
           "hSup": 0,
           "repas": {
             "petitDej": "non",
-            "dejeuner": "non",
+            "dejeuner": "assmat",
             "gouter": "non",
             "diner": "non"
           }
