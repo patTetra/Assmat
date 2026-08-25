@@ -122,7 +122,7 @@
     .cal-day.is-today { border: 2px solid var(--accent-light); box-shadow: 0 0 0 1px var(--accent-light), 0 0 10px var(--accent-glow); }
     .cal-day.is-today .cal-day-num { color: var(--accent-light); }
     .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
-    .cal-day-check { position: absolute; bottom: 2px; right: 3px; font-size: 0.55rem; line-height: 1; color: var(--success); font-weight: 900; }
+    .cal-day-check { position: absolute; top: 2px; right: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 0.5rem; line-height: 1; color: #fff; font-weight: 900; box-shadow: 0 0 4px rgba(16, 185, 129, 0.6); }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
@@ -262,16 +262,18 @@
         <label>Date</label>
         <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
       </div>
-      <div class="grid-2" style="margin-bottom: 0.85rem;">
+      <div class="grid-2" style="margin-bottom: 0.6rem;">
         <div class="form-group">
           <label>Arrivée réelle</label>
-          <input type="time" id="input-arrivee">
+          <input type="time" id="input-arrivee" onchange="verifierEcartsHoraires()">
         </div>
         <div class="form-group">
           <label>Départ réel</label>
-          <input type="time" id="input-depart">
+          <input type="time" id="input-depart" onchange="verifierEcartsHoraires()">
         </div>
       </div>
+      <div id="ecart-arrivee-zone" style="display:none; margin-bottom:0.6rem;"></div>
+      <div id="ecart-depart-zone" style="display:none; margin-bottom:0.85rem;"></div>
       <div class="grid-2">
         <div class="form-group">
           <label>🥐 Petit-déjeuner</label>
@@ -1230,8 +1232,14 @@
       majStatutSync('online');
       afficherUrlWebcal();
       fermerModalConfigGitHub();
-      chargerDepuisGitHub();
-      pousserICSVersGitHub();
+
+      // On récupère d'abord les données distantes (utile si on configure la synchro sur un
+      // nouvel appareil), puis on repousse l'état courant (y compris les coordonnées de
+      // l'assmat qu'on vient de saisir) pour être sûr qu'elles restent bien enregistrées sur GitHub.
+      chargerDepuisGitHub().then(() => {
+        pousserVersGitHub();
+        pousserICSVersGitHub();
+      });
     }
 
     function afficherUrlWebcal() {
@@ -1266,15 +1274,29 @@
           const data = await res.json();
           githubFileSha = data.sha;
           const jsonString = decodeURIComponent(escape(atob(data.content)));
-          const remoteEnfants = JSON.parse(jsonString);
+          const remoteData = JSON.parse(jsonString);
+
+          // Compatibilité avec l'ancien format distant (juste l'objet enfants, sans profilAssmat).
+          const remoteEnfants = (remoteData && remoteData.enfants) ? remoteData.enfants : remoteData;
+          const remoteProfil = (remoteData && remoteData.profilAssmat) ? remoteData.profilAssmat : null;
+
+          let miseAJour = false;
           if(remoteEnfants && Object.keys(remoteEnfants).length > 0) {
             enfants = remoteEnfants;
             normaliserEtMigrerDonnees();
             if(!enfants[activeEnfantId]) activeEnfantId = Object.keys(enfants)[0];
             localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
-            rafraichirTouteLInterface();
-            majStatutSync('online');
+            miseAJour = true;
           }
+          if(remoteProfil) {
+            profilAssmat = remoteProfil;
+            localStorage.setItem('assmat_profil', JSON.stringify(profilAssmat));
+            migrerProfilAssmatDansEngagements();
+            localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
+            miseAJour = true;
+          }
+          if(miseAJour) rafraichirTouteLInterface();
+          majStatutSync('online');
         } else if(res.status === 404) { majStatutSync('online'); } else { majStatutSync('offline'); }
       } catch (err) { console.error("Erreur chargement GitHub:", err); majStatutSync('offline'); }
     }
@@ -1299,7 +1321,9 @@
           }
         }
 
-        const jsonString = JSON.stringify(enfants, null, 2);
+        // On synchronise à la fois les données des enfants et le profil de l'assistante
+        // maternelle (coordonnées), pour ne pas avoir à les ressaisir sur un autre appareil.
+        const jsonString = JSON.stringify({ profilAssmat, enfants }, null, 2);
         const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
         const bodyData = { message: "Mise à jour automatique - AssMat Flow", content: base64Content };
         if (githubFileSha) bodyData.sha = githubFileSha;
@@ -1463,9 +1487,6 @@
         const enf = enfants[id];
         const c = enf.contrat;
         
-        let subParent = `${c.mere?.prenom || ''} ${c.mere?.prenom && c.pere?.prenom ? '&' : ''} ${c.pere?.prenom || ''}`.trim();
-        if (!subParent) subParent = 'Parents non renseignés';
-
         let prenomAffiche = c.prenomEnfant || c.prenom || 'Enfant';
         let nomAffiche = c.nomEnfant || c.nom || '';
         let ageText = c.naissance ? ` (${calculerAge(c.naissance)})` : '';
@@ -1477,7 +1498,6 @@
           <div class="slide-header">
             <div>
               <div class="slide-title">👶 ${prenomAffiche} ${nomAffiche} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${subParent}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
               <span class="badge ${c.hHebdo > 48 ? 'badge-danger' : (c.hHebdo > 45 ? 'badge-warning' : 'badge-primary')}">${c.hHebdo || 0}h / sem</span>
@@ -1925,6 +1945,57 @@
         if (rGouter) rGouter.value = 'non';
         if (rDiner) rDiner.value = 'non';
       }
+
+      verifierEcartsHoraires();
+    }
+
+    function verifierEcartsHoraires() {
+      const date = document.getElementById('input-date').value;
+      const prevu = (enfants[activeEnfantId].planningPrevu || {})[date] || null;
+      const arrivee = document.getElementById('input-arrivee').value;
+      const depart = document.getElementById('input-depart').value;
+
+      const zoneArrivee = document.getElementById('ecart-arrivee-zone');
+      const zoneDepart = document.getElementById('ecart-depart-zone');
+
+      zoneArrivee.innerHTML = '';
+      zoneArrivee.style.display = 'none';
+      zoneDepart.innerHTML = '';
+      zoneDepart.style.display = 'none';
+
+      if (prevu && prevu.arrivee && arrivee && arrivee !== prevu.arrivee) {
+        if (arrivee < prevu.arrivee) {
+          zoneArrivee.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-ecart-arrivee" checked>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée avant l'horaire prévu (${prevu.arrivee}) — Compter les heures ?</span>
+            </label>`;
+        } else {
+          zoneArrivee.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-ecart-arrivee">
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée après l'horaire prévu (${prevu.arrivee}) — Décompter les heures ?</span>
+            </label>`;
+        }
+        zoneArrivee.style.display = 'block';
+      }
+
+      if (prevu && prevu.depart && depart && depart !== prevu.depart) {
+        if (depart < prevu.depart) {
+          zoneDepart.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-ecart-depart">
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ avant l'horaire prévu (${prevu.depart}) — Décompter les heures ?</span>
+            </label>`;
+        } else {
+          zoneDepart.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-ecart-depart" checked>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ après l'horaire prévu (${prevu.depart}) — Compter les heures ?</span>
+            </label>`;
+        }
+        zoneDepart.style.display = 'block';
+      }
     }
 
     function switchMainTab(tabId) {
@@ -1968,8 +2039,8 @@
 
     function ajouterPresence() {
       const date = document.getElementById('input-date').value;
-      const arrivee = document.getElementById('input-arrivee').value;
-      const depart = document.getElementById('input-depart').value;
+      const arriveeSaisie = document.getElementById('input-arrivee').value;
+      const departSaisi = document.getElementById('input-depart').value;
       const repas = {
         petitDej: document.getElementById('input-repas-petitdej').value,
         dejeuner: document.getElementById('input-repas-dejeuner').value,
@@ -1978,7 +2049,26 @@
       };
       const contrat = enfants[activeEnfantId].contrat;
 
-      if (!date || !arrivee || !depart) return alert("Saisissez la date et les horaires.");
+      if (!date || !arriveeSaisie || !departSaisi) return alert("Saisissez la date et les horaires.");
+
+      const prevu = (enfants[activeEnfantId].planningPrevu || {})[date] || null;
+
+      // Détermine l'heure d'arrivée à retenir pour le calcul des heures, en tenant compte
+      // de la réponse à « Compter/Décompter les heures ? » par rapport à l'horaire prévu.
+      let arrivee = arriveeSaisie;
+      if (prevu && prevu.arrivee && arriveeSaisie !== prevu.arrivee) {
+        const chk = document.getElementById('chk-ecart-arrivee');
+        const appliquerEcart = chk ? chk.checked : (arriveeSaisie < prevu.arrivee);
+        arrivee = appliquerEcart ? arriveeSaisie : prevu.arrivee;
+      }
+
+      // Idem pour l'heure de départ.
+      let depart = departSaisi;
+      if (prevu && prevu.depart && departSaisi !== prevu.depart) {
+        const chk = document.getElementById('chk-ecart-depart');
+        const appliquerEcart = chk ? chk.checked : (departSaisi > prevu.depart);
+        depart = appliquerEcart ? departSaisi : prevu.depart;
+      }
 
       const [hA, mA] = arrivee.split(':').map(Number);
       const [hD, mD] = depart.split(':').map(Number);
@@ -1997,7 +2087,7 @@
       }
 
       enfants[activeEnfantId].presences = (enfants[activeEnfantId].presences || []).filter(p => p.date !== date);
-      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee: arriveeSaisie, depart: departSaisi, duree, hNorm, hComp, hSup, repas });
       sauvegarderGlobal();
       afficherPresences();
       if (document.getElementById('calendar-grid')) rendreCalendrier();
