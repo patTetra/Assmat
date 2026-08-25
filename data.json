@@ -260,7 +260,28 @@
         "hNorm": 8.75,
         "hComp": 0.25,
         "hSup": 0.13333333333333286,
-        "repas": "oui"
+        "repas": {
+          "petitDej": "assmat",
+          "dejeuner": "assmat",
+          "gouter": "assmat",
+          "diner": "assmat"
+        }
+      },
+      {
+        "id": 1787643788806,
+        "date": "2026-08-21",
+        "arrivee": "09:00",
+        "depart": "17:15",
+        "duree": 8.25,
+        "hNorm": 8.25,
+        "hComp": 0,
+        "hSup": 0,
+        "repas": {
+          "petitDej": "non",
+          "dejeuner": "assmat",
+          "gouter": "non",
+          "diner": "non"
+        }
       }
     ],
     "engagement": {
@@ -269,8 +290,8 @@
       "adaptation": "",
       "tarifBrut": 5.12,
       "semainesAn": 52,
-      "assmatNom": "Gaël Desaegher",
-      "assmatAdresse": "1071 route de Plouégat-Guerrand, 29610 Plouigneau",
+      "assmatNom": "",
+      "assmatAdresse": "",
       "valide": true,
       "adaptationDebut": "",
       "adaptationFin": "",
@@ -325,8 +346,8 @@
       "heuresSemaine": "",
       "typeAnnee": "complete",
       "semainesAn": "",
-      "assmatNom": "Gaël Desaegher",
-      "assmatAdresse": "1071 route de Plouégat-Guerrand, 29610 Plouigneau",
+      "assmatNom": "",
+      "assmatAdresse": "",
       "valide": false
     },
     "semaineType": {
@@ -370,8 +391,7 @@
       "2026-08-03": {
         "status": "prevu",
         "arrivee": "08:00",
-        "depart": "18:00",
-        "note": ""
+        "depart": "17:00"
       },
       "2026-08-04": {
         "status": "prevu",
@@ -431,7 +451,7 @@
       "2026-08-24": {
         "status": "prevu",
         "arrivee": "08:00",
-        "depart": "21:30",
+        "depart": "19:00",
         "note": ""
       },
       "2026-08-25": {
@@ -455,130 +475,183 @@
         "depart": "17:00"
       }
     },
-    "presences": [
-      {
-        "id": 1787586596584,
-        "date": "2026-08-24",
-        "arrivee": "08:00",
-        "depart": "15:00",
-        "duree": 7,
-        "hNorm": 7,
-        "hComp": 0,
-        "hSup": 0,
-        "repas": "oui"
-      }
-    ]
+    "presences": []
   },
-  "enf_1787603186095": {
+  "enf_1787581503123": {
     "contrat": {
-      "prenomEnfant": "Rose",
-      "nomEnfant": "Lebeau",
-      "naissance": "2026-05-27",
+      "prenomEnfant": "Lou",
+      "nomEnfant": "",
+      "naissance": "",
       "sortiesVoiture": true,
-      "moisLisse": false,
+      "moisLisse": true,
       "mere": {
-        "nom": "Lebeau",
-        "prenom": "Dylan",
-        "adresse": "14 la Chapelle du Mur 29610 Plouigneau",
-        "port": "06 58 73 68 61",
+        "nom": "",
+        "prenom": "",
+        "port": "",
         "maison": "",
         "bureau": "",
-        "email": "dylanlebeau@hotmail.fr"
+        "adresse": "",
+        "email": ""
       },
       "pere": {
         "nom": "",
         "prenom": "",
-        "adresse": "",
         "port": "",
         "maison": "",
         "bureau": "",
+        "adresse": "",
         "email": ""
       },
       "urgence": {
         "nom": "",
         "tel": ""
       },
-      "tarifNet": 3.8,
-      "majoration": 0,
-      "ie": 0,
-      "ir": 7,
-      "hMensuel": 179,
-      "hHebdo": 48.75,
-      "jHebdo": 5,
-      "semainesAn": 44
+      "tarifNet": "",
+      "majoration": "",
+      "ie": "",
+      "ir": "",
+      "hMensuel": "",
+      "hHebdo": "",
+      "jHebdo": "",
+      "semainesAn": ""
     },
     "engagement": {
-      "dateSignature": "2026-09-01",
-      "dateEffet": "2026-09-01",
-      "adaptationDebut": "2026-09-01",
-      "adaptationFin": "2026-09-03",
-      "tarifBrut": 4.8643,
-      "heuresSemaine": 48.75,
-      "typeAnnee": "incomplete",
-      "semainesAn": 44,
-      "assmatNom": "Gaël Desaegher",
-      "assmatAdresse": "1071 route de Plouégat-Guerrand, 29610 Plouigneau",
-      "valide": true,
-      "tarifNet": 3.8,
-      "parent": {
-        "nom": "Lebeau",
-        "prenom": "Dylan",
-        "adresse": "14 la Chapelle du Mur 29610 Plouigneau",
-        "telephone": "06 58 73 68 61",
-        "email": "dylanlebeau@hotmail.fr"
-      },
-      "indemnitesRepas": {
-        "petitDej": 1,
-        "dejeuner": 2.5,
-        "gouter": 1,
-        "diner": 2.5
-      }
+      "dateSignature": "2026-08-24",
+      "dateEffet": "",
+      "adaptationDebut": "",
+      "adaptationFin": "",
+      "tarifBrut": "",
+      "heuresSemaine": "",
+      "typeAnnee": "complete",
+      "semainesAn": "",
+      "assmatNom": "",
+      "assmatAdresse": "",
+      "valide": false
     },
     "semaineType": {
       "0": {
         "actif": true,
-        "arrivee": "07:15",
-        "depart": "18:00",
-        "repasParents": false
+        "arrivee": "08:00",
+        "depart": "17:00"
       },
       "1": {
         "actif": true,
-        "arrivee": "07:15",
-        "depart": "18:00",
-        "repasParents": false
+        "arrivee": "08:00",
+        "depart": "17:00"
       },
       "2": {
-        "actif": true,
-        "arrivee": "07:15",
-        "depart": "18:00",
-        "repasParents": false
+        "actif": false,
+        "arrivee": "",
+        "depart": ""
       },
       "3": {
         "actif": true,
-        "arrivee": "07:15",
-        "depart": "18:00",
-        "repasParents": false
+        "arrivee": "08:00",
+        "depart": "17:00"
       },
       "4": {
         "actif": true,
-        "arrivee": "07:15",
-        "depart": "13:00",
-        "repasParents": false
+        "arrivee": "08:00",
+        "depart": "17:00"
       },
       "5": {
         "actif": false,
-        "arrivee": "08:30",
-        "depart": "17:30",
-        "repasParents": false
+        "arrivee": "",
+        "depart": ""
       },
       "6": {
         "actif": false,
-        "arrivee": "08:30",
-        "depart": "17:30",
-        "repasParents": false
+        "arrivee": "",
+        "depart": ""
       }
     },
-    "planningPrevu": {},
+    "planningPrevu": {
+      "2026-08-03": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-04": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-06": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-07": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-10": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-11": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-13": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-14": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-17": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-18": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-20": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-21": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-24": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-25": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-27": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-28": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      },
+      "2026-08-31": {
+        "status": "prevu",
+        "arrivee": "08:00",
+        "depart": "17:00"
+      }
+    },
     "presences": []
   }
 }
