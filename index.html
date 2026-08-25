@@ -1958,22 +1958,35 @@
       const zoneArrivee = document.getElementById('ecart-arrivee-zone');
       const zoneDepart = document.getElementById('ecart-depart-zone');
 
+      // On mémorise le choix déjà fait par l'utilisateur (et le sens de l'écart auquel il
+      // correspondait), pour ne pas l'effacer silencieusement si l'autre champ horaire change.
+      const ancienChkArrivee = document.getElementById('chk-ecart-arrivee');
+      const ancienSensArrivee = ancienChkArrivee?.dataset.sens;
+      const ancienCocheArrivee = ancienChkArrivee?.checked;
+
+      const ancienChkDepart = document.getElementById('chk-ecart-depart');
+      const ancienSensDepart = ancienChkDepart?.dataset.sens;
+      const ancienCocheDepart = ancienChkDepart?.checked;
+
       zoneArrivee.innerHTML = '';
       zoneArrivee.style.display = 'none';
       zoneDepart.innerHTML = '';
       zoneDepart.style.display = 'none';
 
       if (prevu && prevu.arrivee && arrivee && arrivee !== prevu.arrivee) {
-        if (arrivee < prevu.arrivee) {
+        const sens = arrivee < prevu.arrivee ? 'avant' : 'apres';
+        const cocheParDefaut = sens === 'avant';
+        const coche = (ancienSensArrivee === sens) ? ancienCocheArrivee : cocheParDefaut;
+        if (sens === 'avant') {
           zoneArrivee.innerHTML = `
             <label class="checkbox-group">
-              <input type="checkbox" id="chk-ecart-arrivee" checked>
+              <input type="checkbox" id="chk-ecart-arrivee" data-sens="avant" ${coche ? 'checked' : ''}>
               <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée avant l'horaire prévu (${prevu.arrivee}) — Compter les heures ?</span>
             </label>`;
         } else {
           zoneArrivee.innerHTML = `
             <label class="checkbox-group">
-              <input type="checkbox" id="chk-ecart-arrivee">
+              <input type="checkbox" id="chk-ecart-arrivee" data-sens="apres" ${coche ? 'checked' : ''}>
               <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée après l'horaire prévu (${prevu.arrivee}) — Décompter les heures ?</span>
             </label>`;
         }
@@ -1981,16 +1994,19 @@
       }
 
       if (prevu && prevu.depart && depart && depart !== prevu.depart) {
-        if (depart < prevu.depart) {
+        const sens = depart < prevu.depart ? 'avant' : 'apres';
+        const cocheParDefaut = sens === 'apres';
+        const coche = (ancienSensDepart === sens) ? ancienCocheDepart : cocheParDefaut;
+        if (sens === 'avant') {
           zoneDepart.innerHTML = `
             <label class="checkbox-group">
-              <input type="checkbox" id="chk-ecart-depart">
+              <input type="checkbox" id="chk-ecart-depart" data-sens="avant" ${coche ? 'checked' : ''}>
               <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ avant l'horaire prévu (${prevu.depart}) — Décompter les heures ?</span>
             </label>`;
         } else {
           zoneDepart.innerHTML = `
             <label class="checkbox-group">
-              <input type="checkbox" id="chk-ecart-depart" checked>
+              <input type="checkbox" id="chk-ecart-depart" data-sens="apres" ${coche ? 'checked' : ''}>
               <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ après l'horaire prévu (${prevu.depart}) — Compter les heures ?</span>
             </label>`;
         }
@@ -2087,7 +2103,7 @@
       }
 
       enfants[activeEnfantId].presences = (enfants[activeEnfantId].presences || []).filter(p => p.date !== date);
-      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee: arriveeSaisie, depart: departSaisi, duree, hNorm, hComp, hSup, repas });
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
       sauvegarderGlobal();
       afficherPresences();
       if (document.getElementById('calendar-grid')) rendreCalendrier();
