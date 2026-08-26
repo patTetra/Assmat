@@ -172,8 +172,14 @@
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
     .cal-day-badge { font-size: 0.58rem; font-weight: 600; padding: 2px 3px; border-radius: 4px; text-align: center; width: 100%; }
     .cal-day-badge.off { color: var(--text-muted); font-size: 0.75rem; opacity: 0.4; }
-    .cal-day-del { position: absolute; top: 2px; left: 2px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; z-index: 2; }
-    .cal-day-del:hover, .cal-day-del:active { opacity: 0.85; }
+    .cal-day-del { position: absolute; bottom: 2px; right: 3px; font-size: 0.62rem; line-height: 1; opacity: 0.32; padding: 3px; cursor: pointer; transition: opacity 0.15s ease; z-index: 2; }
+    .cal-day-del:hover, .cal-day-del:active { opacity: 0.9; }
+
+    .week-actions { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.85rem; }
+    .week-action-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.5rem 0.7rem; }
+    .week-action-row span { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+    .week-action-row button { background: transparent; border: none; color: var(--danger); font-size: 0.85rem; cursor: pointer; padding: 2px 6px; opacity: 0.75; }
+    .week-action-row button:active { opacity: 1; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 1rem; }
     .modal-overlay.active { display: flex; }
@@ -412,6 +418,7 @@
         <button class="btn btn-primary btn-sm" onclick="genererPlanningMoisComplet()">⚡ Appliquer la semaine type</button>
         <button class="btn btn-secondary btn-sm" onclick="synchroniserICSMaintenant()">🔄 Forcer la synchro calendrier</button>
         <button class="btn btn-secondary btn-sm" onclick="telechargerICS()">📥 Télécharger le .ics</button>
+        <button class="btn btn-danger btn-sm" onclick="effacerMoisPlanning()">🗑️ Effacer le mois</button>
       </div>
 
       <div id="planning-total-mois" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem;"></div>
@@ -420,6 +427,8 @@
         <div>LUN</div><div>MAR</div><div>MER</div><div>JEU</div><div>VEN</div><div>SAM</div><div>DIM</div>
       </div>
       <div class="calendar-grid" id="calendar-grid"></div>
+
+      <div class="week-actions" id="planning-week-actions"></div>
     </div>
 
     <div class="card">
@@ -493,6 +502,37 @@
             <input type="checkbox" id="cfg-sorties-voiture">
             <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">🚗 Sorties autorisées en voiture</span>
           </label>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 1.25rem;">
+          <div class="form-group">
+            <label>Type de contrat</label>
+            <select id="cfg-type-contrat">
+              <option value="CDI">CDI</option>
+              <option value="CDD">CDD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jour de repos hebdomadaire</label>
+            <select id="cfg-jour-repos">
+              <option value="">-</option>
+              <option value="Lundi">Lundi</option>
+              <option value="Mardi">Mardi</option>
+              <option value="Mercredi">Mercredi</option>
+              <option value="Jeudi">Jeudi</option>
+              <option value="Vendredi">Vendredi</option>
+              <option value="Samedi">Samedi</option>
+              <option value="Dimanche">Dimanche</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>N° Pajemploi de l'employeur</label>
+            <input type="text" id="cfg-num-pajemploi" placeholder="Notification d'immatriculation Urssaf">
+          </div>
+          <div class="form-group">
+            <label>N° de sécurité sociale employeur</label>
+            <input type="text" id="cfg-num-secu-employeur" placeholder="15 chiffres">
+          </div>
         </div>
 
         <h2>Coordonnées des Parents</h2>
@@ -680,6 +720,11 @@
         </div>
 
         <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Agrément &amp; Assurances de l'assistante maternelle</div>
+          <div class="print-box-content" id="ctr-print-agrement"></div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
           <div class="print-box-title">Enfant concerné</div>
           <div class="print-box-content" id="ctr-print-enfant"></div>
         </div>
@@ -701,7 +746,11 @@
 
         <div class="legal-print-clause">
           <strong>Clauses générales :</strong><br>
-          Le présent contrat est régi par la Convention Collective Nationale des salariés du particulier employeur et emploi à domicile (assistants maternels du particulier employeur). Toute modification substantielle (horaires, rémunération, lieu d'accueil) fera l'objet d'un avenant écrit signé des deux parties. En cas de rupture, les parties respecteront les délais de préavis prévus par la convention collective en vigueur.
+          Le présent contrat est régi par la Convention Collective Nationale des Particuliers Employeurs et de l'Emploi à Domicile (IDCC 3239, en vigueur depuis le 1er janvier 2022, socle spécifique « assistants maternels »), ainsi que par le Code du travail et le Code de l'action sociale et des familles. Toute modification substantielle (horaires, rémunération, lieu d'accueil) fera l'objet d'un avenant écrit signé des deux parties.<br><br>
+          <strong>Période d'essai :</strong> conformément à la convention collective, une période d'essai est prévue dès le premier jour d'accueil effectif de l'enfant. Sa durée dépend du rythme d'accueil convenu (jusqu'à 3 mois pour un accueil de 1 à 3 jours par semaine, durée réduite au-delà) ; elle peut être rompue librement par l'une ou l'autre des parties, sans indemnité, sauf abus.<br><br>
+          <strong>Rupture du contrat :</strong> hors période d'essai, la partie qui prend l'initiative de la rupture doit respecter un délai de préavis (de 8 jours à 1 mois selon l'ancienneté de l'assistante maternelle), sauf faute grave, faute lourde ou retrait/suspension de l'agrément. Une indemnité de rupture est due à l'assistante maternelle à compter de 9 mois d'ancienneté, sauf faute grave ou lourde. Toute indemnité compensatrice de congés payés restant dus sera versée au moment de la rupture.<br><br>
+          <strong>Pièces à annexer au présent contrat :</strong> copie de l'agrément de l'assistante maternelle, attestation d'assurance responsabilité civile professionnelle en cours de validité, planning prévisionnel d'accueil (semaine type), et, le cas échéant, copie du titre de séjour et de l'autorisation de travail de l'assistante maternelle.<br><br>
+          Le présent contrat est établi en deux exemplaires originaux, un pour chaque partie, et doit être déclaré à Pajemploi (URSSAF) dans le mois suivant le début effectif de l'accueil.
         </div>
 
         <div class="print-signatures">
@@ -1148,6 +1197,47 @@
       </div>
 
       <div class="info-group" style="margin-bottom:1rem;">
+        <h3>📋 Mentions légales (agrément &amp; assurances)</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">
+          Obligatoires sur le contrat de travail (Code de l'action sociale et des familles, CCN IDCC 3239).
+        </p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>N° d'agrément</label>
+            <input type="text" id="assmat-num-agrement" placeholder="Délivré par le Conseil départemental">
+          </div>
+          <div class="form-group">
+            <label>Date de délivrance / dernier renouvellement</label>
+            <input type="date" id="assmat-date-agrement">
+          </div>
+          <div class="form-group">
+            <label>Capacité d'accueil (agrément)</label>
+            <input type="text" id="assmat-capacite-accueil" placeholder="ex : 3 enfants simultanément">
+          </div>
+          <div class="form-group">
+            <label>N° de sécurité sociale</label>
+            <input type="text" id="assmat-num-secu" placeholder="15 chiffres">
+          </div>
+          <div class="form-group">
+            <label>Assurance Responsabilité Civile Pro. — Compagnie</label>
+            <input type="text" id="assmat-assurance-rc-compagnie" placeholder="Nom de la compagnie">
+          </div>
+          <div class="form-group">
+            <label>Assurance RC Pro. — N° de police</label>
+            <input type="text" id="assmat-assurance-rc-police" placeholder="N° de contrat">
+          </div>
+          <div class="form-group">
+            <label>Assurance auto (si sorties en voiture) — Compagnie</label>
+            <input type="text" id="assmat-assurance-auto-compagnie" placeholder="Nom de la compagnie">
+          </div>
+          <div class="form-group">
+            <label>Assurance auto — N° de police</label>
+            <input type="text" id="assmat-assurance-auto-police" placeholder="N° de contrat">
+          </div>
+        </div>
+      </div>
+
+      <div class="info-group" style="margin-bottom:1rem;">
         <h3>☁️ Synchronisation GitHub</h3>
         <div class="grid-2">
         <div class="form-group">
@@ -1444,6 +1534,14 @@
       document.getElementById('assmat-ville').value = profilAssmat.ville || '';
       document.getElementById('assmat-telephone').value = profilAssmat.telephone || '';
       document.getElementById('assmat-email').value = profilAssmat.email || '';
+      document.getElementById('assmat-num-agrement').value = profilAssmat.numAgrement || '';
+      document.getElementById('assmat-date-agrement').value = profilAssmat.dateAgrement || '';
+      document.getElementById('assmat-capacite-accueil').value = profilAssmat.capaciteAccueil || '';
+      document.getElementById('assmat-num-secu').value = profilAssmat.numSecu || '';
+      document.getElementById('assmat-assurance-rc-compagnie').value = profilAssmat.assuranceRCCompagnie || '';
+      document.getElementById('assmat-assurance-rc-police').value = profilAssmat.assuranceRCPolice || '';
+      document.getElementById('assmat-assurance-auto-compagnie').value = profilAssmat.assuranceAutoCompagnie || '';
+      document.getElementById('assmat-assurance-auto-police').value = profilAssmat.assuranceAutoPolice || '';
 
       document.getElementById('gh-user').value = githubConfig.user || '';
       document.getElementById('gh-repo').value = githubConfig.repo || '';
@@ -1465,7 +1563,15 @@
         codePostal: document.getElementById('assmat-code-postal').value.trim(),
         ville: document.getElementById('assmat-ville').value.trim(),
         telephone: document.getElementById('assmat-telephone').value.trim(),
-        email: document.getElementById('assmat-email').value.trim()
+        email: document.getElementById('assmat-email').value.trim(),
+        numAgrement: document.getElementById('assmat-num-agrement').value.trim(),
+        dateAgrement: document.getElementById('assmat-date-agrement').value,
+        capaciteAccueil: document.getElementById('assmat-capacite-accueil').value.trim(),
+        numSecu: document.getElementById('assmat-num-secu').value.trim(),
+        assuranceRCCompagnie: document.getElementById('assmat-assurance-rc-compagnie').value.trim(),
+        assuranceRCPolice: document.getElementById('assmat-assurance-rc-police').value.trim(),
+        assuranceAutoCompagnie: document.getElementById('assmat-assurance-auto-compagnie').value.trim(),
+        assuranceAutoPolice: document.getElementById('assmat-assurance-auto-police').value.trim()
       };
 
       localStorage.setItem('assmat_profil', JSON.stringify(profilAssmat));
@@ -1890,6 +1996,7 @@
       }
 
       mettreAJourTotalMoisPlanning();
+      rendreActionsSemaines(year, month);
     }
 
     function supprimerJourPlanning(isoDate) {
@@ -1897,6 +2004,82 @@
       if (!planning[isoDate]) return;
       if (!confirm(`Effacer les horaires du ${isoDate} ?`)) return;
       delete planning[isoDate];
+      sauvegarderGlobal();
+      rendreCalendrier();
+    }
+
+    // Découpe le mois affiché en semaines (lundi -> dimanche) pour proposer un effacement groupé
+    function rendreActionsSemaines(year, month) {
+      const zone = document.getElementById('planning-week-actions');
+      if (!zone) return;
+
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+      const lastDay = new Date(year, month + 1, 0).getDate();
+
+      const semaines = [];
+      let semaineCourante = [];
+
+      for (let day = 1; day <= lastDay; day++) {
+        const dateObj = new Date(year, month, day);
+        let dow = dateObj.getDay() - 1;
+        if (dow === -1) dow = 6;
+
+        const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        semaineCourante.push(isoDate);
+
+        if (dow === 6 || day === lastDay) {
+          semaines.push(semaineCourante);
+          semaineCourante = [];
+        }
+      }
+
+      let html = '';
+      semaines.forEach(joursIso => {
+        const nbJoursPlanifies = joursIso.filter(iso => planning[iso] && planning[iso].arrivee && planning[iso].depart).length;
+        if (nbJoursPlanifies === 0) return;
+
+        const debut = joursIso[0].split('-').reverse().slice(0, 2).join('/');
+        const fin = joursIso[joursIso.length - 1].split('-').reverse().slice(0, 2).join('/');
+
+        html += `
+          <div class="week-action-row">
+            <span>Semaine du ${debut} au ${fin} · ${nbJoursPlanifies} j posé${nbJoursPlanifies > 1 ? 's' : ''}</span>
+            <button onclick="effacerSemainePlanning('${joursIso[0]}', '${joursIso[joursIso.length - 1]}')" title="Effacer cette semaine">🗑️ Effacer</button>
+          </div>
+        `;
+      });
+
+      zone.innerHTML = html;
+    }
+
+    function effacerSemainePlanning(isoDebut, isoFin) {
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+      const joursConcernes = Object.keys(planning).filter(iso => iso >= isoDebut && iso <= isoFin);
+      if (joursConcernes.length === 0) return;
+
+      if (!confirm(`Effacer les horaires de la semaine du ${isoDebut.split('-').reverse().join('/')} au ${isoFin.split('-').reverse().join('/')} (${joursConcernes.length} jour(s)) ?`)) return;
+
+      joursConcernes.forEach(iso => delete planning[iso]);
+      sauvegarderGlobal();
+      rendreCalendrier();
+    }
+
+    function effacerMoisPlanning() {
+      const year = currentDateState.getFullYear();
+      const month = currentDateState.getMonth();
+      const isoMois = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+      const planning = enfants[activeEnfantId].planningPrevu || {};
+      const joursConcernes = Object.keys(planning).filter(iso => iso.startsWith(isoMois));
+
+      if (joursConcernes.length === 0) {
+        alert(`Aucun horaire posé pour ${MOIS[month]} ${year}.`);
+        return;
+      }
+
+      if (!confirm(`Effacer tous les horaires posés en ${MOIS[month]} ${year} (${joursConcernes.length} jour(s)) ? Cette action est irréversible.`)) return;
+
+      joursConcernes.forEach(iso => delete planning[iso]);
       sauvegarderGlobal();
       rendreCalendrier();
     }
@@ -2669,6 +2852,10 @@
       document.getElementById('cfg-date-debut-contrat').value = c.dateDebut || '';
       document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
       document.getElementById('cfg-mois-lisse').checked = c.moisLisse !== false;
+      document.getElementById('cfg-type-contrat').value = c.typeContrat || 'CDI';
+      document.getElementById('cfg-jour-repos').value = c.jourRepos || '';
+      document.getElementById('cfg-num-pajemploi').value = c.numPajemploi || '';
+      document.getElementById('cfg-num-secu-employeur').value = c.numSecuEmployeur || '';
 
       document.getElementById('cfg-mere-nom').value = c.mere?.nom || '';
       document.getElementById('cfg-mere-prenom').value = c.mere?.prenom || '';
@@ -2723,6 +2910,10 @@
         dateDebut: document.getElementById('cfg-date-debut-contrat').value,
         sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
         moisLisse: moisLisse,
+        typeContrat: document.getElementById('cfg-type-contrat').value || 'CDI',
+        jourRepos: document.getElementById('cfg-jour-repos').value,
+        numPajemploi: document.getElementById('cfg-num-pajemploi').value.trim(),
+        numSecuEmployeur: document.getElementById('cfg-num-secu-employeur').value.trim(),
         mere: { nom: document.getElementById('cfg-mere-nom').value, prenom: document.getElementById('cfg-mere-prenom').value, adresse: document.getElementById('cfg-mere-adresse').value, port: document.getElementById('cfg-mere-port').value, maison: document.getElementById('cfg-mere-maison').value, bureau: document.getElementById('cfg-mere-bureau').value, email: document.getElementById('cfg-mere-email').value },
         pere: { nom: document.getElementById('cfg-pere-nom').value, prenom: document.getElementById('cfg-pere-prenom').value, adresse: document.getElementById('cfg-pere-adresse').value, port: document.getElementById('cfg-pere-port').value, maison: document.getElementById('cfg-pere-maison').value, bureau: document.getElementById('cfg-pere-bureau').value, email: document.getElementById('cfg-pere-email').value },
         urgence: { nom: document.getElementById('cfg-urgence-nom').value, tel: document.getElementById('cfg-urgence-tel').value },
@@ -2996,11 +3187,21 @@
         Contact d'urgence : ${c.urgence?.nom || 'N/C'} — ${c.urgence?.tel || 'N/C'}
       `;
 
+      document.getElementById('ctr-print-agrement').innerHTML = `
+        • N° d'agrément : <strong>${profilAssmat.numAgrement || '…………………………'}</strong> — Délivré / renouvelé le : <strong>${profilAssmat.dateAgrement ? formaterDateFr(profilAssmat.dateAgrement) : '……………………'}</strong><br>
+        • Capacité d'accueil autorisée : ${profilAssmat.capaciteAccueil || '……………………'}<br>
+        • N° de sécurité sociale de l'assistante maternelle : ${profilAssmat.numSecu || '……………………'}<br>
+        • Assurance Responsabilité Civile Professionnelle : ${profilAssmat.assuranceRCCompagnie || '……………………'}${profilAssmat.assuranceRCPolice ? ` — N° de police : ${profilAssmat.assuranceRCPolice}` : ' — N° de police : ……………………'}
+        ${c.sortiesVoiture ? `<br>• Assurance automobile (sorties autorisées) : ${profilAssmat.assuranceAutoCompagnie || '……………………'}${profilAssmat.assuranceAutoPolice ? ` — N° de police : ${profilAssmat.assuranceAutoPolice}` : ' — N° de police : ……………………'}` : ''}
+      `;
+
       document.getElementById('ctr-print-conditions').innerHTML = `
-        • Date de début du contrat : <strong>${formaterDateFr(c.dateDebut) || 'N/C'}</strong><br>
+        • Type de contrat : <strong>${c.typeContrat || 'CDI'}</strong> — Date de début : <strong>${formaterDateFr(c.dateDebut) || 'N/C'}</strong><br>
         • Horaire hebdomadaire prévu : <strong>${c.hHebdo || 0}h / sem</strong> sur ${c.jHebdo || 0} jour(s)<br>
+        • Jour de repos hebdomadaire : ${c.jourRepos || '……………………'}<br>
         • Semaines d'accueil / an : <strong>${c.semainesAn || 52}</strong><br>
-        • Sorties en voiture : ${c.sortiesVoiture ? 'Autorisées' : 'Non autorisées'}
+        • Sorties en voiture : ${c.sortiesVoiture ? 'Autorisées' : 'Non autorisées'}<br>
+        • N° Pajemploi de l'employeur : ${c.numPajemploi || '……………………'} — N° de sécurité sociale de l'employeur : ${c.numSecuEmployeur || '……………………'}
       `;
 
       document.getElementById('ctr-print-semaine').innerHTML = genererTableauSemaineType(st);
