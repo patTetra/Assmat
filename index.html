@@ -31,15 +31,22 @@
       --radius-sm: 8px;
     }
 
-    html.light-mode {
+    body.light-mode {
       --bg: #f1f5f9;
       --surface: #ffffff;
-      --surface-card: #eef2f7;
-      --border: rgba(15, 23, 42, 0.09);
+      --surface-card: #e9edf3;
+      --border: rgba(15, 23, 42, 0.1);
 
       --text-main: #0f172a;
       --text-muted: #64748b;
     }
+
+    body.light-mode input,
+    body.light-mode select { color: var(--text-main); }
+    body.light-mode header h1,
+    body.light-mode .card h2,
+    body.light-mode .slide-title,
+    body.light-mode .cal-day-num { color: var(--text-main); }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { max-width: 100vw; overflow-x: hidden; }
@@ -65,8 +72,7 @@
     }
     .brand-icon-btn:active { transform: scale(0.92); }
 
-    header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--text-main); line-height: 1.1; cursor: pointer; transition: opacity 0.15s ease; user-select: none; }
-    header h1:active { opacity: 0.6; }
+    header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 800; color: #fff; line-height: 1.1; }
     header p { font-size: 0.8rem; color: var(--text-muted); }
 
     .sync-status-container { display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; }
@@ -83,14 +89,7 @@
 
     .child-slide { flex: 0 0 100%; scroll-snap-align: start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .slide-header { display: flex; justify-content: space-between; align-items: center; }
-    .slide-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-
-    .dashboard-slide { display: flex; flex-direction: column; }
-    .dashboard-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; max-height: 45vh; overflow-y: auto; }
-    .dashboard-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.7rem 0.85rem; }
-    .dashboard-row-info { display: flex; flex-direction: column; gap: 0.3rem; cursor: pointer; flex: 1; min-width: 0; }
-    .dashboard-row-name { font-weight: 700; font-size: 0.92rem; color: var(--text-main); }
-    .dashboard-row-empty { color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem; }
+    .slide-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; }
 
     .slider-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-card); transition: all 0.2s ease; }
@@ -109,7 +108,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     .card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.15rem; margin-bottom: 1.25rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
+    .card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: #fff; }
 
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.85rem; }
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; }
@@ -117,14 +116,14 @@
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
     
-    input, select { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; color: var(--text-main); background: var(--surface-card); outline: none; }
+    input, select { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; color: #fff; background: var(--surface-card); outline: none; }
 
     .checkbox-group { display: flex; align-items: center; gap: 0.6rem; background: var(--surface-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border); cursor: pointer; }
     .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 
     .btn { border: none; padding: 0.75rem 1.2rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.88rem; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
     .btn-primary { background: var(--accent-gradient); color: white; box-shadow: 0 4px 14px var(--accent-glow); }
-    .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
+    .btn-secondary { background: var(--surface-card); color: #fff; border: 1px solid var(--border); }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
     .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
 
@@ -139,11 +138,15 @@
     .cal-day.has-presence { background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(129, 140, 248, 0.4); opacity: 1; }
     .cal-day.is-today { border: 2px solid var(--accent-light); box-shadow: 0 0 0 1px var(--accent-light), 0 0 10px var(--accent-glow); }
     .cal-day.is-today .cal-day-num { color: var(--accent-light); }
-    .cal-day-num { font-size: 0.75rem; font-weight: 700; color: var(--text-main); width: 100%; text-align: left; }
+    .cal-day-num { font-size: 0.75rem; font-weight: 700; color: #fff; width: 100%; text-align: left; }
     .cal-day-check { position: absolute; top: 2px; right: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 0.5rem; line-height: 1; color: #fff; font-weight: 900; box-shadow: 0 0 4px rgba(16, 185, 129, 0.6); }
+    .inline-check { position: static !important; display: inline-flex !important; width: 16px; height: 16px; font-size: 0.6rem; margin-left: 6px; vertical-align: middle; }
+
+    .accueil-enfant-card.non-prevu { opacity: 0.5; }
+    .accueil-enfant-card.non-prevu h2 { color: var(--text-muted); }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
-    .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: var(--text-main); }
+    .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
     .cal-day-badge { font-size: 0.58rem; font-weight: 600; padding: 2px 3px; border-radius: 4px; text-align: center; width: 100%; }
     .cal-day-badge.off { color: var(--text-muted); font-size: 0.75rem; opacity: 0.4; }
     .cal-day-del { position: absolute; top: -3px; right: -1px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; }
@@ -157,7 +160,7 @@
     .week-grid { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
     .week-day-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border); }
     .week-day-row.weekend-row { background: rgba(15, 23, 42, 0.4); opacity: 0.7; }
-    .week-day-row label { font-size: 0.8rem; text-transform: none; color: var(--text-main); width: 80px; }
+    .week-day-row label { font-size: 0.8rem; text-transform: none; color: #fff; width: 80px; }
 
     .dup-panel { display: none; background: rgba(99, 102, 241, 0.1); border: 1px dashed rgba(129, 140, 248, 0.4); border-radius: var(--radius-sm); padding: 0.6rem; margin: -0.15rem 0 0.35rem 0; }
     .dup-panel.active { display: block; }
@@ -181,7 +184,7 @@
 
     .summary-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
     .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
-    .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
+    .summary-line.total { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.85rem; margin-bottom: 0; font-size: 1.05rem; font-weight: 800; color: #fff; }
 
     .legal-alert-box { margin-top: 0.85rem; padding: 0.85rem; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: var(--radius-md); font-size: 0.8rem; color: #fecdd3; line-height: 1.4; }
     .legal-alert-box h4 { color: #f43f5e; font-size: 0.85rem; font-weight: 800; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
@@ -205,7 +208,7 @@
       html { max-width: 100% !important; }
       body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; font-family: 'Helvetica Neue', Arial, sans-serif !important; font-size: 9.5pt !important; }
       #engagement, #paie { width: 100% !important; max-width: 100% !important; }
-      header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #presence, #planning, #admin, #contrat, #impots { display: none !important; }
+      header, .slider-container, .nav-tabs, .no-print, .modal-overlay, #accueil, #presence, #planning, #admin, #contrat, #impots { display: none !important; }
       
       .print-only { display: block !important; }
       .card { background: #ffffff !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
@@ -242,19 +245,12 @@
   </style>
 </head>
 <body class="print-mode-paie">
-  <script>
-    (function() {
-      if (localStorage.getItem('assmat_theme') === 'light') {
-        document.documentElement.classList.add('light-mode');
-      }
-    })();
-  </script>
 
   <header class="no-print">
     <div class="brand">
       <button class="brand-icon-btn" onclick="ouvrirModalConfigGitHub()" title="Paramètres d'application & Synchro">⚙️</button>
-      <div>
-        <h1 onclick="basculerModeNuit()" title="Basculer entre mode jour et mode nuit">AssMat Flow</h1>
+      <div onclick="toggleTheme()" title="Basculer le mode jour/nuit" style="cursor:pointer;">
+        <h1>AssMat Flow <span id="theme-toggle-icon" style="font-size:0.9rem;">🌙</span></h1>
         <p>Suivi d'assistance maternelle</p>
       </div>
     </div>
@@ -274,15 +270,25 @@
 
   <!-- NAVIGATION PRINCIPALE -->
   <nav class="nav-tabs no-print main-nav">
-    <button class="tab-btn active" onclick="switchMainTab('presence')">📅 Journée</button>
+    <button class="tab-btn active" onclick="switchMainTab('accueil')">🏠 Aujourd'hui</button>
+    <button class="tab-btn" onclick="switchMainTab('presence')">📅 Journée</button>
     <button class="tab-btn" onclick="switchMainTab('planning')">🗓️ Planning</button>
     <button class="tab-btn" onclick="switchMainTab('admin')">📁 Paramètres</button>
   </nav>
 
-  <!-- TAB 1 : VALIDATION DU JOUR -->
-  <div id="presence" class="tab-content main-content active">
+  <!-- TAB 0 : PAGE D'ACCUEIL DU JOUR -->
+  <div id="accueil" class="tab-content main-content active">
+    <div class="card no-print" style="text-align:center;">
+      <div id="accueil-date" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
+      <div id="accueil-heure" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:2.2rem; color:var(--accent-light); margin-top:2px;"></div>
+    </div>
+    <div id="accueil-enfants-list"></div>
+  </div>
+
+  <!-- TAB 1 : VALIDATION DU JOUR (PAR FICHE ENFANT) -->
+  <div id="presence" class="tab-content main-content">
     <div class="card no-print">
-      <h2>Saisie / Validation rapide du jour</h2>
+      <h2>Saisie / Validation rapide du jour <span id="presence-check-badge"></span></h2>
       <div class="form-group" style="margin-bottom: 0.85rem;">
         <label>Date</label>
         <input type="date" id="input-date" onchange="chargerHorairePrevuPourDate()">
@@ -446,7 +452,7 @@
         <div style="margin-bottom: 1.25rem;">
           <label class="checkbox-group">
             <input type="checkbox" id="cfg-sorties-voiture">
-            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">🚗 Sorties autorisées en voiture</span>
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">🚗 Sorties autorisées en voiture</span>
           </label>
         </div>
 
@@ -507,7 +513,7 @@
         <div style="margin-bottom: 1rem;">
           <label class="checkbox-group">
             <input type="checkbox" id="cfg-mois-lisse" onchange="toggleLissageState()">
-            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">📊 Mois lissé (Mensualisation fixe)</span>
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">📊 Mois lissé (Mensualisation fixe)</span>
           </label>
         </div>
 
@@ -774,7 +780,7 @@
             </div>
             <div>
               <span style="font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Enfant & Parents</span><br>
-              <strong id="fp-enfant" style="font-size:0.9rem; color:var(--text-main);"></strong><br>
+              <strong id="fp-enfant" style="font-size:0.9rem; color:#fff;"></strong><br>
               <span id="fp-parent" style="font-size:0.78rem; color:var(--text-muted);"></span>
             </div>
           </div>
@@ -885,7 +891,7 @@
         <div style="margin-bottom: 1rem;">
           <label class="checkbox-group">
             <input type="checkbox" id="imp-tous-enfants" checked onchange="calculerImpotsAnnuel()">
-            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">Consolider tous les enfants sur cette période</span>
+            <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">Consolider tous les enfants sur cette période</span>
           </label>
         </div>
 
@@ -938,7 +944,7 @@
   <!-- MODAL CONFIGURATION GITHUB -->
   <div class="modal-overlay" id="modal-config-gh">
     <div class="modal">
-      <h2 style="margin-bottom:1rem; font-size:1.1rem; color:var(--text-main);">⚙️ Paramètres Application & GitHub</h2>
+      <h2 style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">⚙️ Paramètres Application & GitHub</h2>
 
       <div class="info-group" style="margin-bottom:1rem;">
         <h3>👩‍🍼 Mon profil d'assistante maternelle</h3>
@@ -1033,7 +1039,7 @@
   <!-- MODAL EDITION JOURNEE -->
   <div class="modal-overlay" id="modal-day">
     <div class="modal">
-      <h2 id="modal-date-title" style="margin-bottom:1rem; font-size:1.1rem; color:var(--text-main);">Modifier la journée</h2>
+      <h2 id="modal-date-title" style="margin-bottom:1rem; font-size:1.1rem; color:#fff;">Modifier la journée</h2>
       <div id="modal-times-container">
         <div class="grid-2" style="margin-bottom:0.8rem;">
           <div class="form-group">
@@ -1062,6 +1068,23 @@
     const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
     let currentDateState = new Date();
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('assmat_theme', isLight ? 'light' : 'dark');
+      const icon = document.getElementById('theme-toggle-icon');
+      if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+    }
+
+    function appliquerThemeSauvegarde() {
+      const theme = localStorage.getItem('assmat_theme');
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) icon.textContent = '☀️';
+      }
+    }
     let selectedIsoDate = null;
     let githubFileSha = null;
     let icsFileSha = null;
@@ -1194,9 +1217,6 @@
 
     normaliserEtMigrerDonnees();
     let activeEnfantId = localStorage.getItem('assmat_active_id') || Object.keys(enfants)[0];
-    // Index de la slide actuellement affichée dans le slider (0 = tableau de bord du jour,
-    // toujours affiché en premier à l'ouverture de l'application ; 1..n = enfants).
-    let currentSlideIndex = 0;
 
     const today = new Date();
     const defaultMonthVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -1493,6 +1513,7 @@
     }
 
     function rafraichirTouteLInterface() {
+      rendreAccueil();
       rendreSlider();
       chargerFormulaireContrat();
       chargerFormulaireEngagement();
@@ -1512,19 +1533,6 @@
       track.innerHTML = ''; dots.innerHTML = '';
 
       const keys = Object.keys(enfants);
-
-      // Slide 0 : tableau de bord de validation du jour, tous enfants confondus.
-      // C'est toujours la première slide, affichée par défaut à l'ouverture de l'app.
-      const dashSlide = document.createElement('div');
-      dashSlide.className = 'child-slide dashboard-slide';
-      dashSlide.id = 'slide-dashboard';
-      dashSlide.innerHTML = construireContenuDashboardJour(keys);
-      track.appendChild(dashSlide);
-
-      const dotDash = document.createElement('div');
-      dotDash.className = `dot ${currentSlideIndex === 0 ? 'active' : ''}`;
-      dots.appendChild(dotDash);
-
       keys.forEach((id, index) => {
         const enf = enfants[id];
         const c = enf.contrat;
@@ -1553,113 +1561,12 @@
         track.appendChild(slide);
 
         const dot = document.createElement('div');
-        dot.className = `dot ${(index + 1) === currentSlideIndex ? 'active' : ''}`;
+        dot.className = `dot ${id === activeEnfantId ? 'active' : ''}`;
         dots.appendChild(dot);
       });
 
-      setTimeout(() => { track.scrollLeft = currentSlideIndex * track.offsetWidth; }, 50);
-    }
-
-    // Construit le contenu (vertical, sous forme de liste) de la slide "tableau de bord"
-    // récapitulant, pour la journée en cours, le statut de validation de chaque enfant.
-    function construireContenuDashboardJour(keys) {
-      const todayISO = new Date().toISOString().split('T')[0];
-      const todayFR = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-
-      if (!keys || keys.length === 0) {
-        return `
-          <div class="slide-header">
-            <div class="slide-title">📋 Validation du jour</div>
-          </div>
-          <p class="dashboard-row-empty">Ajoutez un enfant pour commencer le suivi des journées.</p>
-        `;
-      }
-
-      let nbValides = 0;
-
-      const lignes = keys.map(id => {
-        const enf = enfants[id];
-        const c = enf.contrat || {};
-        const prenom = c.prenomEnfant || c.prenom || 'Enfant';
-        const prevu = (enf.planningPrevu || {})[todayISO];
-        const fait = (enf.presences || []).find(p => p.date === todayISO);
-
-        let statutHtml, actionHtml;
-        if (fait) {
-          nbValides++;
-          statutHtml = `<span class="badge badge-success">✅ ${fait.arrivee} – ${fait.depart}</span>`;
-          actionHtml = `<button class="btn btn-secondary btn-sm" onclick="allerAValidationEnfant('${id}')">Modifier</button>`;
-        } else if (prevu && prevu.arrivee) {
-          statutHtml = `<span class="badge badge-warning">⏳ Prévu ${prevu.arrivee} – ${prevu.depart}</span>`;
-          actionHtml = `<button class="btn btn-primary btn-sm" onclick="validerJourneeRapide('${id}')">Valider</button>`;
-        } else {
-          statutHtml = `<span style="font-size:0.75rem; color:var(--text-muted);">Pas de planning prévu</span>`;
-          actionHtml = `<button class="btn btn-secondary btn-sm" onclick="allerAValidationEnfant('${id}')">Saisir</button>`;
-        }
-
-        return `
-          <div class="dashboard-row" data-id="${id}">
-            <div class="dashboard-row-info" onclick="allerAValidationEnfant('${id}')">
-              <div class="dashboard-row-name">👶 ${prenom}</div>
-              ${statutHtml}
-            </div>
-            <div class="dashboard-row-action">${actionHtml}</div>
-          </div>
-        `;
-      }).join('');
-
-      return `
-        <div class="slide-header">
-          <div>
-            <div class="slide-title">📋 Validation du jour</div>
-            <div style="font-size:0.78rem; color:var(--text-muted); text-transform:capitalize; margin-top:2px;">${todayFR}</div>
-          </div>
-          <span class="badge ${nbValides === keys.length ? 'badge-success' : 'badge-warning'}">${nbValides}/${keys.length} validé${keys.length > 1 ? 's' : ''}</span>
-        </div>
-        <div class="dashboard-list">${lignes}</div>
-      `;
-    }
-
-    // Passe à l'onglet "Journée" pré-rempli pour l'enfant donné (saisie/modification complète),
-    // et positionne le slider sur la slide de cet enfant.
-    function allerAValidationEnfant(id) {
-      activeEnfantId = id;
-      localStorage.setItem('assmat_active_id', id);
-      const keys = Object.keys(enfants);
-      const idx = keys.indexOf(id);
-      if (idx >= 0) currentSlideIndex = idx + 1;
-
-      switchMainTab('presence');
-      document.getElementById('input-date').valueAsDate = new Date();
-      chargerHorairePrevuPourDate();
-      rendreSlider();
-
-      const cible = document.getElementById('presence');
-      if (cible) cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    // Validation en un tap depuis le tableau de bord : utilise l'horaire prévu du jour
-    // (ou des horaires par défaut) sans repas déclarés — modifiable ensuite via "Modifier".
-    function validerJourneeRapide(id) {
-      const todayISO = new Date().toISOString().split('T')[0];
-      const prevu = (enfants[id].planningPrevu || {})[todayISO] || {};
-      const arrivee = prevu.arrivee || '08:30';
-      const depart = prevu.depart || '17:30';
-      const repas = { petitDej: 'non', dejeuner: 'non', gouter: 'non', diner: 'non' };
-
-      enregistrerPresence(id, todayISO, arrivee, depart, repas);
-
-      rendreSlider();
-      if (id === activeEnfantId) {
-        afficherPresences();
-        if (document.getElementById('calendar-grid')) rendreCalendrier();
-        chargerHorairePrevuPourDate();
-      }
-    }
-
-    function basculerModeNuit() {
-      const estClair = document.documentElement.classList.toggle('light-mode');
-      localStorage.setItem('assmat_theme', estClair ? 'light' : 'dark');
+      const activeIndex = keys.indexOf(activeEnfantId);
+      if(activeIndex >= 0) { setTimeout(() => { track.scrollLeft = activeIndex * track.offsetWidth; }, 50); }
     }
 
     function calculerAge(dateNaissance) {
@@ -1675,18 +1582,11 @@
     function handleSliderScroll() {
       const track = document.getElementById('slider-track');
       const index = Math.round(track.scrollLeft / track.offsetWidth);
-      if (index === currentSlideIndex) return;
-
-      currentSlideIndex = index;
-      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
-
-      if (index === 0) return; // slide "tableau de bord" : pas d'enfant actif associé
-
       const keys = Object.keys(enfants);
-      const id = keys[index - 1];
-      if (id && id !== activeEnfantId) {
-        activeEnfantId = id;
+      if (keys[index] && keys[index] !== activeEnfantId) {
+        activeEnfantId = keys[index];
         localStorage.setItem('assmat_active_id', activeEnfantId);
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
         rafraichirTouteLInterface();
       }
     }
@@ -1715,7 +1615,6 @@
         planningPrevu: {}, presences: []
       };
       activeEnfantId = id;
-      currentSlideIndex = Object.keys(enfants).indexOf(id) + 1;
       sauvegarderGlobal();
       rafraichirTouteLInterface();
       switchMainTab('admin');
@@ -1728,7 +1627,6 @@
       if (confirm(`Supprimer le profil de ${prenom} ?`)) {
         delete enfants[activeEnfantId];
         activeEnfantId = Object.keys(enfants)[0];
-        currentSlideIndex = 1;
         sauvegarderGlobal();
         rafraichirTouteLInterface();
       }
@@ -2076,6 +1974,9 @@
       const existant = (enfants[activeEnfantId].presences || []).find(p => p.date === date);
       const prev = (enfants[activeEnfantId].planningPrevu || {})[date];
 
+      const checkBadge = document.getElementById('presence-check-badge');
+      if (checkBadge) checkBadge.innerHTML = existant ? `<span class="cal-day-check inline-check" title="Journée validée">✓</span>` : '';
+
       const rPetitDej = document.getElementById('input-repas-petitdej');
       const rDejeuner = document.getElementById('input-repas-dejeuner');
       const rGouter = document.getElementById('input-repas-gouter');
@@ -2133,13 +2034,13 @@
           zoneArrivee.innerHTML = `
             <label class="checkbox-group">
               <input type="checkbox" id="chk-ecart-arrivee" data-sens="avant" ${coche ? 'checked' : ''}>
-              <span style="font-size:0.82rem; font-weight:600; color:var(--text-main);">⏱️ Arrivée avant l'horaire prévu (${prevu.arrivee}) — Compter les heures ?</span>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée avant l'horaire prévu (${prevu.arrivee}) — Compter les heures ?</span>
             </label>`;
         } else {
           zoneArrivee.innerHTML = `
             <label class="checkbox-group">
               <input type="checkbox" id="chk-ecart-arrivee" data-sens="apres" ${coche ? 'checked' : ''}>
-              <span style="font-size:0.82rem; font-weight:600; color:var(--text-main);">⏱️ Arrivée après l'horaire prévu (${prevu.arrivee}) — Décompter les heures ?</span>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée après l'horaire prévu (${prevu.arrivee}) — Décompter les heures ?</span>
             </label>`;
         }
         zoneArrivee.style.display = 'block';
@@ -2153,17 +2054,168 @@
           zoneDepart.innerHTML = `
             <label class="checkbox-group">
               <input type="checkbox" id="chk-ecart-depart" data-sens="avant" ${coche ? 'checked' : ''}>
-              <span style="font-size:0.82rem; font-weight:600; color:var(--text-main);">⏱️ Départ avant l'horaire prévu (${prevu.depart}) — Décompter les heures ?</span>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ avant l'horaire prévu (${prevu.depart}) — Décompter les heures ?</span>
             </label>`;
         } else {
           zoneDepart.innerHTML = `
             <label class="checkbox-group">
               <input type="checkbox" id="chk-ecart-depart" data-sens="apres" ${coche ? 'checked' : ''}>
-              <span style="font-size:0.82rem; font-weight:600; color:var(--text-main);">⏱️ Départ après l'horaire prévu (${prevu.depart}) — Compter les heures ?</span>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ après l'horaire prévu (${prevu.depart}) — Compter les heures ?</span>
             </label>`;
         }
         zoneDepart.style.display = 'block';
       }
+    }
+
+    /* --- PAGE D'ACCUEIL DU JOUR --- */
+
+    function getTodayIso() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getIdxJourSemaine(dateObj) {
+      let idx = dateObj.getDay() - 1;
+      if (idx === -1) idx = 6;
+      return idx;
+    }
+
+    function majHorlogeAccueil() {
+      const dateZone = document.getElementById('accueil-date');
+      const heureZone = document.getElementById('accueil-heure');
+      if (!dateZone || !heureZone) return;
+      const now = new Date();
+      dateZone.innerText = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      heureZone.innerText = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function optionsRepasHtml(selectId, valeurActuelle) {
+      const v = valeurActuelle || 'non';
+      return `
+        <select id="${selectId}">
+          <option value="non" ${v === 'non' ? 'selected' : ''}>Non</option>
+          <option value="parent" ${v === 'parent' ? 'selected' : ''}>Parent</option>
+          <option value="assmat" ${v === 'assmat' ? 'selected' : ''}>Assmat</option>
+        </select>`;
+    }
+
+    function rendreAccueil() {
+      majHorlogeAccueil();
+      const container = document.getElementById('accueil-enfants-list');
+      if (!container) return;
+
+      const todayIso = getTodayIso();
+      const idxJour = getIdxJourSemaine(new Date());
+      const keys = Object.keys(enfants);
+
+      if (keys.length === 0) {
+        container.innerHTML = `<div class="card" style="text-align:center; color:var(--text-muted);">Aucun enfant enregistré pour le moment.</div>`;
+        return;
+      }
+
+      container.innerHTML = keys.map(id => {
+        const enf = enfants[id];
+        const c = enf.contrat || {};
+        const prenom = c.prenomEnfant || c.prenom || 'Enfant';
+        const nom = c.nomEnfant || c.nom || '';
+
+        const st = enf.semaineType || {};
+        const jourInfo = st[idxJour] || { actif: (idxJour < 5) };
+        const estPrevu = !!jourInfo.actif;
+
+        const presenceExistante = (enf.presences || []).find(p => p.date === todayIso);
+        const dejaValide = !!presenceExistante;
+        const repasExistant = (presenceExistante && typeof presenceExistante.repas === 'object') ? presenceExistante.repas : {};
+
+        const arriveeDefaut = presenceExistante?.arrivee || jourInfo.arrivee || '08:30';
+        const departDefaut = presenceExistante?.depart || jourInfo.depart || '17:30';
+
+        const checkHtml = dejaValide ? `<span class="cal-day-check inline-check" title="Journée déjà validée">✓</span>` : '';
+        const nonPrevuBadge = estPrevu ? '' : `<span class="badge badge-warning">Non prévu aujourd'hui</span>`;
+
+        return `
+          <div class="card no-print accueil-enfant-card ${estPrevu ? '' : 'non-prevu'}">
+            <h2 style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+              <span>👶 ${prenom} ${nom}${checkHtml}</span>
+              ${nonPrevuBadge}
+            </h2>
+            <div class="grid-2" style="margin-bottom: 0.6rem;">
+              <div class="form-group">
+                <label>Arrivée réelle</label>
+                <input type="time" id="acc-arrivee-${id}" value="${arriveeDefaut}">
+              </div>
+              <div class="form-group">
+                <label>Départ réel</label>
+                <input type="time" id="acc-depart-${id}" value="${departDefaut}">
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>🥐 Petit-déjeuner</label>
+                ${optionsRepasHtml(`acc-repas-petitdej-${id}`, repasExistant.petitDej)}
+              </div>
+              <div class="form-group">
+                <label>🍽️ Déjeuner</label>
+                ${optionsRepasHtml(`acc-repas-dejeuner-${id}`, repasExistant.dejeuner)}
+              </div>
+              <div class="form-group">
+                <label>🍪 Goûter</label>
+                ${optionsRepasHtml(`acc-repas-gouter-${id}`, repasExistant.gouter)}
+              </div>
+              <div class="form-group">
+                <label>🍲 Dîner</label>
+                ${optionsRepasHtml(`acc-repas-diner-${id}`, repasExistant.diner)}
+              </div>
+            </div>
+            <br>
+            <button class="btn btn-primary" style="width:100%;" onclick="validerJourneeAccueil('${id}')">${dejaValide ? '✓ Mettre à jour la validation' : 'Valider la journée'}</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function validerJourneeAccueil(enfantId) {
+      const todayIso = getTodayIso();
+      const arrivee = document.getElementById(`acc-arrivee-${enfantId}`).value;
+      const depart = document.getElementById(`acc-depart-${enfantId}`).value;
+      if (!arrivee || !depart) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
+
+      const repas = {
+        petitDej: document.getElementById(`acc-repas-petitdej-${enfantId}`).value,
+        dejeuner: document.getElementById(`acc-repas-dejeuner-${enfantId}`).value,
+        gouter: document.getElementById(`acc-repas-gouter-${enfantId}`).value,
+        diner: document.getElementById(`acc-repas-diner-${enfantId}`).value
+      };
+
+      const contrat = enfants[enfantId].contrat || {};
+      const [hA, mA] = arrivee.split(':').map(Number);
+      const [hD, mD] = depart.split(':').map(Number);
+      let duree = (hD + mD / 60) - (hA + mA / 60);
+      if (duree < 0) duree += 24;
+
+      let maxJourNorm = 45 / (contrat.jHebdo || 5);
+      let hNorm = Math.min(duree, maxJourNorm);
+      let hComp = 0, hSup = 0;
+      if (duree > maxJourNorm) {
+        if (duree > 9) {
+          hComp = Math.max(0, 9 - maxJourNorm);
+          hSup = duree - 9;
+        } else { hComp = duree - maxJourNorm; }
+      }
+
+      enfants[enfantId].presences = (enfants[enfantId].presences || []).filter(p => p.date !== todayIso);
+      enfants[enfantId].presences.push({ id: Date.now(), date: todayIso, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+
+      sauvegarderGlobal();
+      rendreAccueil();
+
+      if (enfantId === activeEnfantId) {
+        afficherPresences();
+        if (document.getElementById('calendar-grid')) rendreCalendrier();
+        chargerHorairePrevuPourDate();
+      }
+
+      alert("Journée validée !");
     }
 
     function switchMainTab(tabId) {
@@ -2174,6 +2226,12 @@
       const activeBtn = Array.from(document.querySelectorAll('.main-nav .tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
       if(activeBtn) activeBtn.classList.add('active');
 
+      const sliderContainer = document.querySelector('.slider-container');
+      if (sliderContainer) sliderContainer.style.display = (tabId === 'accueil') ? 'none' : '';
+
+      if(tabId === 'accueil') {
+        rendreAccueil();
+      }
       if(tabId === 'planning') { 
         chargerSemaineTypeInterface(); 
         rendreCalendrier(); 
@@ -2215,6 +2273,7 @@
         gouter: document.getElementById('input-repas-gouter').value,
         diner: document.getElementById('input-repas-diner').value
       };
+      const contrat = enfants[activeEnfantId].contrat;
 
       if (!date || !arriveeSaisie || !departSaisi) return alert("Saisissez la date et les horaires.");
 
@@ -2237,17 +2296,6 @@
         depart = appliquerEcart ? departSaisi : prevu.depart;
       }
 
-      enregistrerPresence(activeEnfantId, date, arrivee, depart, repas);
-      afficherPresences();
-      if (document.getElementById('calendar-grid')) rendreCalendrier();
-      rendreSlider();
-      alert("Journée validée !");
-    }
-
-    // Calcule les heures normales/complémentaires/supplémentaires d'une présence
-    // à partir des horaires d'arrivée et de départ, pour un enfant donné.
-    function calculerHeuresPresence(enfantId, arrivee, depart) {
-      const contrat = enfants[enfantId].contrat;
       const [hA, mA] = arrivee.split(':').map(Number);
       const [hD, mD] = depart.split(':').map(Number);
       let duree = (hD + mD/60) - (hA + mA/60);
@@ -2264,17 +2312,12 @@
         } else { hComp = duree - maxJourNorm; }
       }
 
-      return { duree, hNorm, hComp, hSup };
-    }
-
-    // Enregistre (ou remplace) la présence d'un jour donné pour un enfant donné.
-    // Utilisée à la fois par la saisie détaillée (ajouterPresence) et par la validation
-    // rapide depuis le tableau de bord du jour (validerJourneeRapide).
-    function enregistrerPresence(enfantId, date, arrivee, depart, repas) {
-      const { duree, hNorm, hComp, hSup } = calculerHeuresPresence(enfantId, arrivee, depart);
-      enfants[enfantId].presences = (enfants[enfantId].presences || []).filter(p => p.date !== date);
-      enfants[enfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      enfants[activeEnfantId].presences = (enfants[activeEnfantId].presences || []).filter(p => p.date !== date);
+      enfants[activeEnfantId].presences.push({ id: Date.now(), date, arrivee, depart, duree, hNorm, hComp, hSup, repas });
       sauvegarderGlobal();
+      afficherPresences();
+      if (document.getElementById('calendar-grid')) rendreCalendrier();
+      alert("Journée validée !");
     }
 
     function supprimerPresence(id) {
@@ -2282,7 +2325,6 @@
       sauvegarderGlobal();
       afficherPresences();
       if (document.getElementById('calendar-grid')) rendreCalendrier();
-      rendreSlider();
     }
 
     function afficherPresences() {
@@ -2933,11 +2975,15 @@
 
     // INITIALISATION GENERALE AU CHARGEMENT
     window.addEventListener('DOMContentLoaded', () => {
+      appliquerThemeSauvegarde();
       normaliserEtMigrerDonnees();
       migrerProfilAssmatDansEngagements();
       localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       chargerFormulaireGitHub();
       rafraichirTouteLInterface();
+      const sliderContainer = document.querySelector('.slider-container');
+      if (sliderContainer) sliderContainer.style.display = 'none';
+      setInterval(majHorlogeAccueil, 30000);
     });
   </script>
 </body>
