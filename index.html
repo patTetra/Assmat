@@ -42,11 +42,26 @@
     }
 
     body.light-mode input,
-    body.light-mode select { color: var(--text-main); }
+    body.light-mode select,
     body.light-mode header h1,
     body.light-mode .card h2,
     body.light-mode .slide-title,
-    body.light-mode .cal-day-num { color: var(--text-main); }
+    body.light-mode .cal-day-num,
+    body.light-mode .btn-secondary,
+    body.light-mode .cal-day-badge-stack .time-line,
+    body.light-mode .week-day-row label,
+    body.light-mode .summary-line.total,
+    body.light-mode .pajemploi-item-val {
+      color: var(--text-main);
+    }
+
+    /* Filet de sécurité : neutralise les couleurs blanches écrites en dur (inline ou générées en JS) */
+    body.light-mode [style*="color:#fff"],
+    body.light-mode [style*="color: #fff"],
+    body.light-mode [style*="color:#ffffff"],
+    body.light-mode [style*="color: #ffffff"] {
+      color: var(--text-main) !important;
+    }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { max-width: 100vw; overflow-x: hidden; }
@@ -142,8 +157,9 @@
     .cal-day-check { position: absolute; top: 2px; right: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 0.5rem; line-height: 1; color: #fff; font-weight: 900; box-shadow: 0 0 4px rgba(16, 185, 129, 0.6); }
     .inline-check { position: static !important; display: inline-flex !important; width: 16px; height: 16px; font-size: 0.6rem; margin-left: 6px; vertical-align: middle; }
 
-    .accueil-enfant-card.non-prevu { opacity: 0.5; }
-    .accueil-enfant-card.non-prevu h2 { color: var(--text-muted); }
+    .accueil-enfant-card.non-prevu { border-style: dashed; }
+    .accueil-enfant-card.non-prevu .grid-2,
+    .accueil-enfant-card.non-prevu .btn-primary { opacity: 0.55; }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
@@ -2105,7 +2121,6 @@
       if (!container) return;
 
       const todayIso = getTodayIso();
-      const idxJour = getIdxJourSemaine(new Date());
       const keys = Object.keys(enfants);
 
       if (keys.length === 0) {
@@ -2119,16 +2134,15 @@
         const prenom = c.prenomEnfant || c.prenom || 'Enfant';
         const nom = c.nomEnfant || c.nom || '';
 
-        const st = enf.semaineType || {};
-        const jourInfo = st[idxJour] || { actif: (idxJour < 5) };
-        const estPrevu = !!jourInfo.actif;
+        const planningJour = (enf.planningPrevu || {})[todayIso] || null;
+        const estPrevu = !!(planningJour && planningJour.arrivee && planningJour.depart);
 
         const presenceExistante = (enf.presences || []).find(p => p.date === todayIso);
         const dejaValide = !!presenceExistante;
         const repasExistant = (presenceExistante && typeof presenceExistante.repas === 'object') ? presenceExistante.repas : {};
 
-        const arriveeDefaut = presenceExistante?.arrivee || jourInfo.arrivee || '08:30';
-        const departDefaut = presenceExistante?.depart || jourInfo.depart || '17:30';
+        const arriveeDefaut = presenceExistante?.arrivee || planningJour?.arrivee || '08:30';
+        const departDefaut = presenceExistante?.depart || planningJour?.depart || '17:30';
 
         const checkHtml = dejaValide ? `<span class="cal-day-check inline-check" title="Journée déjà validée">✓</span>` : '';
         const nonPrevuBadge = estPrevu ? '' : `<span class="badge badge-warning">Non prévu aujourd'hui</span>`;
