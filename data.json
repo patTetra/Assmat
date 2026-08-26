@@ -293,6 +293,22 @@
             "gouter": "assmat",
             "diner": "assmat"
           }
+        },
+        {
+          "id": 1787724519791,
+          "date": "2026-08-18",
+          "arrivee": "09:00",
+          "depart": "17:05",
+          "duree": 8.083333333333332,
+          "hNorm": 8.083333333333332,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         }
       ],
       "engagement": {
