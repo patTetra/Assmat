@@ -247,7 +247,7 @@
         "ie": 0,
         "ir": 0,
         "hMensuel": 156,
-        "hHebdo": 36,
+        "hHebdo": 34,
         "jHebdo": 4,
         "semainesAn": 52,
         "dateDebut": "",
@@ -277,18 +277,18 @@
       "semaineType": {
         "0": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:45",
+          "depart": "17:05"
         },
         "1": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:45",
+          "depart": "17:05"
         },
         "2": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30"
         },
         "3": {
           "actif": true,
@@ -297,18 +297,18 @@
         },
         "4": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:45",
+          "depart": "17:05"
         },
         "5": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30"
         },
         "6": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30"
         }
       },
       "planningPrevu": {
