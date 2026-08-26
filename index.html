@@ -160,6 +160,12 @@
     .accueil-enfant-card.non-prevu { border-style: dashed; }
     .accueil-enfant-card.non-prevu .grid-2,
     .accueil-enfant-card.non-prevu .btn-primary { opacity: 0.55; }
+
+    .input-horaire-grand { font-size: 1.5rem !important; font-weight: 800 !important; border: none !important; background: transparent !important; padding: 0.2rem 0 !important; color: var(--text-main) !important; }
+
+    .ha-toggle-btn { border: none; background: transparent; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+    .ha-toggle-dot { display: block; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-card); border: 1px solid var(--border); transition: all 0.25s ease; }
+    .ha-toggle-dot.on { background: var(--warning); box-shadow: 0 0 10px 3px rgba(245, 158, 11, 0.7); border-color: var(--warning); }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
@@ -295,7 +301,12 @@
   <!-- TAB 0 : PAGE D'ACCUEIL DU JOUR -->
   <div id="accueil" class="tab-content main-content active">
     <div class="card no-print" style="text-align:center;">
-      <div id="accueil-date" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem;">
+        <div id="accueil-date" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
+        <button id="ha-mode-enfant-btn" class="ha-toggle-btn" onclick="toggleModeEnfant()" title="Mode enfant (Home Assistant)">
+          <span id="ha-mode-enfant-dot" class="ha-toggle-dot"></span>
+        </button>
+      </div>
       <div id="accueil-heure" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:2.2rem; color:var(--accent-light); margin-top:2px;"></div>
     </div>
     <div id="accueil-enfants-list"></div>
@@ -312,11 +323,11 @@
       <div class="grid-2" style="margin-bottom: 0.6rem;">
         <div class="form-group">
           <label>Arrivée réelle</label>
-          <input type="time" id="input-arrivee" onchange="verifierEcartsHoraires()">
+          <input type="time" id="input-arrivee" class="input-horaire-grand" onchange="verifierEcartsHoraires()">
         </div>
         <div class="form-group">
           <label>Départ réel</label>
-          <input type="time" id="input-depart" onchange="verifierEcartsHoraires()">
+          <input type="time" id="input-depart" class="input-horaire-grand" onchange="verifierEcartsHoraires()">
         </div>
       </div>
       <div id="ecart-arrivee-zone" style="display:none; margin-bottom:0.6rem;"></div>
@@ -1032,9 +1043,29 @@
         </div>
         </div>
       </div>
+      <div class="info-group" style="margin-bottom:1rem;">
+        <h3>🏠 Home Assistant — Mode enfant</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem; line-height:1.4;">
+          Permet de piloter et de suivre depuis cette application l'interrupteur « Mode enfant » de votre installation Home Assistant. L'état s'affiche à droite de la date sur la page d'accueil, qu'il soit déclenché ici ou automatiquement par Home Assistant.
+        </p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>URL de l'instance</label>
+            <input type="text" id="ha-url" placeholder="https://mon-ha.duckdns.org:8123">
+          </div>
+          <div class="form-group">
+            <label>Token d'accès longue durée</label>
+            <input type="password" id="ha-token" placeholder="eyJ...">
+          </div>
+          <div class="form-group">
+            <label>Entité de l'interrupteur</label>
+            <input type="text" id="ha-entity" placeholder="switch.mode_enfant" value="switch.mode_enfant">
+          </div>
+        </div>
+      </div>
       <br>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub()">💾 Enregistrer les paramètres & Synchroniser</button>
+        <button class="btn btn-primary" onclick="sauvegarderConfigGitHub(); sauvegarderConfigHA();">💾 Enregistrer les paramètres & Synchroniser</button>
         <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
         <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
       </div>
@@ -1084,6 +1115,9 @@
     const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
     let currentDateState = new Date();
+
+    let haConfig = JSON.parse(localStorage.getItem('assmat_ha_config')) || { url: '', token: '', entity: 'switch.mode_enfant' };
+    let haPollTimer = null;
 
     function toggleTheme() {
       document.body.classList.toggle('light-mode');
@@ -1265,6 +1299,7 @@
       document.getElementById('gh-token').value = githubConfig.token || '';
       if(githubConfig.user && githubConfig.repo && githubConfig.token) { majStatutSync('online'); } else { majStatutSync(''); }
       afficherUrlWebcal();
+      chargerConfigHA();
     }
 
     function sauvegarderConfigGitHub() {
@@ -2117,6 +2152,7 @@
 
     function rendreAccueil() {
       majHorlogeAccueil();
+      demarrerPollingModeEnfant();
       const container = document.getElementById('accueil-enfants-list');
       if (!container) return;
 
@@ -2156,11 +2192,11 @@
             <div class="grid-2" style="margin-bottom: 0.6rem;">
               <div class="form-group">
                 <label>Arrivée réelle</label>
-                <input type="time" id="acc-arrivee-${id}" value="${arriveeDefaut}">
+                <input type="time" id="acc-arrivee-${id}" class="input-horaire-grand" value="${arriveeDefaut}">
               </div>
               <div class="form-group">
                 <label>Départ réel</label>
-                <input type="time" id="acc-depart-${id}" value="${departDefaut}">
+                <input type="time" id="acc-depart-${id}" class="input-horaire-grand" value="${departDefaut}">
               </div>
             </div>
             <div class="grid-2">
@@ -2230,6 +2266,74 @@
       }
 
       alert("Journée validée !");
+    }
+
+    function chargerConfigHA() {
+      document.getElementById('ha-url').value = haConfig.url || '';
+      document.getElementById('ha-token').value = haConfig.token || '';
+      document.getElementById('ha-entity').value = haConfig.entity || 'switch.mode_enfant';
+    }
+
+    function sauvegarderConfigHA() {
+      haConfig = {
+        url: document.getElementById('ha-url').value.trim().replace(/\/$/, ''),
+        token: document.getElementById('ha-token').value.trim(),
+        entity: document.getElementById('ha-entity').value.trim() || 'switch.mode_enfant'
+      };
+      localStorage.setItem('assmat_ha_config', JSON.stringify(haConfig));
+      demarrerPollingModeEnfant();
+    }
+
+    function haConfigured() {
+      return !!(haConfig.url && haConfig.token && haConfig.entity);
+    }
+
+    async function rafraichirEtatModeEnfant() {
+      const dot = document.getElementById('ha-mode-enfant-dot');
+      if (!dot) return;
+      if (!haConfigured()) {
+        dot.classList.remove('on');
+        dot.title = "Home Assistant non configuré — cliquez pour paramétrer";
+        return;
+      }
+      try {
+        const res = await fetch(`${haConfig.url}/api/states/${haConfig.entity}`, {
+          headers: { 'Authorization': `Bearer ${haConfig.token}`, 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Réponse HA invalide');
+        const data = await res.json();
+        dot.classList.toggle('on', data.state === 'on');
+        dot.title = data.state === 'on' ? 'Mode enfant activé — cliquer pour désactiver' : 'Mode enfant désactivé — cliquer pour activer';
+      } catch (err) {
+        console.error('Erreur Home Assistant (lecture état):', err);
+        dot.title = 'Home Assistant injoignable';
+      }
+    }
+
+    async function toggleModeEnfant() {
+      if (!haConfigured()) { ouvrirModalConfigGitHub(); return; }
+      const dot = document.getElementById('ha-mode-enfant-dot');
+      const etaitActif = dot.classList.contains('on');
+      const service = etaitActif ? 'turn_off' : 'turn_on';
+      try {
+        const res = await fetch(`${haConfig.url}/api/services/switch/${service}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${haConfig.token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: haConfig.entity })
+        });
+        if (!res.ok) throw new Error('Commande refusée par Home Assistant');
+        dot.classList.toggle('on', !etaitActif);
+        setTimeout(rafraichirEtatModeEnfant, 800);
+      } catch (err) {
+        console.error('Erreur Home Assistant (commande):', err);
+        alert("Impossible de joindre Home Assistant. Vérifiez l'URL, le token et l'accessibilité réseau de votre instance.");
+      }
+    }
+
+    function demarrerPollingModeEnfant() {
+      if (haPollTimer) clearInterval(haPollTimer);
+      rafraichirEtatModeEnfant();
+      haPollTimer = setInterval(rafraichirEtatModeEnfant, 15000);
     }
 
     function switchMainTab(tabId) {
