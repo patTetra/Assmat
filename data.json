@@ -46,7 +46,17 @@
         "hHebdo": 32,
         "jHebdo": 4,
         "semainesAn": 52,
-        "moisLisse": true
+        "moisLisse": true,
+        "dateDebut": "",
+        "annexes": {
+          "notice": false,
+          "sante": true,
+          "autorisations": true,
+          "urgence": true,
+          "planning": false,
+          "remuneration": false,
+          "reglement": false
+        }
       },
       "semaineType": {
         "0": {
@@ -239,7 +249,8 @@
         "adaptationFin": "",
         "heuresSemaine": 32,
         "typeAnnee": "complete"
-      }
+      },
+      "documents": []
     },
     "enf_1787580821157": {
       "contrat": {
@@ -277,7 +288,17 @@
         "hMensuel": 156,
         "hHebdo": 36,
         "jHebdo": 4,
-        "semainesAn": 52
+        "semainesAn": 52,
+        "dateDebut": "",
+        "annexes": {
+          "notice": false,
+          "sante": false,
+          "autorisations": false,
+          "urgence": false,
+          "planning": false,
+          "remuneration": false,
+          "reglement": false
+        }
       },
       "engagement": {
         "dateSignature": "2026-08-24",
@@ -422,7 +443,8 @@
           "note": ""
         }
       },
-      "presences": []
+      "presences": [],
+      "documents": []
     },
     "enf_1787581503123": {
       "contrat": {
@@ -460,7 +482,17 @@
         "hMensuel": "",
         "hHebdo": "",
         "jHebdo": "",
-        "semainesAn": ""
+        "semainesAn": "",
+        "dateDebut": "",
+        "annexes": {
+          "notice": false,
+          "sante": false,
+          "autorisations": false,
+          "urgence": false,
+          "planning": false,
+          "remuneration": false,
+          "reglement": false
+        }
       },
       "engagement": {
         "dateSignature": "2026-08-24",
@@ -622,7 +654,8 @@
             "diner": "non"
           }
         }
-      ]
+      ],
+      "documents": []
     }
   }
 }
