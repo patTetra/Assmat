@@ -172,7 +172,7 @@
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
     .cal-day-badge { font-size: 0.58rem; font-weight: 600; padding: 2px 3px; border-radius: 4px; text-align: center; width: 100%; }
     .cal-day-badge.off { color: var(--text-muted); font-size: 0.75rem; opacity: 0.4; }
-    .cal-day-del { position: absolute; top: -3px; right: -1px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; }
+    .cal-day-del { position: absolute; top: 2px; right: 2px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; z-index: 2; }
     .cal-day-del:hover, .cal-day-del:active { opacity: 0.85; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 1rem; }
@@ -476,6 +476,10 @@
             <label>Date de naissance (ou prévue)</label>
             <input type="date" id="cfg-naissance-enfant">
           </div>
+          <div class="form-group">
+            <label>Date de début du contrat</label>
+            <input type="date" id="cfg-date-debut-contrat">
+          </div>
         </div>
 
         <div style="margin-bottom: 1.25rem;">
@@ -577,7 +581,7 @@
           </div>
           <div class="form-group">
             <label>Semaines / an</label>
-            <input type="number" id="cfg-semaines-an" placeholder="ex: 52 ou 46..." oninput="mettreAJourCalculsSemaineTypeUI()">
+            <input type="number" id="cfg-semaines-an" placeholder="ex: 52 ou 46..." oninput="mettreAJourCalculsSemaineTypeUI(); mettreAJourCalculsSemaineTypeUI('ct-');">
           </div>
         </div>
         <br>
@@ -585,6 +589,36 @@
           <button class="btn btn-primary" onclick="sauvegarderContrat()">Enregistrer le contrat</button>
           <button class="btn btn-danger btn-sm" onclick="supprimerEnfantActif()">Supprimer ce profil</button>
         </div>
+      </div>
+
+      <div class="card">
+        <details>
+          <summary style="display:flex; justify-content:space-between; align-items:center;">
+            <span>📅 Créer la semaine type de ce contrat</span>
+            <span id="ct-st-total-badge" class="badge badge-primary">0h / sem</span>
+          </summary>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0 0.75rem;">
+            Si vous la renseignez et l'enregistrez ici, elle remplacera la semaine type actuelle de la fiche de l'enfant (visible aussi dans l'onglet Planning).
+          </p>
+          <div class="week-grid" id="ct-week-schedule-grid"></div>
+
+          <div id="ct-st-legal-alert" class="legal-alert-box" style="display:none;">
+            <h4>⚠️ Dépassement des plafonds légaux</h4>
+            <div id="ct-st-alert-text"></div>
+            <div style="margin-top:0.4rem; font-weight:600;">Solutions recommandées :</div>
+            <ul>
+              <li>Réduire le nombre de semaines d'accueil (ex: passer en <i>Année Incomplète</i> à 45 ou 46 semaines) pour respecter la limite de 2 250h/an.</li>
+              <li>Ajuster les horaires quotidiens pour lisser la moyenne hebdomadaire sous les 48h.</li>
+            </ul>
+            <div style="font-size:0.75rem; opacity:0.85;"><i>Note : Si le volume est maintenu, un accord écrit explicite de l'assistante maternelle est obligatoirement requis.</i></div>
+          </div>
+
+          <div id="ct-st-alert-45h" style="display:none; margin-top:0.75rem; padding:0.6rem; background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--radius-sm); font-size:0.78rem; color:var(--warning);">
+            ℹ️ <b>Semaine > 45h :</b> Le contrat est automatiquement passé au réel (option « Mois lissé » décochée).
+          </div>
+          <br>
+          <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType('ct-')">Enregistrer cette semaine type sur la fiche de l'enfant</button>
+        </details>
       </div>
     </div>
 
@@ -1137,6 +1171,13 @@
         if (icon) icon.textContent = '☀️';
       }
     }
+
+    // Applique une classe de mode d'impression (print-mode-xxx) tout en conservant
+    // le mode jour/nuit en cours, pour que l'app ne revienne pas en mode nuit après impression.
+    function definirModeImpression(mode) {
+      const isLight = document.body.classList.contains('light-mode');
+      document.body.className = mode + (isLight ? ' light-mode' : '');
+    }
     let selectedIsoDate = null;
     let githubFileSha = null;
     let icsFileSha = null;
@@ -1229,6 +1270,7 @@
         if(!c.urgence) c.urgence = { nom: '', tel: '' };
         if(c.jHebdo === undefined) c.jHebdo = 4;
         if(c.semainesAn === undefined) c.semainesAn = 52;
+        if(c.dateDebut === undefined) c.dateDebut = '';
 
         enfants[id].contrat = c;
 
@@ -1571,7 +1613,8 @@
       chargerFormulaireContrat();
       chargerFormulaireEngagement();
       afficherPresences();
-      chargerSemaineTypeInterface();
+      chargerSemaineTypeInterface('');
+      chargerSemaineTypeInterface('ct-');
       rendreCalendrier();
       chargerHorairePrevuPourDate();
       
@@ -1650,7 +1693,7 @@
       const id = 'enf_' + Date.now();
       enfants[id] = {
         contrat: { 
-          prenomEnfant: prenom, nomEnfant: '', naissance: '', sortiesVoiture: true, moisLisse: true,
+          prenomEnfant: prenom, nomEnfant: '', naissance: '', dateDebut: '', sortiesVoiture: true, moisLisse: true,
           mere: { nom: '', prenom: '', adresse: '', port: '', maison: '', bureau: '', email: '' },
           pere: { nom: '', prenom: '', adresse: '', port: '', maison: '', bureau: '', email: '' },
           urgence: { nom: '', tel: '' },
@@ -1719,19 +1762,21 @@
         const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const prevu = planning[isoDate];
         let badgeHtml = `<div class="cal-day-badge off">-</div>`;
+        let delHtml = '';
         let dayClass = "cal-day";
 
         if (dayOfWeek === 5 || dayOfWeek === 6) dayClass += " is-weekend";
         if (isoDate === todayIso) dayClass += " is-today";
 
         if (prevu && prevu.arrivee && prevu.depart) {
-          badgeHtml = `<div class="cal-day-badge-stack"><span class="cal-day-del" onclick="event.stopPropagation(); supprimerJourPlanning('${isoDate}')" title="Effacer cette journée">🗑</span><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
+          badgeHtml = `<div class="cal-day-badge-stack"><span class="time-line">${prevu.arrivee}</span><span class="time-line">${prevu.depart}</span></div>`;
+          delHtml = `<span class="cal-day-del" onclick="event.stopPropagation(); supprimerJourPlanning('${isoDate}')" title="Effacer cette journée">🗑</span>`;
           dayClass += " has-presence";
         }
 
         const checkHtml = joursValides.has(isoDate) ? `<span class="cal-day-check" title="Journée validée">✓</span>` : '';
 
-        grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')"><div class="cal-day-num">${day}</div>${badgeHtml}${checkHtml}</div>`;
+        grid.innerHTML += `<div class="${dayClass}" onclick="ouvrirModalJour('${isoDate}')">${delHtml}<div class="cal-day-num">${day}</div>${badgeHtml}${checkHtml}</div>`;
       }
 
       mettreAJourTotalMoisPlanning();
@@ -1840,12 +1885,13 @@
       alert(`Semaine type appliquée au mois de ${MOIS[month]} ${year} !`);
     }
 
-    function calculerTotalHeuresSemaineType() {
+    function calculerTotalHeuresSemaineType(prefix) {
+      prefix = prefix || '';
       let total = 0; let nbJoursActifs = 0;
       JOURS.forEach((_, idx) => {
-        const check = document.getElementById(`st-check-${idx}`);
-        const arrVal = document.getElementById(`st-arr-${idx}`)?.value;
-        const depVal = document.getElementById(`st-dep-${idx}`)?.value;
+        const check = document.getElementById(`${prefix}st-check-${idx}`);
+        const arrVal = document.getElementById(`${prefix}st-arr-${idx}`)?.value;
+        const depVal = document.getElementById(`${prefix}st-dep-${idx}`)?.value;
 
         if (check && check.checked && arrVal && depVal) {
           const [hA, mA] = arrVal.split(':').map(Number);
@@ -1859,12 +1905,13 @@
       return { total, nbJoursActifs };
     }
 
-    function mettreAJourCalculsSemaineTypeUI() {
-      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType();
-      const badge = document.getElementById('st-total-badge');
-      const alertBox45 = document.getElementById('st-alert-45h');
-      const legalAlertBox = document.getElementById('st-legal-alert');
-      const legalAlertText = document.getElementById('st-alert-text');
+    function mettreAJourCalculsSemaineTypeUI(prefix) {
+      prefix = prefix || '';
+      const { total, nbJoursActifs } = calculerTotalHeuresSemaineType(prefix);
+      const badge = document.getElementById(`${prefix}st-total-badge`);
+      const alertBox45 = document.getElementById(`${prefix}st-alert-45h`);
+      const legalAlertBox = document.getElementById(`${prefix}st-legal-alert`);
+      const legalAlertText = document.getElementById(`${prefix}st-alert-text`);
 
       const semainesAn = parseFloat(document.getElementById('cfg-semaines-an')?.value) || (enfants[activeEnfantId]?.contrat?.semainesAn || 52);
       const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
@@ -1898,8 +1945,10 @@
       calculerIndemniteEngagement();
     }
 
-    function chargerSemaineTypeInterface() {
-      const grid = document.getElementById('week-schedule-grid');
+    function chargerSemaineTypeInterface(prefix) {
+      prefix = prefix || '';
+      const grid = document.getElementById(`${prefix}week-schedule-grid`);
+      if (!grid) return;
       grid.innerHTML = '';
       const st = enfants[activeEnfantId].semaineType || {};
 
@@ -1908,87 +1957,92 @@
         const isWeekend = (idx === 5 || idx === 6);
         const autresJours = JOURS.map((j2, idx2) => idx2 === idx ? '' : `
               <label class="dup-day-chip">
-                <input type="checkbox" id="dup-check-${idx}-${idx2}"> ${j2.slice(0, 3)}
+                <input type="checkbox" id="${prefix}dup-check-${idx}-${idx2}"> ${j2.slice(0, 3)}
               </label>`).join('');
 
         grid.innerHTML += `
           <div class="week-day-row ${isWeekend ? 'weekend-row' : ''}" style="flex-direction:column; align-items:stretch; gap:0.4rem;">
             <div style="display:flex; align-items:center; justify-content:space-between;">
               <div style="display:flex; align-items:center; gap:0.5rem;">
-                <input type="checkbox" id="st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx})">
-                <label for="st-check-${idx}">${jour}</label>
+                <input type="checkbox" id="${prefix}st-check-${idx}" ${item.actif ? 'checked' : ''} onchange="autoCheckSemaineType(${idx}, '${prefix}')">
+                <label for="${prefix}st-check-${idx}">${jour}</label>
               </div>
               <div style="display:flex; gap:0.3rem;">
-                <input type="time" id="st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx})">
-                <input type="time" id="st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx})">
+                <input type="time" id="${prefix}st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx}, '${prefix}')">
+                <input type="time" id="${prefix}st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx}, '${prefix}')">
               </div>
             </div>
           </div>
-          <div class="dup-panel" id="dup-panel-${idx}">
+          <div class="dup-panel" id="${prefix}dup-panel-${idx}">
             <p>Appliquer ces horaires (${item.arrivee || '08:30'} - ${item.depart || '17:30'}) à d'autres jours ?</p>
             <div class="dup-days">${autresJours}</div>
             <div class="dup-panel-actions">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="fermerPanelDuplication(${idx})">Ignorer</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="dupliquerHorairesSemaineType(${idx})">Dupliquer vers les jours cochés</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="fermerPanelDuplication(${idx}, '${prefix}')">Ignorer</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="dupliquerHorairesSemaineType(${idx}, '${prefix}')">Dupliquer vers les jours cochés</button>
             </div>
           </div>
         `;
       });
-      mettreAJourCalculsSemaineTypeUI();
+      mettreAJourCalculsSemaineTypeUI(prefix);
     }
 
-    function autoCheckSemaineType(idx) {
-      const check = document.getElementById(`st-check-${idx}`);
+    function autoCheckSemaineType(idx, prefix) {
+      prefix = prefix || '';
+      const check = document.getElementById(`${prefix}st-check-${idx}`);
       if (check && !check.checked && event.type === 'input') check.checked = true;
-      mettreAJourCalculsSemaineTypeUI();
+      mettreAJourCalculsSemaineTypeUI(prefix);
     }
 
-    function onChangeHoraireSemaineType(idx) {
-      autoCheckSemaineType(idx);
+    function onChangeHoraireSemaineType(idx, prefix) {
+      prefix = prefix || '';
+      autoCheckSemaineType(idx, prefix);
 
       // Propose de dupliquer les horaires qui viennent d'être saisis sur d'autres jours
-      const panel = document.getElementById(`dup-panel-${idx}`);
-      const arr = document.getElementById(`st-arr-${idx}`)?.value || '';
-      const dep = document.getElementById(`st-dep-${idx}`)?.value || '';
+      const panel = document.getElementById(`${prefix}dup-panel-${idx}`);
+      const arr = document.getElementById(`${prefix}st-arr-${idx}`)?.value || '';
+      const dep = document.getElementById(`${prefix}st-dep-${idx}`)?.value || '';
       const texte = panel?.querySelector('p');
       if (texte) texte.innerText = `Appliquer ces horaires (${arr} - ${dep}) à d'autres jours ?`;
       if (panel) panel.classList.add('active');
     }
 
-    function fermerPanelDuplication(idx) {
-      const panel = document.getElementById(`dup-panel-${idx}`);
+    function fermerPanelDuplication(idx, prefix) {
+      prefix = prefix || '';
+      const panel = document.getElementById(`${prefix}dup-panel-${idx}`);
       if (panel) panel.classList.remove('active');
       JOURS.forEach((_, idx2) => {
-        const chk = document.getElementById(`dup-check-${idx}-${idx2}`);
+        const chk = document.getElementById(`${prefix}dup-check-${idx}-${idx2}`);
         if (chk) chk.checked = false;
       });
     }
 
-    function dupliquerHorairesSemaineType(idx) {
-      const arr = document.getElementById(`st-arr-${idx}`)?.value;
-      const dep = document.getElementById(`st-dep-${idx}`)?.value;
+    function dupliquerHorairesSemaineType(idx, prefix) {
+      prefix = prefix || '';
+      const arr = document.getElementById(`${prefix}st-arr-${idx}`)?.value;
+      const dep = document.getElementById(`${prefix}st-dep-${idx}`)?.value;
       if (!arr || !dep) return;
 
       let auMoinsUnJour = false;
       JOURS.forEach((_, idx2) => {
         if (idx2 === idx) return;
-        const chk = document.getElementById(`dup-check-${idx}-${idx2}`);
+        const chk = document.getElementById(`${prefix}dup-check-${idx}-${idx2}`);
         if (chk && chk.checked) {
-          document.getElementById(`st-arr-${idx2}`).value = arr;
-          document.getElementById(`st-dep-${idx2}`).value = dep;
-          document.getElementById(`st-check-${idx2}`).checked = true;
+          document.getElementById(`${prefix}st-arr-${idx2}`).value = arr;
+          document.getElementById(`${prefix}st-dep-${idx2}`).value = dep;
+          document.getElementById(`${prefix}st-check-${idx2}`).checked = true;
           auMoinsUnJour = true;
         }
       });
 
       if (!auMoinsUnJour) { alert("Cochez au moins un jour pour dupliquer les horaires."); return; }
 
-      fermerPanelDuplication(idx);
-      mettreAJourCalculsSemaineTypeUI();
+      fermerPanelDuplication(idx, prefix);
+      mettreAJourCalculsSemaineTypeUI(prefix);
     }
 
-    function sauvegarderSemaineType() {
-      const { total } = calculerTotalHeuresSemaineType();
+    function sauvegarderSemaineType(prefix) {
+      prefix = prefix || '';
+      const { total } = calculerTotalHeuresSemaineType(prefix);
       const semainesAn = enfants[activeEnfantId]?.contrat?.semainesAn || 52;
       const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
 
@@ -1999,9 +2053,9 @@
       const st = {};
       JOURS.forEach((_, idx) => {
         st[idx] = {
-          actif: document.getElementById(`st-check-${idx}`).checked,
-          arrivee: document.getElementById(`st-arr-${idx}`).value,
-          depart: document.getElementById(`st-dep-${idx}`).value
+          actif: document.getElementById(`${prefix}st-check-${idx}`).checked,
+          arrivee: document.getElementById(`${prefix}st-arr-${idx}`).value,
+          depart: document.getElementById(`${prefix}st-dep-${idx}`).value
         };
       });
       enfants[activeEnfantId].semaineType = st;
@@ -2010,7 +2064,11 @@
 
       sauvegarderGlobal();
       rendreSlider();
-      alert("Semaine type enregistrée !");
+      // Synchronise les deux interfaces (Contrat et Planning) avec la nouvelle semaine type
+      chargerSemaineTypeInterface('');
+      chargerSemaineTypeInterface('ct-');
+      document.getElementById('cfg-h-hebdo').value = enfants[activeEnfantId].contrat.hHebdo;
+      alert("Semaine type enregistrée sur la fiche de l'enfant !");
     }
 
     function toggleLissageState() {
@@ -2386,6 +2444,7 @@
       if(tabId === 'paie') calculerFicheDePaie();
       if(tabId === 'impots') calculerImpotsAnnuel();
       if(tabId === 'engagement') { chargerFormulaireEngagement(); preparerImpressionEngagement(); }
+      if(tabId === 'contrat') { chargerFormulaireContrat(); chargerSemaineTypeInterface('ct-'); }
     }
 
     document.getElementById('input-date').valueAsDate = new Date();
@@ -2497,6 +2556,7 @@
       document.getElementById('cfg-prenom-enfant').value = c.prenomEnfant || c.prenom || '';
       document.getElementById('cfg-nom-enfant').value = c.nomEnfant || c.nom || '';
       document.getElementById('cfg-naissance-enfant').value = c.naissance || '';
+      document.getElementById('cfg-date-debut-contrat').value = c.dateDebut || '';
       document.getElementById('cfg-sorties-voiture').checked = !!c.sortiesVoiture;
       document.getElementById('cfg-mois-lisse').checked = c.moisLisse !== false;
 
@@ -2547,6 +2607,7 @@
         prenomEnfant: document.getElementById('cfg-prenom-enfant').value,
         nomEnfant: document.getElementById('cfg-nom-enfant').value,
         naissance: document.getElementById('cfg-naissance-enfant').value,
+        dateDebut: document.getElementById('cfg-date-debut-contrat').value,
         sortiesVoiture: document.getElementById('cfg-sorties-voiture').checked,
         moisLisse: moisLisse,
         mere: { nom: document.getElementById('cfg-mere-nom').value, prenom: document.getElementById('cfg-mere-prenom').value, adresse: document.getElementById('cfg-mere-adresse').value, port: document.getElementById('cfg-mere-port').value, maison: document.getElementById('cfg-mere-maison').value, bureau: document.getElementById('cfg-mere-bureau').value, email: document.getElementById('cfg-mere-email').value },
@@ -2878,7 +2939,7 @@
 
     function imprimerEngagement() {
       preparerImpressionEngagement();
-      document.body.className = "print-mode-engagement";
+      definirModeImpression("print-mode-engagement");
       window.print();
     }
 
@@ -3020,7 +3081,7 @@
 
     function imprimerPaie() {
       calculerFicheDePaie();
-      document.body.className = "print-mode-paie";
+      definirModeImpression("print-mode-paie");
       window.print();
     }
 
