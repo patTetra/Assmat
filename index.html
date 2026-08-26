@@ -363,33 +363,37 @@
         <div class="form-group">
           <label>🥐 Petit-déjeuner</label>
           <select id="input-repas-petitdej">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍽️ Déjeuner</label>
           <select id="input-repas-dejeuner">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍪 Goûter</label>
           <select id="input-repas-gouter">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍲 Dîner</label>
           <select id="input-repas-diner">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
       </div>
@@ -1337,33 +1341,37 @@
         <div class="form-group">
           <label>🥐 Petit-déjeuner</label>
           <select id="modal-repas-petitdej">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍽️ Déjeuner</label>
           <select id="modal-repas-dejeuner">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍪 Goûter</label>
           <select id="modal-repas-gouter">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
         <div class="form-group">
           <label>🍲 Dîner</label>
           <select id="modal-repas-diner">
-            <option value="non">Non</option>
-            <option value="parent">Parent</option>
-            <option value="assmat">Assmat</option>
+            <option value="non">Aucun</option>
+            <option value="parent">PE</option>
+            <option value="lm">LM</option>
+            <option value="assmat">AM</option>
           </select>
         </div>
       </div>
@@ -2601,10 +2609,11 @@
       } else {
         setTimeSelectValue('input-arrivee', prev?.arrivee || "08:30", 8);
         setTimeSelectValue('input-depart', prev?.depart || "17:30", 17);
-        if (rPetitDej) rPetitDej.value = 'non';
-        if (rDejeuner) rDejeuner.value = 'non';
-        if (rGouter) rGouter.value = 'non';
-        if (rDiner) rDiner.value = 'non';
+        const rp = (prev && typeof prev.repas === 'object') ? prev.repas : {};
+        if (rPetitDej) rPetitDej.value = rp.petitDej || 'non';
+        if (rDejeuner) rDejeuner.value = rp.dejeuner || 'non';
+        if (rGouter) rGouter.value = rp.gouter || 'non';
+        if (rDiner) rDiner.value = rp.diner || 'non';
       }
 
       verifierEcartsHoraires();
@@ -2701,9 +2710,10 @@
       const v = valeurActuelle || 'non';
       return `
         <select id="${selectId}">
-          <option value="non" ${v === 'non' ? 'selected' : ''}>Non</option>
-          <option value="parent" ${v === 'parent' ? 'selected' : ''}>Parent</option>
-          <option value="assmat" ${v === 'assmat' ? 'selected' : ''}>Assmat</option>
+          <option value="non" ${v === 'non' ? 'selected' : ''}>Aucun</option>
+          <option value="parent" ${v === 'parent' ? 'selected' : ''}>PE</option>
+          <option value="lm" ${v === 'lm' ? 'selected' : ''}>LM</option>
+          <option value="assmat" ${v === 'assmat' ? 'selected' : ''}>AM</option>
         </select>`;
     }
 
@@ -2732,7 +2742,9 @@
 
         const presenceExistante = (enf.presences || []).find(p => p.date === todayIso);
         const dejaValide = !!presenceExistante;
-        const repasExistant = (presenceExistante && typeof presenceExistante.repas === 'object') ? presenceExistante.repas : {};
+        const repasValide = (presenceExistante && typeof presenceExistante.repas === 'object') ? presenceExistante.repas : null;
+        const repasPrevu = (planningJour && typeof planningJour.repas === 'object') ? planningJour.repas : {};
+        const repasExistant = repasValide || repasPrevu;
 
         const arriveeDefaut = presenceExistante?.arrivee || planningJour?.arrivee || '08:30';
         const departDefaut = presenceExistante?.depart || planningJour?.depart || '17:30';
