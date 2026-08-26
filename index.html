@@ -202,6 +202,14 @@
     .dup-panel-actions { display: flex; gap: 0.4rem; justify-content: flex-end; }
     .week-day-row input[type="time"] { width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem; }
 
+    /* Sélecteur d'heure personnalisé (listes déroulantes Heures / Minutes par pas de 5) */
+    .time-select-group { display: inline-flex; align-items: center; gap: 2px; }
+    .time-select-group select { width: auto; appearance: auto; -webkit-appearance: auto; cursor: pointer; }
+    .time-select-sep { font-weight: 800; color: var(--text-main); }
+    .input-horaire-grand.time-select-group select { font-size: 1.5rem !important; font-weight: 800 !important; border: none !important; background: transparent !important; padding: 0.2rem 0 !important; color: var(--text-main) !important; }
+    .week-day-row .time-select-group select { padding: 0.3rem 0.35rem; font-size: 0.8rem; }
+    .time-select-group.compact select { padding: 0.3rem 0.35rem; font-size: 0.8rem; }
+
     .table-container { width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 0.5rem; }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--surface-card); white-space: nowrap; }
     th { background: rgba(0, 0, 0, 0.2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; }
@@ -338,11 +346,11 @@
       <div class="grid-2" style="margin-bottom: 0.6rem;">
         <div class="form-group">
           <label>Arrivée réelle</label>
-          <input type="time" step="300" id="input-arrivee" class="input-horaire-grand" onchange="verifierEcartsHoraires()">
+          <span class="time-select-slot" data-base-id="input-arrivee" data-default-hour="8" data-class="input-horaire-grand" data-onchange="verifierEcartsHoraires()"></span>
         </div>
         <div class="form-group">
           <label>Départ réel</label>
-          <input type="time" step="300" id="input-depart" class="input-horaire-grand" onchange="verifierEcartsHoraires()">
+          <span class="time-select-slot" data-base-id="input-depart" data-default-hour="17" data-class="input-horaire-grand" data-onchange="verifierEcartsHoraires()"></span>
         </div>
       </div>
       <div id="ecart-arrivee-zone" style="display:none; margin-bottom:0.6rem;"></div>
@@ -1313,14 +1321,15 @@
         <div class="grid-2" style="margin-bottom:0.8rem;">
           <div class="form-group">
             <label>Arrivée prévue</label>
-            <input type="time" step="300" id="modal-arrivee">
+            <span class="time-select-slot" data-base-id="modal-arrivee" data-default-hour="8" data-onchange="onChangeHoraireModalJour()"></span>
           </div>
           <div class="form-group">
             <label>Départ prévu</label>
-            <input type="time" step="300" id="modal-depart">
+            <span class="time-select-slot" data-base-id="modal-depart" data-default-hour="17" data-onchange="onChangeHoraireModalJour()"></span>
           </div>
         </div>
       </div>
+      <div class="dup-panel" id="modal-dup-panel"></div>
       <div class="form-group" style="margin-bottom:1.2rem;">
         <label>Note / Commentaire (optionnel)</label>
         <input type="text" id="modal-note" placeholder="ex: RTT Parent, Medecin...">
@@ -1357,6 +1366,68 @@
       localStorage.setItem('assmat_theme', isLight ? 'light' : 'dark');
       const icon = document.getElementById('theme-toggle-icon');
       if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+    }
+
+    // ==== SÉLECTEUR D'HEURE PERSONNALISÉ (listes déroulantes Heures 0-23 / Minutes par pas de 5) ====
+    // Génère le HTML de deux <select> (heures / minutes) pour un champ horaire donné.
+    // - baseId : identifiant de base, les selects auront pour id `${baseId}-h` et `${baseId}-m`
+    // - value : valeur actuelle au format "HH:MM" (ou vide/undefined)
+    // - defaultHour : heure sur laquelle positionner le select par défaut quand value est vide (8 pour une arrivée, 17 pour un départ)
+    // - options : { className, onchange }
+    function timeSelectHtml(baseId, value, defaultHour, options) {
+      options = options || {};
+      const [vh, vm] = (value || '').split(':');
+      const cls = options.className ? ` ${options.className}` : '';
+      const onch = options.onchange ? ` onchange="${options.onchange}"` : '';
+      let heuresOpts = '';
+      for (let h = 0; h < 24; h++) {
+        const hh = String(h).padStart(2, '0');
+        const estSelectionne = vh ? (hh === vh) : (h === (defaultHour !== undefined ? defaultHour : 8));
+        heuresOpts += `<option value="${hh}" ${estSelectionne ? 'selected' : ''}>${hh}</option>`;
+      }
+      let minutesOpts = '';
+      for (let m = 0; m < 60; m += 5) {
+        const mm = String(m).padStart(2, '0');
+        const estSelectionne = vm ? (mm === vm) : (m === 0);
+        minutesOpts += `<option value="${mm}" ${estSelectionne ? 'selected' : ''}>${mm}</option>`;
+      }
+      return `<span class="time-select-group${cls}" id="${baseId}">` +
+        `<select id="${baseId}-h" aria-label="Heures"${onch}>${heuresOpts}</select>` +
+        `<span class="time-select-sep">:</span>` +
+        `<select id="${baseId}-m" aria-label="Minutes"${onch}>${minutesOpts}</select>` +
+        `</span>`;
+    }
+
+    // Lit la valeur d'un sélecteur d'heure sous la forme "HH:MM". Retourne '' s'il n'existe pas encore.
+    function getTimeSelectValue(baseId) {
+      const h = document.getElementById(`${baseId}-h`);
+      const m = document.getElementById(`${baseId}-m`);
+      if (!h || !m) return '';
+      return `${h.value}:${m.value}`;
+    }
+
+    // Positionne un sélecteur d'heure existant sur une valeur "HH:MM", ou sur l'heure par défaut si value est vide.
+    function setTimeSelectValue(baseId, value, defaultHour) {
+      const h = document.getElementById(`${baseId}-h`);
+      const m = document.getElementById(`${baseId}-m`);
+      if (!h || !m) return;
+      if (value) {
+        const [vh, vm] = value.split(':');
+        if (vh) h.value = vh;
+        if (vm) m.value = vm;
+      } else {
+        h.value = String(defaultHour !== undefined ? defaultHour : 8).padStart(2, '0');
+        m.value = '00';
+      }
+    }
+
+    // Remplace, au chargement de la page, chaque emplacement statique (.time-select-slot) par le sélecteur d'heure généré.
+    function initTimeSelectSlots() {
+      document.querySelectorAll('.time-select-slot').forEach(slot => {
+        const baseId = slot.dataset.baseId;
+        const defaultHour = parseInt(slot.dataset.defaultHour, 10) || 8;
+        slot.outerHTML = timeSelectHtml(baseId, '', defaultHour, { className: slot.dataset.class || '', onchange: slot.dataset.onchange || '' });
+      });
     }
 
     function appliquerThemeSauvegarde() {
@@ -2103,9 +2174,10 @@
       selectedIsoDate = isoDate;
       const prevu = (enfants[activeEnfantId].planningPrevu || {})[isoDate] || {};
       document.getElementById('modal-date-title').innerText = `Planning du ${isoDate}`;
-      document.getElementById('modal-arrivee').value = prevu.arrivee || '08:30';
-      document.getElementById('modal-depart').value = prevu.depart || '17:30';
+      setTimeSelectValue('modal-arrivee', prevu.arrivee || '08:30', 8);
+      setTimeSelectValue('modal-depart', prevu.depart || '17:30', 17);
       document.getElementById('modal-note').value = prevu.note || '';
+      construireDupPanelModalJour(isoDate);
       document.getElementById('modal-day').classList.add('active');
     }
 
@@ -2113,8 +2185,8 @@
 
     function sauvegarderJourneePlanning() {
       if (!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
-      const arrivee = document.getElementById('modal-arrivee').value;
-      const depart = document.getElementById('modal-depart').value;
+      const arrivee = getTimeSelectValue('modal-arrivee');
+      const depart = getTimeSelectValue('modal-depart');
       const note = document.getElementById('modal-note').value;
 
       enfants[activeEnfantId].planningPrevu[selectedIsoDate] = { status: 'prevu', arrivee, depart, note };
@@ -2122,6 +2194,83 @@
       fermerModal();
       rendreCalendrier();
       chargerHorairePrevuPourDate();
+    }
+
+    // Retourne les 7 jours (lundi -> dimanche) de la semaine calendaire contenant isoDate,
+    // sous la forme [{ iso: 'AAAA-MM-JJ', label: 'lun. 12/08' }, ...].
+    function joursMemeSemaine(isoDate) {
+      const d = new Date(`${isoDate}T00:00:00`);
+      const jsDay = d.getDay(); // 0 = dimanche ... 6 = samedi
+      const offsetLundi = jsDay === 0 ? -6 : 1 - jsDay;
+      const lundi = new Date(d);
+      lundi.setDate(d.getDate() + offsetLundi);
+      const jours = [];
+      for (let i = 0; i < 7; i++) {
+        const dj = new Date(lundi);
+        dj.setDate(lundi.getDate() + i);
+        const iso = `${dj.getFullYear()}-${String(dj.getMonth() + 1).padStart(2, '0')}-${String(dj.getDate()).padStart(2, '0')}`;
+        jours.push({ iso, label: `${JOURS[i].slice(0, 3)} ${String(dj.getDate()).padStart(2, '0')}/${String(dj.getMonth() + 1).padStart(2, '0')}` });
+      }
+      return jours;
+    }
+
+    // Construit (sans l'afficher) le panneau de duplication du modal "édition journée",
+    // avec une case à cocher par autre jour de la même semaine calendaire.
+    function construireDupPanelModalJour(isoDate) {
+      const panel = document.getElementById('modal-dup-panel');
+      if (!panel) return;
+      const autresJours = joursMemeSemaine(isoDate).filter(j => j.iso !== isoDate);
+      panel.classList.remove('active');
+      panel.innerHTML = `
+        <p>Appliquer ces horaires à d'autres jours de cette semaine ?</p>
+        <div class="dup-days">
+          ${autresJours.map(j => `
+            <label class="dup-day-chip">
+              <input type="checkbox" class="modal-dup-check" value="${j.iso}"> ${j.label}
+            </label>`).join('')}
+        </div>
+        <div class="dup-panel-actions">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="fermerPanelDuplicationModalJour()">Ignorer</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="dupliquerHorairesModalJour()">Dupliquer vers les jours cochés</button>
+        </div>`;
+    }
+
+    // Propose la duplication dès que l'utilisateur modifie l'horaire du jour en cours d'édition.
+    function onChangeHoraireModalJour() {
+      const panel = document.getElementById('modal-dup-panel');
+      if (!panel || !selectedIsoDate) return;
+      const arr = getTimeSelectValue('modal-arrivee');
+      const dep = getTimeSelectValue('modal-depart');
+      const texte = panel.querySelector('p');
+      if (texte) texte.innerText = `Appliquer ces horaires (${arr} - ${dep}) à d'autres jours de cette semaine ?`;
+      panel.classList.add('active');
+    }
+
+    function fermerPanelDuplicationModalJour() {
+      const panel = document.getElementById('modal-dup-panel');
+      if (!panel) return;
+      panel.classList.remove('active');
+      panel.querySelectorAll('.modal-dup-check').forEach(chk => chk.checked = false);
+    }
+
+    function dupliquerHorairesModalJour() {
+      const arr = getTimeSelectValue('modal-arrivee');
+      const dep = getTimeSelectValue('modal-depart');
+      const note = document.getElementById('modal-note').value;
+      if (!arr || !dep) return;
+
+      const checks = document.querySelectorAll('#modal-dup-panel .modal-dup-check:checked');
+      if (!checks.length) { alert("Cochez au moins un jour pour dupliquer les horaires."); return; }
+
+      if (!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
+      checks.forEach(chk => {
+        enfants[activeEnfantId].planningPrevu[chk.value] = { status: 'prevu', arrivee: arr, depart: dep, note };
+      });
+
+      sauvegarderGlobal();
+      fermerPanelDuplicationModalJour();
+      rendreCalendrier();
+      alert("Horaires dupliqués sur les jours sélectionnés.");
     }
 
     function genererPlanningMoisComplet() {
@@ -2155,8 +2304,8 @@
       let total = 0; let nbJoursActifs = 0;
       JOURS.forEach((_, idx) => {
         const check = document.getElementById(`${prefix}st-check-${idx}`);
-        const arrVal = document.getElementById(`${prefix}st-arr-${idx}`)?.value;
-        const depVal = document.getElementById(`${prefix}st-dep-${idx}`)?.value;
+        const arrVal = getTimeSelectValue(`${prefix}st-arr-${idx}`);
+        const depVal = getTimeSelectValue(`${prefix}st-dep-${idx}`);
 
         if (check && check.checked && arrVal && depVal) {
           const [hA, mA] = arrVal.split(':').map(Number);
@@ -2233,8 +2382,8 @@
                 <label for="${prefix}st-check-${idx}">${jour}</label>
               </div>
               <div style="display:flex; gap:0.3rem;">
-                <input type="time" step="300" id="${prefix}st-arr-${idx}" value="${item.arrivee || '08:30'}" oninput="onChangeHoraireSemaineType(${idx}, '${prefix}')">
-                <input type="time" step="300" id="${prefix}st-dep-${idx}" value="${item.depart || '17:30'}" oninput="onChangeHoraireSemaineType(${idx}, '${prefix}')">
+                ${timeSelectHtml(`${prefix}st-arr-${idx}`, item.arrivee || '08:30', 8, { onchange: `onChangeHoraireSemaineType(${idx}, '${prefix}')` })}
+                ${timeSelectHtml(`${prefix}st-dep-${idx}`, item.depart || '17:30', 17, { onchange: `onChangeHoraireSemaineType(${idx}, '${prefix}')` })}
               </div>
             </div>
           </div>
@@ -2264,8 +2413,8 @@
 
       // Propose de dupliquer les horaires qui viennent d'être saisis sur d'autres jours
       const panel = document.getElementById(`${prefix}dup-panel-${idx}`);
-      const arr = document.getElementById(`${prefix}st-arr-${idx}`)?.value || '';
-      const dep = document.getElementById(`${prefix}st-dep-${idx}`)?.value || '';
+      const arr = getTimeSelectValue(`${prefix}st-arr-${idx}`) || '';
+      const dep = getTimeSelectValue(`${prefix}st-dep-${idx}`) || '';
       const texte = panel?.querySelector('p');
       if (texte) texte.innerText = `Appliquer ces horaires (${arr} - ${dep}) à d'autres jours ?`;
       if (panel) panel.classList.add('active');
@@ -2283,8 +2432,8 @@
 
     function dupliquerHorairesSemaineType(idx, prefix) {
       prefix = prefix || '';
-      const arr = document.getElementById(`${prefix}st-arr-${idx}`)?.value;
-      const dep = document.getElementById(`${prefix}st-dep-${idx}`)?.value;
+      const arr = getTimeSelectValue(`${prefix}st-arr-${idx}`);
+      const dep = getTimeSelectValue(`${prefix}st-dep-${idx}`);
       if (!arr || !dep) return;
 
       let auMoinsUnJour = false;
@@ -2292,8 +2441,8 @@
         if (idx2 === idx) return;
         const chk = document.getElementById(`${prefix}dup-check-${idx}-${idx2}`);
         if (chk && chk.checked) {
-          document.getElementById(`${prefix}st-arr-${idx2}`).value = arr;
-          document.getElementById(`${prefix}st-dep-${idx2}`).value = dep;
+          setTimeSelectValue(`${prefix}st-arr-${idx2}`, arr);
+          setTimeSelectValue(`${prefix}st-dep-${idx2}`, dep);
           document.getElementById(`${prefix}st-check-${idx2}`).checked = true;
           auMoinsUnJour = true;
         }
@@ -2319,8 +2468,8 @@
       JOURS.forEach((_, idx) => {
         st[idx] = {
           actif: document.getElementById(`${prefix}st-check-${idx}`).checked,
-          arrivee: document.getElementById(`${prefix}st-arr-${idx}`).value,
-          depart: document.getElementById(`${prefix}st-dep-${idx}`).value
+          arrivee: getTimeSelectValue(`${prefix}st-arr-${idx}`),
+          depart: getTimeSelectValue(`${prefix}st-dep-${idx}`)
         };
       });
       enfants[activeEnfantId].semaineType = st;
@@ -2359,16 +2508,16 @@
       const rDiner = document.getElementById('input-repas-diner');
 
       if (existant) {
-        document.getElementById('input-arrivee').value = existant.arrivee || "08:30";
-        document.getElementById('input-depart').value = existant.depart || "17:30";
+        setTimeSelectValue('input-arrivee', existant.arrivee || "08:30", 8);
+        setTimeSelectValue('input-depart', existant.depart || "17:30", 17);
         const r = (existant.repas && typeof existant.repas === 'object') ? existant.repas : {};
         if (rPetitDej) rPetitDej.value = r.petitDej || 'non';
         if (rDejeuner) rDejeuner.value = r.dejeuner || 'non';
         if (rGouter) rGouter.value = r.gouter || 'non';
         if (rDiner) rDiner.value = r.diner || 'non';
       } else {
-        document.getElementById('input-arrivee').value = prev?.arrivee || "08:30";
-        document.getElementById('input-depart').value = prev?.depart || "17:30";
+        setTimeSelectValue('input-arrivee', prev?.arrivee || "08:30", 8);
+        setTimeSelectValue('input-depart', prev?.depart || "17:30", 17);
         if (rPetitDej) rPetitDej.value = 'non';
         if (rDejeuner) rDejeuner.value = 'non';
         if (rGouter) rGouter.value = 'non';
@@ -2381,8 +2530,8 @@
     function verifierEcartsHoraires() {
       const date = document.getElementById('input-date').value;
       const prevu = (enfants[activeEnfantId].planningPrevu || {})[date] || null;
-      const arrivee = document.getElementById('input-arrivee').value;
-      const depart = document.getElementById('input-depart').value;
+      const arrivee = getTimeSelectValue('input-arrivee');
+      const depart = getTimeSelectValue('input-depart');
 
       const zoneArrivee = document.getElementById('ecart-arrivee-zone');
       const zoneDepart = document.getElementById('ecart-depart-zone');
@@ -2517,11 +2666,11 @@
             <div class="grid-2" style="margin-bottom: 0.6rem;">
               <div class="form-group">
                 <label>Arrivée réelle</label>
-                <input type="time" step="300" id="acc-arrivee-${id}" class="input-horaire-grand" value="${arriveeDefaut}">
+                ${timeSelectHtml(`acc-arrivee-${id}`, arriveeDefaut, 8, { className: 'input-horaire-grand' })}
               </div>
               <div class="form-group">
                 <label>Départ réel</label>
-                <input type="time" step="300" id="acc-depart-${id}" class="input-horaire-grand" value="${departDefaut}">
+                ${timeSelectHtml(`acc-depart-${id}`, departDefaut, 17, { className: 'input-horaire-grand' })}
               </div>
             </div>
             <div class="grid-2">
@@ -2551,8 +2700,8 @@
 
     function validerJourneeAccueil(enfantId) {
       const todayIso = getTodayIso();
-      const arrivee = document.getElementById(`acc-arrivee-${enfantId}`).value;
-      const depart = document.getElementById(`acc-depart-${enfantId}`).value;
+      const arrivee = getTimeSelectValue(`acc-arrivee-${enfantId}`);
+      const depart = getTimeSelectValue(`acc-depart-${enfantId}`);
       if (!arrivee || !depart) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
 
       const repas = {
@@ -2716,8 +2865,8 @@
 
     function ajouterPresence() {
       const date = document.getElementById('input-date').value;
-      const arriveeSaisie = document.getElementById('input-arrivee').value;
-      const departSaisi = document.getElementById('input-depart').value;
+      const arriveeSaisie = getTimeSelectValue('input-arrivee');
+      const departSaisi = getTimeSelectValue('input-depart');
       const repas = {
         petitDej: document.getElementById('input-repas-petitdej').value,
         dejeuner: document.getElementById('input-repas-dejeuner').value,
@@ -3729,6 +3878,7 @@
 
     // INITIALISATION GENERALE AU CHARGEMENT
     window.addEventListener('DOMContentLoaded', () => {
+      initTimeSelectSlots();
       appliquerThemeSauvegarde();
       normaliserEtMigrerDonnees();
       migrerProfilAssmatDansEngagements();
