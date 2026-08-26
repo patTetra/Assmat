@@ -163,9 +163,10 @@
 
     .input-horaire-grand { font-size: 1.5rem !important; font-weight: 800 !important; border: none !important; background: transparent !important; padding: 0.2rem 0 !important; color: var(--text-main) !important; }
 
-    .ha-toggle-btn { border: none; background: transparent; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+    .ha-toggle-btn { border: none; background: transparent; cursor: pointer; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
     .ha-toggle-dot { display: block; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-card); border: 1px solid var(--border); transition: all 0.25s ease; }
     .ha-toggle-dot.on { background: var(--warning); box-shadow: 0 0 10px 3px rgba(245, 158, 11, 0.7); border-color: var(--warning); }
+    .ha-toggle-label { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
     
     .cal-day-badge-stack { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 100%; margin-top: 2px; position: relative; }
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
@@ -301,10 +302,11 @@
   <!-- TAB 0 : PAGE D'ACCUEIL DU JOUR -->
   <div id="accueil" class="tab-content main-content active">
     <div class="card no-print" style="text-align:center;">
-      <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:2.5rem;">
         <div id="accueil-date" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
         <button id="ha-mode-enfant-btn" class="ha-toggle-btn" onclick="toggleModeEnfant()" title="Mode enfant (Home Assistant)">
           <span id="ha-mode-enfant-dot" class="ha-toggle-dot"></span>
+          <span class="ha-toggle-label">Mode enfant</span>
         </button>
       </div>
       <div id="accueil-heure" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:2.2rem; color:var(--accent-light); margin-top:2px;"></div>
@@ -2315,8 +2317,9 @@
       const dot = document.getElementById('ha-mode-enfant-dot');
       const etaitActif = dot.classList.contains('on');
       const service = etaitActif ? 'turn_off' : 'turn_on';
+      const domaine = (haConfig.entity.split('.')[0]) || 'switch';
       try {
-        const res = await fetch(`${haConfig.url}/api/services/switch/${service}`, {
+        const res = await fetch(`${haConfig.url}/api/services/${domaine}/${service}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${haConfig.token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id: haConfig.entity })
@@ -2345,7 +2348,13 @@
       if(activeBtn) activeBtn.classList.add('active');
 
       const sliderContainer = document.querySelector('.slider-container');
-      if (sliderContainer) sliderContainer.style.display = (tabId === 'accueil') ? 'none' : '';
+      if (sliderContainer) {
+        const doitEtreVisible = (tabId !== 'accueil');
+        sliderContainer.style.display = doitEtreVisible ? '' : 'none';
+        // Le slider perd sa position de défilement pendant qu'il est masqué (largeur nulle) :
+        // on le regénère une fois redevenu visible pour le resynchroniser avec l'enfant actif.
+        if (doitEtreVisible) requestAnimationFrame(() => rendreSlider());
+      }
 
       if(tabId === 'accueil') {
         rendreAccueil();
