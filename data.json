@@ -49,12 +49,12 @@
         "jHebdo": 4,
         "semainesAn": 52,
         "annexes": {
-          "notice": false,
+          "notice": true,
           "sante": true,
           "autorisations": true,
           "urgence": true,
-          "planning": false,
-          "remuneration": false,
+          "planning": true,
+          "remuneration": true,
           "reglement": true
         }
       },
