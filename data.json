@@ -501,6 +501,12 @@
           "arrivee": "06:30",
           "depart": "14:50",
           "note": ""
+        },
+        "2026-09-28": {
+          "status": "prevu",
+          "arrivee": "06:30",
+          "depart": "14:30",
+          "note": ""
         }
       },
       "presences": [],
