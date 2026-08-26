@@ -250,7 +250,15 @@
         "heuresSemaine": 32,
         "typeAnnee": "complete"
       },
-      "documents": []
+      "documents": [
+        {
+          "name": "image.jpg",
+          "path": "documents/youenn-segalen/1787733961844-image.jpg",
+          "sha": "8e0888f458a21871df4f14b57824d6985ccaaffe",
+          "url": "https://raw.githubusercontent.com/patTetra/Assmat/main/documents/youenn-segalen/1787733961844-image.jpg",
+          "date": "2026-08-26"
+        }
+      ]
     },
     "enf_1787580821157": {
       "contrat": {
