@@ -1861,7 +1861,7 @@
               <div class="slide-title">👶 ${prenomAffiche} ${nomAffiche} <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${ageText}</span></div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-              <span class="badge ${c.hHebdo > 48 ? 'badge-danger' : (c.hHebdo > 45 ? 'badge-warning' : 'badge-primary')}">${c.hHebdo || 0}h / sem</span>
+              <span class="badge ${c.hHebdo > 48 ? 'badge-danger' : (c.hHebdo > 45 ? 'badge-warning' : 'badge-primary')}">${formatHeuresMinutes(c.hHebdo || 0)} / sem</span>
             </div>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem;">
@@ -2043,6 +2043,19 @@
       rendreCalendrier();
     }
 
+    // Convertit un nombre d'heures décimal (ex: 8.333) en affichage "8h20".
+    // Le signe négatif éventuel est conservé devant le nombre d'heures.
+    function formatHeuresMinutes(decimalHeures) {
+      const val = Number(decimalHeures);
+      if (!isFinite(val)) return '0h00';
+      const neg = val < 0;
+      const abs = Math.abs(val);
+      let h = Math.floor(abs + 1e-9);
+      let m = Math.round((abs - h) * 60);
+      if (m === 60) { m = 0; h += 1; }
+      return `${neg ? '-' : ''}${h}h${String(m).padStart(2, '0')}`;
+    }
+
     function mettreAJourTotalMoisPlanning() {
       const zone = document.getElementById('planning-total-mois');
       if (!zone) return;
@@ -2065,20 +2078,20 @@
       });
 
       const hMensuel = enfants[activeEnfantId]?.contrat?.hMensuel || 0;
-      let html = `<span class="badge badge-primary">Total posé : ${totalHeures.toFixed(1)}h</span>`;
+      let html = `<span class="badge badge-primary">Total posé : ${formatHeuresMinutes(totalHeures)}</span>`;
 
       if (hMensuel > 0) {
         const ecart = totalHeures - hMensuel;
         if (ecart <= 0) {
-          html += `<span class="badge badge-success">Reste à poser : ${Math.abs(ecart).toFixed(1)}h / ${hMensuel}h</span>`;
+          html += `<span class="badge badge-success">Reste à poser : ${formatHeuresMinutes(Math.abs(ecart))} / ${formatHeuresMinutes(hMensuel)}</span>`;
         } else {
           // Au-delà du volume mensuel contractuel : heures complémentaires dans la limite de 1/10e du volume mensuel, puis heures supplémentaires au-delà.
           const seuilComp = hMensuel * 0.10;
           const hComp = Math.min(ecart, seuilComp);
           const hSup = Math.max(0, ecart - seuilComp);
-          html += `<span class="badge badge-warning">Heures complémentaires : ${hComp.toFixed(1)}h</span>`;
+          html += `<span class="badge badge-warning">Heures complémentaires : ${formatHeuresMinutes(hComp)}</span>`;
           if (hSup > 0) {
-            html += `<span class="badge badge-danger">Heures supplémentaires : ${hSup.toFixed(1)}h</span>`;
+            html += `<span class="badge badge-danger">Heures supplémentaires : ${formatHeuresMinutes(hSup)}</span>`;
           }
         }
       }
@@ -2169,12 +2182,12 @@
       const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
 
       if (badge) {
-        badge.innerText = `${total.toFixed(1)}h / sem`;
+        badge.innerText = `${formatHeuresMinutes(total)} / sem`;
         badge.className = total > 48 ? 'badge badge-danger' : (total > 45 ? 'badge badge-warning' : 'badge badge-primary');
       }
 
       let motifsAlerte = [];
-      if (total > 48) motifsAlerte.push(`Durée hebdomadaire de <b>${total.toFixed(2)}h</b> (supérieure à 48h/sem).`);
+      if (total > 48) motifsAlerte.push(`Durée hebdomadaire de <b>${formatHeuresMinutes(total)}</b> (supérieure à 48h/sem).`);
       if (hAnnuelles > 2250) motifsAlerte.push(`Volume annuel estimé à <b>${hAnnuelles}h</b> (supérieur au plafond de 2 250h/an).`);
 
       if (motifsAlerte.length > 0) {
@@ -2299,7 +2312,7 @@
       const hAnnuelles = Math.round(total * (semainesAn === 52 ? 47 : semainesAn));
 
       if (total > 48 || hAnnuelles > 2250) {
-        if (!confirm(`⚠️ Planning hors plafonds légaux (${total.toFixed(2)}h/sem, ~${hAnnuelles}h/an).\nEnregistrer tout de même ?`)) return;
+        if (!confirm(`⚠️ Planning hors plafonds légaux (${formatHeuresMinutes(total)}/sem, ~${hAnnuelles}h/an).\nEnregistrer tout de même ?`)) return;
       }
 
       const st = {};
@@ -2782,19 +2795,19 @@
           let ecartHtml = '';
           if (Math.abs(ecart) >= 0.01) {
             const signe = ecart > 0 ? '+' : '';
-            ecartHtml = ` <span style="font-size:0.72rem; color:${ecart > 0 ? 'var(--success)' : 'var(--danger)'};">(${signe}${ecart.toFixed(2)}h)</span>`;
+            ecartHtml = ` <span style="font-size:0.72rem; color:${ecart > 0 ? 'var(--success)' : 'var(--danger)'};">(${signe}${formatHeuresMinutes(ecart)})</span>`;
           }
-          dureePrevueHtml = `${dureePrevue.toFixed(2)}h${ecartHtml}`;
+          dureePrevueHtml = `${formatHeuresMinutes(dureePrevue)}${ecartHtml}`;
         }
         tbody.innerHTML += `
           <tr>
             <td><strong>${p.date}</strong></td>
             <td><span class="badge badge-primary">${p.arrivee}-${p.depart}</span></td>
             <td>${dureePrevueHtml}</td>
-            <td>${p.duree.toFixed(2)}h</td>
-            <td>${p.hNorm.toFixed(2)}h</td>
-            <td>${p.hComp.toFixed(2)}h</td>
-            <td>${p.hSup > 0 ? `<span class="badge badge-success">${p.hSup.toFixed(2)}h</span>` : '0h'}</td>
+            <td>${formatHeuresMinutes(p.duree)}</td>
+            <td>${formatHeuresMinutes(p.hNorm)}</td>
+            <td>${formatHeuresMinutes(p.hComp)}</td>
+            <td>${p.hSup > 0 ? `<span class="badge badge-success">${formatHeuresMinutes(p.hSup)}</span>` : '0h00'}</td>
             <td><button class="btn btn-danger btn-sm" onclick="supprimerPresence(${p.id})">🗑️</button></td>
           </tr>
         `;
@@ -3086,8 +3099,8 @@
             <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Majoration heures supplémentaires</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.majoration || 0} %</td></tr>
             <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Indemnité d'entretien</td><td style="padding:4px; border-bottom:1px solid #ccc;">${(c.ie || 0).toFixed(2)} € / jour</td></tr>
             <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Indemnité de repas</td><td style="padding:4px; border-bottom:1px solid #ccc;">${(c.ir || 0).toFixed(2)} € / jour</td></tr>
-            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Heures mensualisées</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.hMensuel || 0} h / mois</td></tr>
-            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Horaire hebdomadaire</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.hHebdo || 0} h / semaine, ${c.jHebdo || 0} jour(s)</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Heures mensualisées</td><td style="padding:4px; border-bottom:1px solid #ccc;">${formatHeuresMinutes(c.hMensuel || 0)} / mois</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Horaire hebdomadaire</td><td style="padding:4px; border-bottom:1px solid #ccc;">${formatHeuresMinutes(c.hHebdo || 0)} / semaine, ${c.jHebdo || 0} jour(s)</td></tr>
             <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Semaines d'accueil / an</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.semainesAn || 52}</td></tr>
             <tr><td style="padding:4px;">Mode de rémunération</td><td style="padding:4px;">${c.moisLisse !== false ? 'Mensualisé (mois lissé)' : 'Au réel (heures effectivement réalisées)'}</td></tr>
           </table>`,
@@ -3156,7 +3169,7 @@
 
       document.getElementById('ctr-print-conditions').innerHTML = `
         • Type de contrat : <strong>${c.typeContrat || 'CDI'}</strong> — Date de début : <strong>${formaterDateFr(c.dateDebut) || 'N/C'}</strong><br>
-        • Horaire hebdomadaire prévu : <strong>${c.hHebdo || 0}h / sem</strong> sur ${c.jHebdo || 0} jour(s)<br>
+        • Horaire hebdomadaire prévu : <strong>${formatHeuresMinutes(c.hHebdo || 0)} / sem</strong> sur ${c.jHebdo || 0} jour(s)<br>
         • Jour de repos hebdomadaire : ${c.jourRepos || '……………………'}<br>
         • Semaines d'accueil / an : <strong>${c.semainesAn || 52}</strong><br>
         • Sorties en voiture : ${c.sortiesVoiture ? 'Autorisées' : 'Non autorisées'}<br>
@@ -3168,7 +3181,7 @@
       document.getElementById('ctr-print-remuneration').innerHTML = `
         Tarif horaire net : <strong>${(c.tarifNet || 0).toFixed(2)} €/h</strong> — Majoration H. Sup. : ${c.majoration || 0}%<br>
         Indemnité d'entretien : ${(c.ie || 0).toFixed(2)} €/j — Indemnité de repas : ${(c.ir || 0).toFixed(2)} €/j<br>
-        Heures mensualisées : ${c.hMensuel || 0} h/mois — Mode : ${c.moisLisse !== false ? 'Mensualisé (lissé)' : 'Au réel'}
+        Heures mensualisées : ${formatHeuresMinutes(c.hMensuel || 0)}/mois — Mode : ${c.moisLisse !== false ? 'Mensualisé (lissé)' : 'Au réel'}
       `;
 
       const annexesChoisies = ANNEXES_DISPONIBLES.filter(a => c.annexes && c.annexes[a.id]);
