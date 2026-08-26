@@ -172,7 +172,7 @@
     .cal-day-badge-stack .time-line { font-size: 0.62rem; font-weight: 700; line-height: 1.1; color: #fff; }
     .cal-day-badge { font-size: 0.58rem; font-weight: 600; padding: 2px 3px; border-radius: 4px; text-align: center; width: 100%; }
     .cal-day-badge.off { color: var(--text-muted); font-size: 0.75rem; opacity: 0.4; }
-    .cal-day-del { position: absolute; top: 2px; right: 2px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; z-index: 2; }
+    .cal-day-del { position: absolute; top: 2px; left: 2px; font-size: 0.6rem; line-height: 1; opacity: 0.28; padding: 2px; cursor: pointer; transition: opacity 0.15s ease; z-index: 2; }
     .cal-day-del:hover, .cal-day-del:active { opacity: 0.85; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 1rem; }
@@ -243,6 +243,11 @@
       /* IMPRESSION ENGAGEMENT */
       body.print-mode-engagement #admin, body.print-mode-engagement #engagement { display: block !important; }
       body.print-mode-engagement #paie, body.print-mode-engagement #contrat, body.print-mode-engagement #impots { display: none !important; }
+
+      /* IMPRESSION CONTRAT */
+      body.print-mode-contrat #admin, body.print-mode-contrat #contrat { display: block !important; }
+      body.print-mode-contrat #engagement, body.print-mode-contrat #paie, body.print-mode-contrat #impots { display: none !important; }
+      .annexe-print { page-break-before: always; padding-top: 4mm; }
 
       .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
       .print-header-title h1 { font-size: 15pt; font-weight: bold; color: #000; text-transform: uppercase; margin-bottom: 2px; }
@@ -458,6 +463,7 @@
 
     <!-- SOUS-ONGLET : CONTRAT -->
     <div id="contrat" class="sub-tab-content" style="display: block;">
+      <div class="no-print">
       <div id="contrat-eng-notice" class="no-print" style="display:none; margin-bottom:1.25rem; padding:0.85rem; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); font-size: 0.82rem; color: #fde68a; line-height:1.4;">
         ⚠️ L'engagement réciproque n'a pas encore été validé. Ce contrat est vierge — rendez-vous dans l'onglet <strong>📜 Engag.</strong> pour le créer, il pourra ensuite pré-remplir automatiquement les champs ci-dessous.
       </div>
@@ -592,6 +598,22 @@
       </div>
 
       <div class="card">
+        <h2>📎 Documents de l'enfant</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
+          Photographiez ou importez les documents utiles (pièce d'identité, justificatif de domicile, attestation CAF, certificats...). Ils sont envoyés dans votre dépôt GitHub, dans un dossier dédié à cet enfant.
+        </p>
+        <div id="doc-gh-warning" style="display:none; margin-bottom:0.75rem; padding:0.6rem; background:rgba(244,63,94,0.12); border:1px solid rgba(244,63,94,0.4); border-radius:var(--radius-sm); font-size:0.78rem; color:#fca5a5;">
+          ⚠️ Configurez d'abord la synchronisation GitHub (icône ⚙️ en haut de l'écran) pour pouvoir stocker des documents.
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+          <input type="file" id="doc-upload-input" accept="image/*,application/pdf" multiple style="flex:1; min-width:200px;">
+          <button class="btn btn-primary btn-sm" onclick="televerserDocumentsEnfant()">📤 Envoyer</button>
+        </div>
+        <div id="doc-upload-status" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;"></div>
+        <div id="doc-liste"></div>
+      </div>
+
+      <div class="card">
         <details>
           <summary style="display:flex; justify-content:space-between; align-items:center;">
             <span>📅 Créer la semaine type de ce contrat</span>
@@ -619,6 +641,81 @@
           <br>
           <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="sauvegarderSemaineType('ct-')">Enregistrer cette semaine type sur la fiche de l'enfant</button>
         </details>
+      </div>
+
+      <div class="card">
+        <h2>📑 Annexes du contrat</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
+          Cochez les annexes à joindre lors de l'impression du contrat. Elles seront imprimées à la suite, chacune sur sa propre page.
+        </p>
+        <div id="annexes-liste" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+      </div>
+
+      <div class="card">
+        <button class="btn btn-primary" style="width:100%;" onclick="imprimerContrat()">🖨️ Imprimer le contrat (pour signature)</button>
+      </div>
+      </div>
+
+      <!-- BLOC IMPRIMABLE DU CONTRAT (généré dynamiquement par preparerImpressionContrat) -->
+      <div class="print-only">
+        <div class="print-header">
+          <div class="print-header-title">
+            <h1>Contrat de Travail</h1>
+            <p>Assistante Maternelle Agréée — Garde d'enfant au domicile de l'assistante maternelle</p>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 9pt; font-weight: bold;" id="ctr-print-date">Fait le : --/--/----</div>
+          </div>
+        </div>
+
+        <div class="print-grid-info">
+          <div class="print-box">
+            <div class="print-box-title">Employeur (Parents)</div>
+            <div class="print-box-content" id="ctr-print-parents"></div>
+          </div>
+          <div class="print-box">
+            <div class="print-box-title">Assistante Maternelle Agréée</div>
+            <div class="print-box-content" id="ctr-print-assmat"></div>
+          </div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Enfant concerné</div>
+          <div class="print-box-content" id="ctr-print-enfant"></div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Conditions de l'accueil</div>
+          <div class="print-box-content" id="ctr-print-conditions"></div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Semaine type prévue</div>
+          <div class="print-box-content" id="ctr-print-semaine"></div>
+        </div>
+
+        <div class="print-box" style="margin-bottom: 10px;">
+          <div class="print-box-title">Rémunération</div>
+          <div class="print-box-content" id="ctr-print-remuneration"></div>
+        </div>
+
+        <div class="legal-print-clause">
+          <strong>Clauses générales :</strong><br>
+          Le présent contrat est régi par la Convention Collective Nationale des salariés du particulier employeur et emploi à domicile (assistants maternels du particulier employeur). Toute modification substantielle (horaires, rémunération, lieu d'accueil) fera l'objet d'un avenant écrit signé des deux parties. En cas de rupture, les parties respecteront les délais de préavis prévus par la convention collective en vigueur.
+        </div>
+
+        <div class="print-signatures">
+          <div class="print-signature-box">
+            <strong>Signature du/des Parent(s) Employeur(s) :</strong><br>
+            <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
+          </div>
+          <div class="print-signature-box">
+            <strong>Signature de l'Assistante Maternelle :</strong><br>
+            <span style="font-size:7pt; color:#444;">(Précédée de la mention manuscrite "Lu et approuvé")</span>
+          </div>
+        </div>
+
+        <div id="ctr-print-annexes"></div>
       </div>
     </div>
 
@@ -1150,6 +1247,16 @@
     const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
+    const ANNEXES_DISPONIBLES = [
+      { id: 'notice', label: "Notice d'information (Convention Collective)" },
+      { id: 'sante', label: "Fiche de renseignements santé de l'enfant" },
+      { id: 'autorisations', label: "Autorisations parentales (sorties, personnes habilitées, image)" },
+      { id: 'urgence', label: "Protocole & autorisation de soins en cas d'urgence" },
+      { id: 'planning', label: "Planning prévisionnel (semaine type)" },
+      { id: 'remuneration', label: "Tableau de calcul de la rémunération mensualisée" },
+      { id: 'reglement', label: "Règlement intérieur / conditions générales d'accueil" }
+    ];
+
     let currentDateState = new Date();
 
     let haConfig = JSON.parse(localStorage.getItem('assmat_ha_config')) || { url: '', token: '', entity: 'switch.mode_enfant' };
@@ -1250,7 +1357,7 @@
           5: { actif: false, arrivee: '', depart: '' }, 
           6: { actif: false, arrivee: '', depart: '' }
         },
-        planningPrevu: {}, presences: []
+        planningPrevu: {}, presences: [], documents: []
       }
     };
     
@@ -1271,8 +1378,11 @@
         if(c.jHebdo === undefined) c.jHebdo = 4;
         if(c.semainesAn === undefined) c.semainesAn = 52;
         if(c.dateDebut === undefined) c.dateDebut = '';
+        if(!c.annexes) c.annexes = {};
+        ANNEXES_DISPONIBLES.forEach(a => { if (c.annexes[a.id] === undefined) c.annexes[a.id] = false; });
 
         enfants[id].contrat = c;
+        if(!Array.isArray(enfants[id].documents)) enfants[id].documents = [];
 
         if(!enfants[id].engagement) {
           enfants[id].engagement = { dateSignature: '', dateEffet: '', adaptationDebut: '', adaptationFin: '', tarifBrut: (c.tarifNet ? (c.tarifNet * 1.28).toFixed(4) : 5.12), heuresSemaine: c.hHebdo || 35, typeAnnee: 'complete', semainesAn: c.semainesAn || 52, assmatNom: '', assmatAdresse: '' };
@@ -1708,7 +1818,7 @@
           4: {actif:true, arrivee:'08:00', depart:'17:00'}, 5: {actif:false, arrivee:'', depart:''}, 
           6: {actif:false, arrivee:'', depart:''} 
         },
-        planningPrevu: {}, presences: []
+        planningPrevu: {}, presences: [], documents: []
       };
       activeEnfantId = id;
       sauvegarderGlobal();
@@ -2590,6 +2700,9 @@
 
       const notice = document.getElementById('contrat-eng-notice');
       if (notice) notice.style.display = eng.valide ? 'none' : 'block';
+
+      chargerListeDocuments();
+      chargerAnnexesInterface();
     }
 
     function sauvegarderContrat() {
@@ -2620,12 +2733,292 @@
         hMensuel: parseFloat(document.getElementById('cfg-h-mensuel').value) || 0,
         hHebdo: hHebdo,
         jHebdo: parseFloat(document.getElementById('cfg-j-hebdo').value) || 4,
-        semainesAn: semainesAn
+        semainesAn: semainesAn,
+        annexes: enfants[activeEnfantId].contrat.annexes || {}
       };
       
       sauvegarderGlobal();
       rendreSlider();
       alert("Contrat mis à jour avec succès !");
+    }
+
+    /* --- DOCUMENTS DE L'ENFANT (STOCKAGE GITHUB) --- */
+    function slugifyTexte(txt) {
+      return (txt || '')
+        .toString()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') || 'enfant';
+    }
+
+    function dossierDocumentsEnfant(id) {
+      const c = enfants[id]?.contrat || {};
+      const nom = `${c.prenomEnfant || ''} ${c.nomEnfant || ''}`.trim() || id;
+      return slugifyTexte(nom);
+    }
+
+    function lireFichierEnBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result.split(',')[1]);
+        r.onerror = () => reject(new Error('Lecture du fichier impossible'));
+        r.readAsDataURL(file);
+      });
+    }
+
+    async function televerserDocumentsEnfant() {
+      const input = document.getElementById('doc-upload-input');
+      const statusEl = document.getElementById('doc-upload-status');
+      if (!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        alert("⚠️ Configure d'abord la synchronisation GitHub (icône ⚙️ en haut) pour pouvoir stocker des documents.");
+        return;
+      }
+      const fichiers = input.files;
+      if (!fichiers || fichiers.length === 0) { alert("Choisis d'abord un ou plusieurs fichiers."); return; }
+
+      const dossier = dossierDocumentsEnfant(activeEnfantId);
+      const branch = githubConfig.branch || 'main';
+      let reussis = 0, echecs = 0;
+
+      for (const file of Array.from(fichiers)) {
+        statusEl.innerText = `Envoi de ${file.name}...`;
+        try {
+          const base64 = await lireFichierEnBase64(file);
+          const nomFichier = `${Date.now()}-${slugifyTexte(file.name.replace(/\.[^/.]+$/, ''))}${(file.name.match(/\.[^/.]+$/) || [''])[0]}`;
+          const path = `documents/${dossier}/${nomFichier}`;
+          const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${path}`;
+          const res = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: `Ajout document : ${file.name}`, content: base64, branch: branch })
+          });
+          if (res.status === 200 || res.status === 201) {
+            const data = await res.json();
+            if (!Array.isArray(enfants[activeEnfantId].documents)) enfants[activeEnfantId].documents = [];
+            enfants[activeEnfantId].documents.push({
+              name: file.name,
+              path: path,
+              sha: data.content.sha,
+              url: data.content.download_url,
+              date: new Date().toISOString().split('T')[0]
+            });
+            reussis++;
+          } else { echecs++; }
+        } catch (err) {
+          console.error('Erreur téléversement document:', err);
+          echecs++;
+        }
+      }
+
+      sauvegarderGlobal();
+      input.value = '';
+      statusEl.innerText = echecs === 0
+        ? `✅ ${reussis} document(s) envoyé(s) avec succès.`
+        : `⚠️ ${reussis} document(s) envoyé(s), ${echecs} échec(s).`;
+      chargerListeDocuments();
+    }
+
+    async function supprimerDocumentEnfant(idx) {
+      const doc = (enfants[activeEnfantId].documents || [])[idx];
+      if (!doc) return;
+      if (!confirm(`Supprimer le document "${doc.name}" ? Cette action le supprime aussi du dépôt GitHub.`)) return;
+
+      if (githubConfig.user && githubConfig.repo && githubConfig.token) {
+        try {
+          const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${doc.path}`;
+          await fetch(url, {
+            method: 'DELETE',
+            headers: { 'Authorization': `token ${githubConfig.token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: `Suppression document : ${doc.name}`, sha: doc.sha, branch: githubConfig.branch || 'main' })
+          });
+        } catch (err) { console.error('Erreur suppression document GitHub:', err); }
+      }
+
+      enfants[activeEnfantId].documents.splice(idx, 1);
+      sauvegarderGlobal();
+      chargerListeDocuments();
+    }
+
+    function chargerListeDocuments() {
+      const warning = document.getElementById('doc-gh-warning');
+      if (warning) warning.style.display = (githubConfig.user && githubConfig.repo && githubConfig.token) ? 'none' : 'block';
+
+      const liste = document.getElementById('doc-liste');
+      if (!liste) return;
+      const docs = enfants[activeEnfantId]?.documents || [];
+      if (docs.length === 0) {
+        liste.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted);">Aucun document pour le moment.</p>`;
+        return;
+      }
+      liste.innerHTML = docs.map((d, idx) => `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; padding:0.5rem 0.6rem; background:var(--surface-card); border-radius:var(--radius-sm); margin-bottom:0.4rem;">
+          <a href="${d.url}" target="_blank" rel="noopener" style="font-size:0.82rem; color:var(--accent-light); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${d.name}</a>
+          <span style="font-size:0.7rem; color:var(--text-muted); white-space:nowrap;">${d.date || ''}</span>
+          <button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem;" onclick="supprimerDocumentEnfant(${idx})">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    /* --- ANNEXES DU CONTRAT --- */
+    function chargerAnnexesInterface() {
+      const cont = document.getElementById('annexes-liste');
+      if (!cont) return;
+      const c = enfants[activeEnfantId].contrat || {};
+      const annexes = c.annexes || {};
+      cont.innerHTML = ANNEXES_DISPONIBLES.map(a => `
+        <label class="checkbox-group">
+          <input type="checkbox" id="annexe-${a.id}" ${annexes[a.id] ? 'checked' : ''} onchange="toggleAnnexe('${a.id}')">
+          <span style="font-size:0.85rem;">${a.label}</span>
+        </label>
+      `).join('');
+    }
+
+    function toggleAnnexe(id) {
+      if (!enfants[activeEnfantId].contrat.annexes) enfants[activeEnfantId].contrat.annexes = {};
+      enfants[activeEnfantId].contrat.annexes[id] = document.getElementById(`annexe-${id}`).checked;
+      sauvegarderGlobal();
+    }
+
+    /* --- IMPRESSION DU CONTRAT --- */
+    function genererTableauSemaineType(st) {
+      const lignes = JOURS.map((j, idx) => {
+        const item = st?.[idx];
+        if (!item || !item.actif) return `<tr><td style="padding:4px; border-bottom:1px solid #eee;">${j}</td><td style="padding:4px; border-bottom:1px solid #eee; color:#999;">Non accueilli</td></tr>`;
+        return `<tr><td style="padding:4px; border-bottom:1px solid #eee;">${j}</td><td style="padding:4px; border-bottom:1px solid #eee;">${item.arrivee} - ${item.depart}</td></tr>`;
+      }).join('');
+      return `<table style="width:100%; border-collapse:collapse; font-size:9pt;">${lignes}</table>`;
+    }
+
+    function genererContenuAnnexe(id, c, eng, st) {
+      const nomEnfant = `${c.prenomEnfant || ''} ${c.nomEnfant || ''}`.trim() || 'N/C';
+      const titres = Object.fromEntries(ANNEXES_DISPONIBLES.map(a => [a.id, a.label]));
+
+      const corps = {
+        notice: `
+          <p>Le présent document constitue une notice d'information remise au salarié (assistante maternelle agréée) et à l'employeur (parents), conformément aux dispositions de la Convention Collective Nationale des salariés du particulier employeur et employeur, activités de la garde d'enfant à domicile.</p>
+          <p>Elle rappelle notamment : la durée légale et les plafonds horaires de travail (48h/semaine, 2 250h/an), les règles relatives aux congés payés et jours fériés, les indemnités d'entretien et de repas, les modalités de rupture du contrat et de préavis, ainsi que les recours possibles auprès de la Caisse Primaire d'Assurance Maladie (assurance chômage) et de Pajemploi pour l'ensemble des démarches administratives.</p>
+          <p>Chaque partie déclare avoir reçu et pris connaissance d'un exemplaire de cette notice.</p>`,
+        sante: `
+          <table style="width:100%; border-collapse:collapse; font-size:9pt;">
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Enfant</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">${nomEnfant}</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Date de naissance</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">${formaterDateFr(c.naissance) || 'N/C'}</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Médecin traitant</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">…………………………………………</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Allergies connues</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">…………………………………………</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Traitement en cours</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">…………………………………………</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;"><b>Vaccinations à jour</b></td><td style="padding:4px; border-bottom:1px solid #ccc;">☐ Oui &nbsp;&nbsp; ☐ Non</td></tr>
+            <tr><td style="padding:4px;"><b>Recommandations particulières</b></td><td style="padding:4px;">…………………………………………</td></tr>
+          </table>
+          <p style="margin-top:8px; font-size:8pt; color:#555;">Fiche à compléter et mettre à jour par les parents à chaque changement de situation médicale.</p>`,
+        autorisations: `
+          <p><b>Sorties en voiture :</b> ${c.sortiesVoiture ? '☑ Autorisées' : '☐ Non autorisées'} — l'assistante maternelle est autorisée à transporter l'enfant dans son véhicule personnel dans le cadre de ses activités (sorties, courses, école).</p>
+          <p><b>Personnes autorisées à récupérer l'enfant</b> (en dehors des parents) :</p>
+          <table style="width:100%; border-collapse:collapse; font-size:9pt; margin-bottom:8px;">
+            <tr><th style="text-align:left; padding:4px; border-bottom:1px solid #000;">Nom / Prénom</th><th style="text-align:left; padding:4px; border-bottom:1px solid #000;">Lien avec l'enfant</th><th style="text-align:left; padding:4px; border-bottom:1px solid #000;">Téléphone</th></tr>
+            <tr><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td></tr>
+            <tr><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td><td style="padding:6px; border-bottom:1px solid #eee;">&nbsp;</td></tr>
+            <tr><td style="padding:6px;">&nbsp;</td><td style="padding:6px;">&nbsp;</td><td style="padding:6px;">&nbsp;</td></tr>
+          </table>
+          <p><b>Droit à l'image :</b> ☐ Les parents autorisent &nbsp; ☐ Les parents n'autorisent pas la prise de photographies de l'enfant dans le cadre des activités quotidiennes (usage privé uniquement, non diffusé).</p>`,
+        urgence: `
+          <p><b>Contact d'urgence :</b> ${c.urgence?.nom || '…………………………'} — Tél. : ${c.urgence?.tel || '…………………………'}</p>
+          <p><b>Médecin traitant :</b> ………………………………………… — Tél. : …………………………</p>
+          <p><b>Hôpital / service de secteur :</b> …………………………………………</p>
+          <p>En cas d'accident ou de maladie soudaine ne permettant pas de joindre immédiatement les parents ou le contact d'urgence, les parents autorisent l'assistante maternelle à :</p>
+          <p>☐ Appeler les services d'urgence (SAMU 15 / Pompiers 18 / 112) et faire transporter l'enfant vers l'établissement de soins le plus proche.<br>
+          ☐ Faire pratiquer, en cas de nécessité vitale, tout acte médical ou chirurgical d'urgence jugé indispensable par le corps médical.</p>
+          <p style="margin-top:8px;">Fait à ……………………, le ……………………</p>`,
+        planning: `<div>${genererTableauSemaineType(st)}</div>
+          <p style="margin-top:8px; font-size:8pt; color:#555;">Ce planning est prévisionnel et pourra être ajusté d'un commun accord entre les parties, par avenant écrit.</p>`,
+        remuneration: `
+          <table style="width:100%; border-collapse:collapse; font-size:9pt;">
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Tarif horaire net</td><td style="padding:4px; border-bottom:1px solid #ccc;"><b>${(c.tarifNet || 0).toFixed(2)} € / h</b></td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Majoration heures supplémentaires</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.majoration || 0} %</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Indemnité d'entretien</td><td style="padding:4px; border-bottom:1px solid #ccc;">${(c.ie || 0).toFixed(2)} € / jour</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Indemnité de repas</td><td style="padding:4px; border-bottom:1px solid #ccc;">${(c.ir || 0).toFixed(2)} € / jour</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Heures mensualisées</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.hMensuel || 0} h / mois</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Horaire hebdomadaire</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.hHebdo || 0} h / semaine, ${c.jHebdo || 0} jour(s)</td></tr>
+            <tr><td style="padding:4px; border-bottom:1px solid #ccc;">Semaines d'accueil / an</td><td style="padding:4px; border-bottom:1px solid #ccc;">${c.semainesAn || 52}</td></tr>
+            <tr><td style="padding:4px;">Mode de rémunération</td><td style="padding:4px;">${c.moisLisse !== false ? 'Mensualisé (mois lissé)' : 'Au réel (heures effectivement réalisées)'}</td></tr>
+          </table>`,
+        reglement: `
+          <p><b>Horaires :</b> les horaires d'arrivée et de départ convenus doivent être respectés. Tout retard doit être signalé le plus tôt possible à l'assistante maternelle.</p>
+          <p><b>Absences :</b> toute absence prévisible (rendez-vous, congé) doit être signalée au moins 48h à l'avance dans la mesure du possible. En cas de maladie de l'enfant, les parents préviennent l'assistante maternelle dès que possible.</p>
+          <p><b>Congés :</b> les dates de congés de l'assistante maternelle et des parents employeurs sont fixées d'un commun accord, au plus tard deux mois avant le 1er mai de chaque année, conformément à la convention collective.</p>
+          <p><b>Jours fériés :</b> les jours fériés chômés et payés sont ceux fixés par le Code du travail, sous réserve des dispositions conventionnelles applicables aux assistants maternels.</p>
+          <p><b>Maladie de l'assistante maternelle :</b> en cas d'arrêt de travail, l'assistante maternelle en informe les parents dans les meilleurs délais et transmet son arrêt de travail.</p>
+          <p><b>Repas et matériel :</b> les modalités de fourniture des repas, couches et matériel de puériculture sont précisées d'un commun accord entre les parties (à défaut, fournis par les parents).</p>`
+      };
+
+      return `
+        <div class="annexe-print">
+          <div class="print-header-title" style="border-bottom:1px solid #000; padding-bottom:6px; margin-bottom:8px;">
+            <h1 style="font-size:13pt;">Annexe — ${titres[id] || id}</h1>
+            <p style="font-size:8pt;">Enfant concerné : ${nomEnfant}</p>
+          </div>
+          ${corps[id] || ''}
+        </div>
+      `;
+    }
+
+    function preparerImpressionContrat() {
+      const c = enfants[activeEnfantId].contrat || {};
+      const st = enfants[activeEnfantId].semaineType || {};
+
+      document.getElementById('ctr-print-date').innerText = `Fait le : ${formaterDateFr(new Date().toISOString().split('T')[0])}`;
+
+      let pText = "";
+      if (c.mere?.nom || c.mere?.prenom) {
+        pText += `<strong>Parent 1 :</strong> ${c.mere.prenom || ''} ${c.mere.nom || ''}<br>`;
+        if (c.mere.adresse) pText += `${c.mere.adresse}<br>`;
+        pText += `Tél. : ${c.mere.port || 'N/C'}${c.mere.email ? ` — E-mail : ${c.mere.email}` : ''}<br>`;
+      }
+      if (c.pere?.nom || c.pere?.prenom) {
+        pText += `<strong>Parent 2 :</strong> ${c.pere.prenom || ''} ${c.pere.nom || ''}<br>`;
+        if (c.pere.adresse) pText += `${c.pere.adresse}<br>`;
+        pText += `Tél. : ${c.pere.port || 'N/C'}${c.pere.email ? ` — E-mail : ${c.pere.email}` : ''}<br>`;
+      }
+      document.getElementById('ctr-print-parents').innerHTML = pText || "Parents non renseignés";
+
+      const assmatContact = [
+        profilAssmat.telephone ? `Tél. : ${profilAssmat.telephone}` : '',
+        profilAssmat.email ? `E-mail : ${profilAssmat.email}` : ''
+      ].filter(Boolean).join('<br>');
+
+      document.getElementById('ctr-print-assmat').innerHTML = `
+        <strong>${getNomCompletAssmat() || 'Assistante maternelle N/C'}</strong><br>
+        ${getAdresseCompleteAssmat() || 'Adresse N/C'}
+        ${assmatContact ? '<br>' + assmatContact : ''}
+      `;
+
+      document.getElementById('ctr-print-enfant').innerHTML = `
+        ${c.prenomEnfant || 'N/C'} ${c.nomEnfant || ''} ${c.naissance ? `(Né(e) / Prévu(e) le ${formaterDateFr(c.naissance)})` : ''}<br>
+        Contact d'urgence : ${c.urgence?.nom || 'N/C'} — ${c.urgence?.tel || 'N/C'}
+      `;
+
+      document.getElementById('ctr-print-conditions').innerHTML = `
+        • Date de début du contrat : <strong>${formaterDateFr(c.dateDebut) || 'N/C'}</strong><br>
+        • Horaire hebdomadaire prévu : <strong>${c.hHebdo || 0}h / sem</strong> sur ${c.jHebdo || 0} jour(s)<br>
+        • Semaines d'accueil / an : <strong>${c.semainesAn || 52}</strong><br>
+        • Sorties en voiture : ${c.sortiesVoiture ? 'Autorisées' : 'Non autorisées'}
+      `;
+
+      document.getElementById('ctr-print-semaine').innerHTML = genererTableauSemaineType(st);
+
+      document.getElementById('ctr-print-remuneration').innerHTML = `
+        Tarif horaire net : <strong>${(c.tarifNet || 0).toFixed(2)} €/h</strong> — Majoration H. Sup. : ${c.majoration || 0}%<br>
+        Indemnité d'entretien : ${(c.ie || 0).toFixed(2)} €/j — Indemnité de repas : ${(c.ir || 0).toFixed(2)} €/j<br>
+        Heures mensualisées : ${c.hMensuel || 0} h/mois — Mode : ${c.moisLisse !== false ? 'Mensualisé (lissé)' : 'Au réel'}
+      `;
+
+      const annexesChoisies = ANNEXES_DISPONIBLES.filter(a => c.annexes && c.annexes[a.id]);
+      document.getElementById('ctr-print-annexes').innerHTML = annexesChoisies.map(a => genererContenuAnnexe(a.id, c, {}, st)).join('');
+    }
+
+    function imprimerContrat() {
+      preparerImpressionContrat();
+      definirModeImpression("print-mode-contrat");
+      window.print();
     }
 
     /* --- GESTION DE L'ENGAGEMENT RECIPROQUE --- */
