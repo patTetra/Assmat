@@ -135,8 +135,63 @@
         },
         "2026-08-31": {
           "status": "prevu",
-          "arrivee": "09:00",
-          "depart": "17:00"
+          "arrivee": "08:15",
+          "depart": "17:30",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "parent",
+            "diner": "non"
+          }
+        },
+        "2026-09-02": {
+          "status": "prevu",
+          "arrivee": "08:15",
+          "depart": "17:30",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "parent",
+            "diner": "non"
+          }
+        },
+        "2026-09-03": {
+          "status": "prevu",
+          "arrivee": "08:15",
+          "depart": "17:30",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "parent",
+            "diner": "non"
+          }
+        },
+        "2026-09-04": {
+          "status": "prevu",
+          "arrivee": "08:15",
+          "depart": "17:30",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "parent",
+            "diner": "non"
+          }
+        },
+        "2026-09-01": {
+          "status": "prevu",
+          "arrivee": "08:15",
+          "depart": "17:30",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "assmat",
+            "gouter": "parent",
+            "diner": "non"
+          }
         }
       },
       "presences": [
