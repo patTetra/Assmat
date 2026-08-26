@@ -15,39 +15,39 @@
         "prenomEnfant": "Youenn",
         "nomEnfant": "Segalen",
         "naissance": "",
+        "dateDebut": "",
         "sortiesVoiture": true,
+        "moisLisse": true,
         "mere": {
           "nom": "",
           "prenom": "Parents de Youenn",
+          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
-          "adresse": "",
           "email": ""
         },
         "pere": {
           "nom": "",
           "prenom": "",
+          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
-          "adresse": "",
           "email": ""
         },
         "urgence": {
-          "nom": "",
-          "tel": ""
+          "nom": "Machin truc",
+          "tel": "0663580547"
         },
         "tarifNet": 4,
         "majoration": 10,
         "ie": 3.5,
         "ir": 4,
-        "hMensuel": 120,
+        "hMensuel": 139,
         "hHebdo": 32,
         "jHebdo": 4,
         "semainesAn": 52,
-        "moisLisse": true,
-        "dateDebut": "",
         "annexes": {
           "notice": false,
           "sante": true,
