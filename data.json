@@ -96,26 +96,6 @@
         }
       },
       "planningPrevu": {
-        "2026-08-10": {
-          "status": "prevu",
-          "arrivee": "09:00",
-          "depart": "17:00"
-        },
-        "2026-08-11": {
-          "status": "prevu",
-          "arrivee": "09:00",
-          "depart": "17:00"
-        },
-        "2026-08-13": {
-          "status": "prevu",
-          "arrivee": "09:00",
-          "depart": "17:00"
-        },
-        "2026-08-14": {
-          "status": "prevu",
-          "arrivee": "09:00",
-          "depart": "17:00"
-        },
         "2026-08-17": {
           "status": "prevu",
           "arrivee": "09:00",
@@ -145,12 +125,6 @@
         "2026-08-25": {
           "status": "prevu",
           "arrivee": "08:01",
-          "depart": "17:00",
-          "note": ""
-        },
-        "2026-08-27": {
-          "status": "prevu",
-          "arrivee": "14:00",
           "depart": "17:00",
           "note": ""
         },
