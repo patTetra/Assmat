@@ -210,6 +210,10 @@
     .week-day-row .time-select-group select { padding: 0.3rem 0.35rem; font-size: 0.8rem; }
     .time-select-group.compact select { padding: 0.3rem 0.35rem; font-size: 0.8rem; }
 
+    .st-repas-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.15rem; }
+    .st-repas-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--text-muted); }
+    .st-repas-item select { width: auto; padding: 0.25rem 0.35rem; font-size: 0.72rem; }
+
     .table-container { width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 0.5rem; }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--surface-card); white-space: nowrap; }
     th { background: rgba(0, 0, 0, 0.2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; }
@@ -1329,6 +1333,40 @@
           </div>
         </div>
       </div>
+      <div class="grid-2" style="margin-bottom:0.8rem;">
+        <div class="form-group">
+          <label>🥐 Petit-déjeuner</label>
+          <select id="modal-repas-petitdej">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍽️ Déjeuner</label>
+          <select id="modal-repas-dejeuner">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍪 Goûter</label>
+          <select id="modal-repas-gouter">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🍲 Dîner</label>
+          <select id="modal-repas-diner">
+            <option value="non">Non</option>
+            <option value="parent">Parent</option>
+            <option value="assmat">Assmat</option>
+          </select>
+        </div>
+      </div>
       <div class="dup-panel" id="modal-dup-panel"></div>
       <div class="form-group" style="margin-bottom:1.2rem;">
         <label>Note / Commentaire (optionnel)</label>
@@ -2173,10 +2211,15 @@
     function ouvrirModalJour(isoDate) {
       selectedIsoDate = isoDate;
       const prevu = (enfants[activeEnfantId].planningPrevu || {})[isoDate] || {};
+      const repasPrevu = prevu.repas || {};
       document.getElementById('modal-date-title').innerText = `Planning du ${isoDate}`;
       setTimeSelectValue('modal-arrivee', prevu.arrivee || '08:30', 8);
       setTimeSelectValue('modal-depart', prevu.depart || '17:30', 17);
       document.getElementById('modal-note').value = prevu.note || '';
+      document.getElementById('modal-repas-petitdej').value = repasPrevu.petitDej || 'non';
+      document.getElementById('modal-repas-dejeuner').value = repasPrevu.dejeuner || 'non';
+      document.getElementById('modal-repas-gouter').value = repasPrevu.gouter || 'non';
+      document.getElementById('modal-repas-diner').value = repasPrevu.diner || 'non';
       construireDupPanelModalJour(isoDate);
       document.getElementById('modal-day').classList.add('active');
     }
@@ -2188,8 +2231,14 @@
       const arrivee = getTimeSelectValue('modal-arrivee');
       const depart = getTimeSelectValue('modal-depart');
       const note = document.getElementById('modal-note').value;
+      const repas = {
+        petitDej: document.getElementById('modal-repas-petitdej').value,
+        dejeuner: document.getElementById('modal-repas-dejeuner').value,
+        gouter: document.getElementById('modal-repas-gouter').value,
+        diner: document.getElementById('modal-repas-diner').value
+      };
 
-      enfants[activeEnfantId].planningPrevu[selectedIsoDate] = { status: 'prevu', arrivee, depart, note };
+      enfants[activeEnfantId].planningPrevu[selectedIsoDate] = { status: 'prevu', arrivee, depart, note, repas };
       sauvegarderGlobal();
       fermerModal();
       rendreCalendrier();
@@ -2257,6 +2306,12 @@
       const arr = getTimeSelectValue('modal-arrivee');
       const dep = getTimeSelectValue('modal-depart');
       const note = document.getElementById('modal-note').value;
+      const repas = {
+        petitDej: document.getElementById('modal-repas-petitdej').value,
+        dejeuner: document.getElementById('modal-repas-dejeuner').value,
+        gouter: document.getElementById('modal-repas-gouter').value,
+        diner: document.getElementById('modal-repas-diner').value
+      };
       if (!arr || !dep) return;
 
       const checks = document.querySelectorAll('#modal-dup-panel .modal-dup-check:checked');
@@ -2264,13 +2319,13 @@
 
       if (!enfants[activeEnfantId].planningPrevu) enfants[activeEnfantId].planningPrevu = {};
       checks.forEach(chk => {
-        enfants[activeEnfantId].planningPrevu[chk.value] = { status: 'prevu', arrivee: arr, depart: dep, note };
+        enfants[activeEnfantId].planningPrevu[chk.value] = { status: 'prevu', arrivee: arr, depart: dep, note, repas };
       });
 
       sauvegarderGlobal();
       fermerPanelDuplicationModalJour();
       rendreCalendrier();
-      alert("Horaires dupliqués sur les jours sélectionnés.");
+      alert("Horaires et repas dupliqués sur les jours sélectionnés.");
     }
 
     function genererPlanningMoisComplet() {
@@ -2290,7 +2345,7 @@
         const configJour = st[dayIdx];
 
         if(configJour && configJour.actif) {
-          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart };
+          enfants[activeEnfantId].planningPrevu[isoDate] = { status: 'prevu', arrivee: configJour.arrivee, depart: configJour.depart, repas: configJour.repas || {} };
         }
       }
 
@@ -2367,7 +2422,8 @@
       const st = enfants[activeEnfantId].semaineType || {};
 
       JOURS.forEach((jour, idx) => {
-        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30' };
+        const item = st[idx] || { actif: (idx < 5), arrivee: '08:30', depart: '17:30', repas: {} };
+        const repasItem = item.repas || {};
         const isWeekend = (idx === 5 || idx === 6);
         const autresJours = JOURS.map((j2, idx2) => idx2 === idx ? '' : `
               <label class="dup-day-chip">
@@ -2385,6 +2441,12 @@
                 ${timeSelectHtml(`${prefix}st-arr-${idx}`, item.arrivee || '08:30', 8, { onchange: `onChangeHoraireSemaineType(${idx}, '${prefix}')` })}
                 ${timeSelectHtml(`${prefix}st-dep-${idx}`, item.depart || '17:30', 17, { onchange: `onChangeHoraireSemaineType(${idx}, '${prefix}')` })}
               </div>
+            </div>
+            <div class="st-repas-row">
+              <label class="st-repas-item" title="Petit-déjeuner">🥐 ${optionsRepasHtml(`${prefix}st-repas-petitdej-${idx}`, repasItem.petitDej)}</label>
+              <label class="st-repas-item" title="Déjeuner">🍽️ ${optionsRepasHtml(`${prefix}st-repas-dejeuner-${idx}`, repasItem.dejeuner)}</label>
+              <label class="st-repas-item" title="Goûter">🍪 ${optionsRepasHtml(`${prefix}st-repas-gouter-${idx}`, repasItem.gouter)}</label>
+              <label class="st-repas-item" title="Dîner">🍲 ${optionsRepasHtml(`${prefix}st-repas-diner-${idx}`, repasItem.diner)}</label>
             </div>
           </div>
           <div class="dup-panel" id="${prefix}dup-panel-${idx}">
@@ -2436,6 +2498,13 @@
       const dep = getTimeSelectValue(`${prefix}st-dep-${idx}`);
       if (!arr || !dep) return;
 
+      const repas = {
+        petitDej: document.getElementById(`${prefix}st-repas-petitdej-${idx}`)?.value || 'non',
+        dejeuner: document.getElementById(`${prefix}st-repas-dejeuner-${idx}`)?.value || 'non',
+        gouter: document.getElementById(`${prefix}st-repas-gouter-${idx}`)?.value || 'non',
+        diner: document.getElementById(`${prefix}st-repas-diner-${idx}`)?.value || 'non'
+      };
+
       let auMoinsUnJour = false;
       JOURS.forEach((_, idx2) => {
         if (idx2 === idx) return;
@@ -2444,6 +2513,14 @@
           setTimeSelectValue(`${prefix}st-arr-${idx2}`, arr);
           setTimeSelectValue(`${prefix}st-dep-${idx2}`, dep);
           document.getElementById(`${prefix}st-check-${idx2}`).checked = true;
+          const selPetitDej = document.getElementById(`${prefix}st-repas-petitdej-${idx2}`);
+          const selDejeuner = document.getElementById(`${prefix}st-repas-dejeuner-${idx2}`);
+          const selGouter = document.getElementById(`${prefix}st-repas-gouter-${idx2}`);
+          const selDiner = document.getElementById(`${prefix}st-repas-diner-${idx2}`);
+          if (selPetitDej) selPetitDej.value = repas.petitDej;
+          if (selDejeuner) selDejeuner.value = repas.dejeuner;
+          if (selGouter) selGouter.value = repas.gouter;
+          if (selDiner) selDiner.value = repas.diner;
           auMoinsUnJour = true;
         }
       });
@@ -2469,7 +2546,13 @@
         st[idx] = {
           actif: document.getElementById(`${prefix}st-check-${idx}`).checked,
           arrivee: getTimeSelectValue(`${prefix}st-arr-${idx}`),
-          depart: getTimeSelectValue(`${prefix}st-dep-${idx}`)
+          depart: getTimeSelectValue(`${prefix}st-dep-${idx}`),
+          repas: {
+            petitDej: document.getElementById(`${prefix}st-repas-petitdej-${idx}`)?.value || 'non',
+            dejeuner: document.getElementById(`${prefix}st-repas-dejeuner-${idx}`)?.value || 'non',
+            gouter: document.getElementById(`${prefix}st-repas-gouter-${idx}`)?.value || 'non',
+            diner: document.getElementById(`${prefix}st-repas-diner-${idx}`)?.value || 'non'
+          }
         };
       });
       enfants[activeEnfantId].semaineType = st;
