@@ -55,7 +55,7 @@
           "urgence": true,
           "planning": false,
           "remuneration": false,
-          "reglement": false
+          "reglement": true
         }
       },
       "semaineType": {
