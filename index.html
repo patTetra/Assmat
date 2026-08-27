@@ -204,7 +204,15 @@
 
     /* Sélecteur d'heure personnalisé (listes déroulantes Heures / Minutes par pas de 5) */
     .time-select-group { display: inline-flex; align-items: center; gap: 2px; }
-    .time-select-group select { width: auto; appearance: auto; -webkit-appearance: auto; cursor: pointer; }
+    .time-select-group select {
+      width: auto;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      background-image: none;
+      padding-right: 0.3rem;
+    }
+    .time-select-group select::-ms-expand { display: none; }
     .time-select-sep { font-weight: 800; color: var(--text-main); }
     .input-horaire-grand.time-select-group select { font-size: 1.5rem !important; font-weight: 800 !important; border: none !important; background: transparent !important; padding: 0.2rem 0 !important; color: var(--text-main) !important; }
     .week-day-row .time-select-group select { padding: 0.3rem 0.35rem; font-size: 0.8rem; }
@@ -398,7 +406,7 @@
         </div>
       </div>
       <br>
-      <button class="btn btn-primary" style="width: 100%;" onclick="ajouterPresence()">Valider la journée</button>
+      <button class="btn btn-primary" id="btn-valider-presence" style="width: 100%;" onclick="ajouterPresence()">Valider la journée</button>
     </div>
 
     <div class="card">
@@ -2592,6 +2600,9 @@
 
       const checkBadge = document.getElementById('presence-check-badge');
       if (checkBadge) checkBadge.innerHTML = existant ? `<span class="cal-day-check inline-check" title="Journée validée">✓</span>` : '';
+
+      const btnValider = document.getElementById('btn-valider-presence');
+      if (btnValider) btnValider.innerText = existant ? '✓ Mettre à jour la validation' : 'Valider la journée';
 
       const rPetitDej = document.getElementById('input-repas-petitdej');
       const rDejeuner = document.getElementById('input-repas-dejeuner');
