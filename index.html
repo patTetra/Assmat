@@ -2761,13 +2761,15 @@
             <div class="grid-2" style="margin-bottom: 0.6rem;">
               <div class="form-group">
                 <label>Arrivée réelle</label>
-                ${timeSelectHtml(`acc-arrivee-${id}`, arriveeDefaut, 8, { className: 'input-horaire-grand' })}
+                ${timeSelectHtml(`acc-arrivee-${id}`, arriveeDefaut, 8, { className: 'input-horaire-grand', onchange: `verifierEcartsHorairesAccueil('${id}')` })}
               </div>
               <div class="form-group">
                 <label>Départ réel</label>
-                ${timeSelectHtml(`acc-depart-${id}`, departDefaut, 17, { className: 'input-horaire-grand' })}
+                ${timeSelectHtml(`acc-depart-${id}`, departDefaut, 17, { className: 'input-horaire-grand', onchange: `verifierEcartsHorairesAccueil('${id}')` })}
               </div>
             </div>
+            <div id="acc-ecart-arrivee-zone-${id}" style="display:none; margin-bottom:0.6rem;"></div>
+            <div id="acc-ecart-depart-zone-${id}" style="display:none; margin-bottom:0.6rem;"></div>
             <div class="grid-2">
               <div class="form-group">
                 <label>🥐 Petit-déjeuner</label>
@@ -2793,11 +2795,91 @@
       }).join('');
     }
 
-    function validerJourneeAccueil(enfantId) {
+    function verifierEcartsHorairesAccueil(enfantId) {
       const todayIso = getTodayIso();
+      const prevu = (enfants[enfantId].planningPrevu || {})[todayIso] || null;
       const arrivee = getTimeSelectValue(`acc-arrivee-${enfantId}`);
       const depart = getTimeSelectValue(`acc-depart-${enfantId}`);
-      if (!arrivee || !depart) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
+
+      const zoneArrivee = document.getElementById(`acc-ecart-arrivee-zone-${enfantId}`);
+      const zoneDepart = document.getElementById(`acc-ecart-depart-zone-${enfantId}`);
+      if (!zoneArrivee || !zoneDepart) return;
+
+      const ancienChkArrivee = document.getElementById(`acc-chk-ecart-arrivee-${enfantId}`);
+      const ancienSensArrivee = ancienChkArrivee?.dataset.sens;
+      const ancienCocheArrivee = ancienChkArrivee?.checked;
+
+      const ancienChkDepart = document.getElementById(`acc-chk-ecart-depart-${enfantId}`);
+      const ancienSensDepart = ancienChkDepart?.dataset.sens;
+      const ancienCocheDepart = ancienChkDepart?.checked;
+
+      zoneArrivee.innerHTML = '';
+      zoneArrivee.style.display = 'none';
+      zoneDepart.innerHTML = '';
+      zoneDepart.style.display = 'none';
+
+      if (prevu && prevu.arrivee && arrivee && arrivee !== prevu.arrivee) {
+        const sens = arrivee < prevu.arrivee ? 'avant' : 'apres';
+        const cocheParDefaut = sens === 'avant';
+        const coche = (ancienSensArrivee === sens) ? ancienCocheArrivee : cocheParDefaut;
+        if (sens === 'avant') {
+          zoneArrivee.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="acc-chk-ecart-arrivee-${enfantId}" data-sens="avant" ${coche ? 'checked' : ''}>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée avant l'horaire prévu (${prevu.arrivee}) — Compter les heures ?</span>
+            </label>`;
+        } else {
+          zoneArrivee.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="acc-chk-ecart-arrivee-${enfantId}" data-sens="apres" ${coche ? 'checked' : ''}>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Arrivée après l'horaire prévu (${prevu.arrivee}) — Décompter les heures ?</span>
+            </label>`;
+        }
+        zoneArrivee.style.display = 'block';
+      }
+
+      if (prevu && prevu.depart && depart && depart !== prevu.depart) {
+        const sens = depart > prevu.depart ? 'apres' : 'avant';
+        const cocheParDefaut = sens === 'apres';
+        const coche = (ancienSensDepart === sens) ? ancienCocheDepart : cocheParDefaut;
+        if (sens === 'apres') {
+          zoneDepart.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="acc-chk-ecart-depart-${enfantId}" data-sens="apres" ${coche ? 'checked' : ''}>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ après l'horaire prévu (${prevu.depart}) — Compter les heures ?</span>
+            </label>`;
+        } else {
+          zoneDepart.innerHTML = `
+            <label class="checkbox-group">
+              <input type="checkbox" id="acc-chk-ecart-depart-${enfantId}" data-sens="avant" ${coche ? 'checked' : ''}>
+              <span style="font-size:0.82rem; font-weight:600; color:#fff;">⏱️ Départ avant l'horaire prévu (${prevu.depart}) — Décompter les heures ?</span>
+            </label>`;
+        }
+        zoneDepart.style.display = 'block';
+      }
+    }
+
+    function validerJourneeAccueil(enfantId) {
+      const todayIso = getTodayIso();
+      const arriveeSaisie = getTimeSelectValue(`acc-arrivee-${enfantId}`);
+      const departSaisi = getTimeSelectValue(`acc-depart-${enfantId}`);
+      if (!arriveeSaisie || !departSaisi) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
+
+      const prevu = (enfants[enfantId].planningPrevu || {})[todayIso] || null;
+
+      let arrivee = arriveeSaisie;
+      if (prevu && prevu.arrivee && arriveeSaisie !== prevu.arrivee) {
+        const chk = document.getElementById(`acc-chk-ecart-arrivee-${enfantId}`);
+        const appliquerEcart = chk ? chk.checked : (arriveeSaisie < prevu.arrivee);
+        arrivee = appliquerEcart ? arriveeSaisie : prevu.arrivee;
+      }
+
+      let depart = departSaisi;
+      if (prevu && prevu.depart && departSaisi !== prevu.depart) {
+        const chk = document.getElementById(`acc-chk-ecart-depart-${enfantId}`);
+        const appliquerEcart = chk ? chk.checked : (departSaisi > prevu.depart);
+        depart = appliquerEcart ? departSaisi : prevu.depart;
+      }
 
       const repas = {
         petitDej: document.getElementById(`acc-repas-petitdej-${enfantId}`).value,
