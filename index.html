@@ -335,9 +335,11 @@
   <!-- TAB 0 : PAGE D'ACCUEIL DU JOUR -->
   <div id="accueil" class="tab-content main-content active">
     <div class="card no-print" style="text-align:center;">
-      <div style="display:flex; align-items:center; justify-content:center; gap:2.5rem;">
-        <div id="accueil-date" style="font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
-        <button id="ha-mode-enfant-btn" class="ha-toggle-btn" onclick="toggleModeEnfant()" title="Mode enfant (Home Assistant)">
+      <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="changerJourAccueil(-1)" title="Jour précédent" style="padding:0.4rem 0.65rem;">◀</button>
+        <div id="accueil-date" onclick="allerAccueilAujourdHui()" title="Revenir à aujourd'hui" style="cursor:pointer; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:1rem; color:var(--text-muted); text-transform:capitalize;"></div>
+        <button class="btn btn-secondary btn-sm" onclick="changerJourAccueil(1)" title="Jour suivant" style="padding:0.4rem 0.65rem;">▶</button>
+        <button id="ha-mode-enfant-btn" class="ha-toggle-btn" onclick="toggleModeEnfant()" title="Mode enfant (Home Assistant)" style="margin-left:0.75rem;">
           <span id="ha-mode-enfant-dot" class="ha-toggle-dot"></span>
           <span class="ha-toggle-label">Mode enfant</span>
         </button>
@@ -2715,9 +2717,59 @@
 
     /* --- PAGE D'ACCUEIL DU JOUR --- */
 
+    let accueilDateOffset = 0; // 0 = aujourd'hui, +1 = demain, -1 = hier, etc.
+
     function getTodayIso() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getAccueilDateIso() {
+      const d = new Date();
+      d.setDate(d.getDate() + accueilDateOffset);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function libelleRelatifJourAccueil(offset) {
+      return { '-2': 'Avant-hier', '-1': 'Hier', '0': "Aujourd'hui", '1': 'Demain', '2': 'Après-demain' }[String(offset)] || null;
+    }
+
+    function changerJourAccueil(delta) {
+      accueilDateOffset += delta;
+      rendreAccueil();
+    }
+
+    function allerAccueilAujourdHui() {
+      if (accueilDateOffset === 0) return;
+      accueilDateOffset = 0;
+      rendreAccueil();
+    }
+
+    /* Swipe tactile sur la page d'accueil : gauche = jour suivant, droite = jour précédent */
+    let accueilSwipeStartX = 0, accueilSwipeStartY = 0;
+    const ACCUEIL_SWIPE_SEUIL_X = 50; // distance horizontale minimale (px)
+    const ACCUEIL_SWIPE_TOLERANCE_Y = 60; // tolérance verticale pour ignorer un scroll
+
+    function accueilSwipeDebut(e) {
+      if (!e.touches || e.touches.length !== 1) return;
+      accueilSwipeStartX = e.touches[0].clientX;
+      accueilSwipeStartY = e.touches[0].clientY;
+    }
+
+    function accueilSwipeFin(e) {
+      if (!e.changedTouches || e.changedTouches.length !== 1) return;
+      const deltaX = e.changedTouches[0].clientX - accueilSwipeStartX;
+      const deltaY = e.changedTouches[0].clientY - accueilSwipeStartY;
+      if (Math.abs(deltaX) > ACCUEIL_SWIPE_SEUIL_X && Math.abs(deltaY) < ACCUEIL_SWIPE_TOLERANCE_Y) {
+        changerJourAccueil(deltaX < 0 ? 1 : -1);
+      }
+    }
+
+    function initSwipeAccueil() {
+      const zone = document.getElementById('accueil');
+      if (!zone) return;
+      zone.addEventListener('touchstart', accueilSwipeDebut, { passive: true });
+      zone.addEventListener('touchend', accueilSwipeFin, { passive: true });
     }
 
     function getIdxJourSemaine(dateObj) {
@@ -2731,8 +2783,13 @@
       const heureZone = document.getElementById('accueil-heure');
       if (!dateZone || !heureZone) return;
       const now = new Date();
-      dateZone.innerText = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       heureZone.innerText = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+      const dJour = new Date();
+      dJour.setDate(dJour.getDate() + accueilDateOffset);
+      const libelleComplet = dJour.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const relatif = libelleRelatifJourAccueil(accueilDateOffset);
+      dateZone.innerHTML = relatif ? `${relatif} <span style="font-weight:500; opacity:0.7;">· ${libelleComplet}</span>` : libelleComplet;
     }
 
     function optionsRepasHtml(selectId, valeurActuelle) {
@@ -2752,7 +2809,7 @@
       const container = document.getElementById('accueil-enfants-list');
       if (!container) return;
 
-      const todayIso = getTodayIso();
+      const dateAffichee = getAccueilDateIso();
       const keys = Object.keys(enfants);
 
       if (keys.length === 0) {
@@ -2760,16 +2817,18 @@
         return;
       }
 
+      const libelleJourBadge = { '-2': 'avant-hier', '-1': 'hier', '0': "aujourd'hui", '1': 'demain', '2': 'après-demain' }[String(accueilDateOffset)] || 'ce jour-là';
+
       container.innerHTML = keys.map(id => {
         const enf = enfants[id];
         const c = enf.contrat || {};
         const prenom = c.prenomEnfant || c.prenom || 'Enfant';
         const nom = c.nomEnfant || c.nom || '';
 
-        const planningJour = (enf.planningPrevu || {})[todayIso] || null;
+        const planningJour = (enf.planningPrevu || {})[dateAffichee] || null;
         const estPrevu = !!(planningJour && planningJour.arrivee && planningJour.depart);
 
-        const presenceExistante = (enf.presences || []).find(p => p.date === todayIso);
+        const presenceExistante = (enf.presences || []).find(p => p.date === dateAffichee);
         const dejaValide = !!presenceExistante;
         const repasValide = (presenceExistante && typeof presenceExistante.repas === 'object') ? presenceExistante.repas : null;
         const repasPrevu = (planningJour && typeof planningJour.repas === 'object') ? planningJour.repas : {};
@@ -2779,7 +2838,7 @@
         const departDefaut = presenceExistante?.depart || planningJour?.depart || '17:30';
 
         const checkHtml = dejaValide ? `<span class="cal-day-check inline-check" title="Journée déjà validée">✓</span>` : '';
-        const nonPrevuBadge = estPrevu ? '' : `<span class="badge badge-warning">Non prévu aujourd'hui</span>`;
+        const nonPrevuBadge = estPrevu ? '' : `<span class="badge badge-warning">Non prévu ${libelleJourBadge}</span>`;
 
         return `
           <div class="card no-print accueil-enfant-card ${estPrevu ? '' : 'non-prevu'}">
@@ -2825,8 +2884,8 @@
     }
 
     function verifierEcartsHorairesAccueil(enfantId) {
-      const todayIso = getTodayIso();
-      const prevu = (enfants[enfantId].planningPrevu || {})[todayIso] || null;
+      const dateAffichee = getAccueilDateIso();
+      const prevu = (enfants[enfantId].planningPrevu || {})[dateAffichee] || null;
       const arrivee = getTimeSelectValue(`acc-arrivee-${enfantId}`);
       const depart = getTimeSelectValue(`acc-depart-${enfantId}`);
 
@@ -2889,12 +2948,12 @@
     }
 
     function validerJourneeAccueil(enfantId) {
-      const todayIso = getTodayIso();
+      const dateAffichee = getAccueilDateIso();
       const arriveeSaisie = getTimeSelectValue(`acc-arrivee-${enfantId}`);
       const departSaisi = getTimeSelectValue(`acc-depart-${enfantId}`);
       if (!arriveeSaisie || !departSaisi) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
 
-      const prevu = (enfants[enfantId].planningPrevu || {})[todayIso] || null;
+      const prevu = (enfants[enfantId].planningPrevu || {})[dateAffichee] || null;
 
       let arrivee = arriveeSaisie;
       if (prevu && prevu.arrivee && arriveeSaisie !== prevu.arrivee) {
@@ -2933,8 +2992,8 @@
         } else { hComp = duree - maxJourNorm; }
       }
 
-      enfants[enfantId].presences = (enfants[enfantId].presences || []).filter(p => p.date !== todayIso);
-      enfants[enfantId].presences.push({ id: Date.now(), date: todayIso, arrivee, depart, duree, hNorm, hComp, hSup, repas });
+      enfants[enfantId].presences = (enfants[enfantId].presences || []).filter(p => p.date !== dateAffichee);
+      enfants[enfantId].presences.push({ id: Date.now(), date: dateAffichee, arrivee, depart, duree, hNorm, hComp, hSup, repas });
 
       sauvegarderGlobal();
       rendreAccueil();
@@ -3035,6 +3094,7 @@
       }
 
       if(tabId === 'accueil') {
+        accueilDateOffset = 0;
         rendreAccueil();
       }
       if(tabId === 'planning') { 
@@ -4091,6 +4151,7 @@
       localStorage.setItem('assmat_enfants_db', JSON.stringify(enfants));
       chargerFormulaireGitHub();
       rafraichirTouteLInterface();
+      initSwipeAccueil();
       const sliderContainer = document.querySelector('.slider-container');
       if (sliderContainer) sliderContainer.style.display = 'none';
       setInterval(majHorlogeAccueil, 30000);
