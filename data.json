@@ -463,7 +463,250 @@
           }
         }
       },
-      "planningPrevu": {},
+      "planningPrevu": {
+        "2026-09-01": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-02": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-03": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-04": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "13:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-07": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-08": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-09": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-10": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-11": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "13:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-14": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-15": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-16": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-17": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-18": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "13:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-21": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-22": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-23": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-24": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-25": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "13:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-28": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-29": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        },
+        "2026-09-30": {
+          "status": "prevu",
+          "arrivee": "07:15",
+          "depart": "18:00",
+          "repas": {
+            "petitDej": "lm",
+            "dejeuner": "lm",
+            "gouter": "lm",
+            "diner": "non"
+          }
+        }
+      },
       "presences": [],
       "documents": []
     }
