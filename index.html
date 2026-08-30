@@ -2718,6 +2718,7 @@
     /* --- PAGE D'ACCUEIL DU JOUR --- */
 
     let accueilDateOffset = 0; // 0 = aujourd'hui, +1 = demain, -1 = hier, etc.
+    let accueilEditionNonPrevu = {}; // enfantId -> true pendant l'édition d'un accueil exceptionnel non prévu
 
     function getTodayIso() {
       const d = new Date();
@@ -2731,17 +2732,19 @@
     }
 
     function libelleRelatifJourAccueil(offset) {
-      return { '-2': 'Avant-hier', '-1': 'Hier', '0': "Aujourd'hui", '1': 'Demain', '2': 'Après-demain' }[String(offset)] || null;
+      return { '-2': 'Avant-hier', '-1': 'Hier', '1': 'Demain', '2': 'Après-demain' }[String(offset)] || null;
     }
 
     function changerJourAccueil(delta) {
       accueilDateOffset += delta;
+      accueilEditionNonPrevu = {};
       rendreAccueil();
     }
 
     function allerAccueilAujourdHui() {
       if (accueilDateOffset === 0) return;
       accueilDateOffset = 0;
+      accueilEditionNonPrevu = {};
       rendreAccueil();
     }
 
@@ -2787,7 +2790,7 @@
 
       const dJour = new Date();
       dJour.setDate(dJour.getDate() + accueilDateOffset);
-      const libelleComplet = dJour.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const libelleComplet = dJour.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
       const relatif = libelleRelatifJourAccueil(accueilDateOffset);
       dateZone.innerHTML = relatif ? `${relatif} <span style="font-weight:500; opacity:0.7;">· ${libelleComplet}</span>` : libelleComplet;
     }
@@ -2827,6 +2830,7 @@
 
         const planningJour = (enf.planningPrevu || {})[dateAffichee] || null;
         const estPrevu = !!(planningJour && planningJour.arrivee && planningJour.depart);
+        const enEditionNonPrevu = !estPrevu && !!accueilEditionNonPrevu[id];
 
         const presenceExistante = (enf.presences || []).find(p => p.date === dateAffichee);
         const dejaValide = !!presenceExistante;
@@ -2840,11 +2844,72 @@
         const checkHtml = dejaValide ? `<span class="cal-day-check inline-check" title="Journée déjà validée">✓</span>` : '';
         const nonPrevuBadge = estPrevu ? '' : `<span class="badge badge-warning">Non prévu ${libelleJourBadge}</span>`;
 
+        // Cas 1 : enfant non prévu et pas en cours d'édition -> pas d'horaires, juste le crayon pour ajouter un accueil exceptionnel.
+        if (!estPrevu && !enEditionNonPrevu) {
+          return `
+            <div class="card no-print accueil-enfant-card non-prevu">
+              <h2 style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+                <span>👶 ${prenom} ${nom}</span>
+                ${nonPrevuBadge}
+              </h2>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-top:0.4rem;">
+                <span style="font-size:0.82rem; color:var(--text-muted);">Aucun horaire prévu ${libelleJourBadge}.</span>
+                <button class="btn btn-secondary btn-sm" onclick="toggleEditionNonPrevuAccueil('${id}')" title="Ajouter un accueil exceptionnel ce jour-là">✏️ Modifier</button>
+              </div>
+            </div>
+          `;
+        }
+
+        // Cas 2 : enfant non prévu mais en cours d'édition -> formulaire pour ajouter un horaire exceptionnel, répercuté sur le calendrier.
+        if (!estPrevu && enEditionNonPrevu) {
+          return `
+            <div class="card no-print accueil-enfant-card non-prevu">
+              <h2 style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+                <span>👶 ${prenom} ${nom}</span>
+                ${nonPrevuBadge}
+              </h2>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.6rem;">Ajoutez un horaire exceptionnel : il sera ajouté au calendrier de l'enfant pour ce jour.</p>
+              <div class="grid-2" style="margin-bottom: 0.6rem;">
+                <div class="form-group">
+                  <label>Arrivée prévue</label>
+                  ${timeSelectHtml(`acc-np-arrivee-${id}`, '08:30', 8)}
+                </div>
+                <div class="form-group">
+                  <label>Départ prévu</label>
+                  ${timeSelectHtml(`acc-np-depart-${id}`, '17:30', 17)}
+                </div>
+              </div>
+              <div class="grid-2" style="margin-bottom: 0.6rem;">
+                <div class="form-group">
+                  <label>🥐 Petit-déjeuner</label>
+                  ${optionsRepasHtml(`acc-np-repas-petitdej-${id}`, null)}
+                </div>
+                <div class="form-group">
+                  <label>🍽️ Déjeuner</label>
+                  ${optionsRepasHtml(`acc-np-repas-dejeuner-${id}`, null)}
+                </div>
+                <div class="form-group">
+                  <label>🍪 Goûter</label>
+                  ${optionsRepasHtml(`acc-np-repas-gouter-${id}`, null)}
+                </div>
+                <div class="form-group">
+                  <label>🍲 Dîner</label>
+                  ${optionsRepasHtml(`acc-np-repas-diner-${id}`, null)}
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="toggleEditionNonPrevuAccueil('${id}')">Annuler</button>
+                <button class="btn btn-primary btn-sm" style="flex:2;" onclick="enregistrerHoraireNonPrevuAccueil('${id}')">💾 Ajouter au calendrier</button>
+              </div>
+            </div>
+          `;
+        }
+
+        // Cas 3 : enfant prévu -> écran de validation habituel.
         return `
-          <div class="card no-print accueil-enfant-card ${estPrevu ? '' : 'non-prevu'}">
+          <div class="card no-print accueil-enfant-card">
             <h2 style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
               <span>👶 ${prenom} ${nom}${checkHtml}</span>
-              ${nonPrevuBadge}
             </h2>
             <div class="grid-2" style="margin-bottom: 0.6rem;">
               <div class="form-group">
@@ -2881,6 +2946,34 @@
           </div>
         `;
       }).join('');
+    }
+
+    function toggleEditionNonPrevuAccueil(enfantId) {
+      accueilEditionNonPrevu[enfantId] = !accueilEditionNonPrevu[enfantId];
+      rendreAccueil();
+    }
+
+    function enregistrerHoraireNonPrevuAccueil(enfantId) {
+      const dateAffichee = getAccueilDateIso();
+      const arrivee = getTimeSelectValue(`acc-np-arrivee-${enfantId}`);
+      const depart = getTimeSelectValue(`acc-np-depart-${enfantId}`);
+      if (!arrivee || !depart) { alert("Saisissez les horaires d'arrivée et de départ."); return; }
+
+      const repas = {
+        petitDej: document.getElementById(`acc-np-repas-petitdej-${enfantId}`).value,
+        dejeuner: document.getElementById(`acc-np-repas-dejeuner-${enfantId}`).value,
+        gouter: document.getElementById(`acc-np-repas-gouter-${enfantId}`).value,
+        diner: document.getElementById(`acc-np-repas-diner-${enfantId}`).value
+      };
+
+      if (!enfants[enfantId].planningPrevu) enfants[enfantId].planningPrevu = {};
+      enfants[enfantId].planningPrevu[dateAffichee] = { arrivee, depart, repas };
+
+      delete accueilEditionNonPrevu[enfantId];
+      sauvegarderGlobal();
+      rendreAccueil();
+
+      if (enfantId === activeEnfantId && document.getElementById('calendar-grid')) rendreCalendrier();
     }
 
     function verifierEcartsHorairesAccueil(enfantId) {
@@ -3095,6 +3188,7 @@
 
       if(tabId === 'accueil') {
         accueilDateOffset = 0;
+        accueilEditionNonPrevu = {};
         rendreAccueil();
       }
       if(tabId === 'planning') { 
