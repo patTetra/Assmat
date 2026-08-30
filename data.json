@@ -719,7 +719,24 @@
           }
         }
       },
-      "presences": [],
+      "presences": [
+        {
+          "id": 1788113075408,
+          "date": "2026-08-31",
+          "arrivee": "08:30",
+          "depart": "17:30",
+          "duree": 9,
+          "hNorm": 9,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
+        }
+      ],
       "documents": []
     }
   }
