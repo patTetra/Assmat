@@ -369,16 +369,7 @@
         "hMensuel": "",
         "hHebdo": 48.75,
         "jHebdo": "",
-        "semainesAn": "",
-        "annexes": {
-          "notice": false,
-          "sante": false,
-          "autorisations": false,
-          "urgence": false,
-          "planning": false,
-          "remuneration": false,
-          "reglement": false
-        }
+        "semainesAn": ""
       },
       "engagement": {
         "dateSignature": "2026-08-30",
@@ -389,8 +380,8 @@
         "heuresSemaine": "",
         "typeAnnee": "complete",
         "semainesAn": "",
-        "assmatNom": "Gaël Desaegher",
-        "assmatAdresse": "1071 route de Plouegat Guerrand, 29610 Plouigneau",
+        "assmatNom": "",
+        "assmatAdresse": "",
         "valide": false
       },
       "semaineType": {
@@ -499,12 +490,13 @@
         },
         "2026-09-03": {
           "status": "prevu",
-          "arrivee": "07:15",
-          "depart": "18:00",
+          "arrivee": "08:00",
+          "depart": "12:00",
+          "note": "",
           "repas": {
             "petitDej": "lm",
             "dejeuner": "lm",
-            "gouter": "lm",
+            "gouter": "non",
             "diner": "non"
           }
         },
