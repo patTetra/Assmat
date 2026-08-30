@@ -1881,7 +1881,7 @@
           lines.push(`DTSTAMP:${dtstamp}`);
           lines.push(`DTSTART;TZID=Europe/Paris:${dtStart}`);
           lines.push(`DTEND;TZID=Europe/Paris:${dtEnd}`);
-          lines.push(`SUMMARY:${icsEscape('👶 ' + prenom + ' - Garde')}`);
+          lines.push(`SUMMARY:${icsEscape('👶 ' + prenom)}`);
           if (p.note) lines.push(`DESCRIPTION:${icsEscape(p.note)}`);
           lines.push('END:VEVENT');
         });
