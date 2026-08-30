@@ -1312,7 +1312,7 @@
       <br>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
         <button class="btn btn-primary" onclick="sauvegarderConfigGitHub(); sauvegarderConfigHA();">💾 Enregistrer les paramètres & Synchroniser</button>
-        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub()">📥 Forcer le téléchargement</button>
+        <button class="btn btn-secondary btn-sm" onclick="chargerDepuisGitHub(true)">📥 Forcer le téléchargement</button>
         <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem;" onclick="fermerModalConfigGitHub()">Fermer</button>
       </div>
 
@@ -1747,8 +1747,12 @@
       alert("Lien copié ! Collez-le dans Réglages > Calendrier > Comptes > Ajouter un compte > Autre > Ajouter un calendrier abonné.");
     }
 
-    async function chargerDepuisGitHub() {
-      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) { majStatutSync(''); return; }
+    async function chargerDepuisGitHub(manuel = false) {
+      if(!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        majStatutSync('');
+        if (manuel) alert("Impossible de télécharger : renseignez d'abord l'utilisateur GitHub, le nom du dépôt et le token, puis enregistrez les paramètres.");
+        return;
+      }
       majStatutSync('syncing');
       const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.path}`;
       
@@ -1781,8 +1785,22 @@
           }
           if(miseAJour) rafraichirTouteLInterface();
           majStatutSync('online');
-        } else if(res.status === 404) { majStatutSync('online'); } else { majStatutSync('offline'); }
-      } catch (err) { console.error("Erreur chargement GitHub:", err); majStatutSync('offline'); }
+          if (manuel) alert(miseAJour ? "Données téléchargées et mises à jour avec succès." : "Connexion réussie, mais le fichier distant ne contient aucune donnée à importer.");
+        } else if(res.status === 404) {
+          majStatutSync('online');
+          if (manuel) alert(`Aucun fichier "${githubConfig.path}" trouvé dans le dépôt ${githubConfig.user}/${githubConfig.repo}. Vérifiez le nom du fichier et la branche.`);
+        } else if(res.status === 401 || res.status === 403) {
+          majStatutSync('offline');
+          if (manuel) alert("Accès refusé par GitHub : vérifiez que le token est correct et qu'il a bien les droits sur le dépôt.");
+        } else {
+          majStatutSync('offline');
+          if (manuel) alert(`Échec du téléchargement (erreur ${res.status}). Vérifiez votre connexion et les paramètres GitHub.`);
+        }
+      } catch (err) {
+        console.error("Erreur chargement GitHub:", err);
+        majStatutSync('offline');
+        if (manuel) alert("Échec du téléchargement : impossible de contacter GitHub. Vérifiez votre connexion internet.");
+      }
     }
 
     async function pousserVersGitHub() {
