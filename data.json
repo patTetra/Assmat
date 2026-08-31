@@ -202,8 +202,15 @@
         },
         "2026-08-31": {
           "status": "prevu",
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "06:30",
+          "depart": "14:50",
+          "note": "",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "2026-08-26": {
           "status": "prevu",
