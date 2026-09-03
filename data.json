@@ -12,27 +12,32 @@
   "enfants": {
     "enf_1787580821157": {
       "contrat": {
-        "prenomEnfant": "Raphael",
+        "prenomEnfant": "Raphaël",
         "nomEnfant": "",
         "naissance": "",
+        "dateDebut": "",
         "sortiesVoiture": true,
         "moisLisse": true,
+        "typeContrat": "CDI",
+        "jourRepos": "",
+        "numPajemploi": "",
+        "numSecuEmployeur": "",
         "mere": {
           "nom": "",
           "prenom": "",
+          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
-          "adresse": "",
           "email": ""
         },
         "pere": {
           "nom": "",
           "prenom": "",
+          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
-          "adresse": "",
           "email": ""
         },
         "urgence": {
@@ -43,11 +48,10 @@
         "majoration": 0,
         "ie": 0,
         "ir": 0,
-        "hMensuel": 156,
+        "hMensuel": 147,
         "hHebdo": 34,
         "jHebdo": 4,
         "semainesAn": 52,
-        "dateDebut": "",
         "annexes": {
           "notice": false,
           "sante": false,
@@ -186,13 +190,27 @@
         },
         "2026-08-28": {
           "status": "prevu",
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "06:30",
+          "depart": "14:50",
+          "note": "",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "2026-08-31": {
           "status": "prevu",
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "06:30",
+          "depart": "14:50",
+          "note": "",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "2026-08-26": {
           "status": "prevu",
@@ -204,11 +222,6 @@
           "status": "prevu",
           "arrivee": "08:45",
           "depart": "17:05"
-        },
-        "2026-09-03": {
-          "status": "prevu",
-          "arrivee": "08:00",
-          "depart": "17:00"
         },
         "2026-09-04": {
           "status": "prevu",
@@ -511,8 +524,9 @@
         },
         "2026-09-04": {
           "status": "prevu",
-          "arrivee": "07:15",
-          "depart": "13:00",
+          "arrivee": "09:00",
+          "depart": "16:00",
+          "note": "",
           "repas": {
             "petitDej": "lm",
             "dejeuner": "lm",
@@ -715,362 +729,6 @@
             "petitDej": "lm",
             "dejeuner": "lm",
             "gouter": "lm",
-            "diner": "non"
-          }
-        }
-      },
-      "presences": [
-        {
-          "id": 1788429454893,
-          "date": "2026-09-03",
-          "arrivee": "08:00",
-          "depart": "12:00",
-          "duree": 4,
-          "hNorm": 4,
-          "hComp": 0,
-          "hSup": 0,
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
-            "diner": "non"
-          }
-        },
-        {
-          "id": 1788423438385,
-          "date": "2026-09-02",
-          "arrivee": "10:30",
-          "depart": "13:00",
-          "duree": 2.5,
-          "hNorm": 2.5,
-          "hComp": 0,
-          "hSup": 0,
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "lm",
-            "gouter": "non",
-            "diner": "non"
-          }
-        }
-      ],
-      "documents": []
-    },
-    "enf_1788423496652": {
-      "contrat": {
-        "prenomEnfant": "Lou",
-        "nomEnfant": "Balpe",
-        "naissance": "2025-05-04",
-        "dateDebut": "",
-        "sortiesVoiture": true,
-        "moisLisse": true,
-        "typeContrat": "CDI",
-        "jourRepos": "Dimanche",
-        "numPajemploi": "00000000923014",
-        "numSecuEmployeur": "28007360880226",
-        "mere": {
-          "nom": "Balpe",
-          "prenom": "Jérôme ",
-          "adresse": "18 Hent Royal 29610 plouigneau ",
-          "port": "06 78 89 38 11",
-          "maison": "",
-          "bureau": "",
-          "email": ""
-        },
-        "pere": {
-          "nom": "Chatellier",
-          "prenom": "Maryne ",
-          "adresse": "18 Hent Royal 29610 PLOUIGNEAU",
-          "port": "06 47 27 48 84",
-          "maison": "",
-          "bureau": "",
-          "email": ""
-        },
-        "urgence": {
-          "nom": "",
-          "tel": ""
-        },
-        "tarifNet": 3.8,
-        "majoration": 25,
-        "ie": 3.92,
-        "ir": 0,
-        "hMensuel": 132,
-        "hHebdo": 30.5,
-        "jHebdo": 3,
-        "semainesAn": 52,
-        "annexes": {
-          "planning": false
-        }
-      },
-      "engagement": {
-        "dateSignature": "2026-09-03",
-        "dateEffet": "",
-        "adaptationDebut": "",
-        "adaptationFin": "",
-        "tarifBrut": "",
-        "heuresSemaine": "",
-        "typeAnnee": "complete",
-        "semainesAn": "",
-        "assmatNom": "",
-        "assmatAdresse": "",
-        "valide": false
-      },
-      "semaineType": {
-        "0": {
-          "actif": true,
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "1": {
-          "actif": true,
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2": {
-          "actif": false,
-          "arrivee": "08:30",
-          "depart": "17:30",
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
-            "diner": "non"
-          }
-        },
-        "3": {
-          "actif": true,
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "4": {
-          "actif": false,
-          "arrivee": "08:00",
-          "depart": "17:00",
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
-            "diner": "non"
-          }
-        },
-        "5": {
-          "actif": false,
-          "arrivee": "08:30",
-          "depart": "17:30",
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
-            "diner": "non"
-          }
-        },
-        "6": {
-          "actif": false,
-          "arrivee": "08:30",
-          "depart": "17:30",
-          "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
-            "diner": "non"
-          }
-        }
-      },
-      "planningPrevu": {
-        "2026-08-31": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-04": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-01": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-08": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-10": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-07": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-15": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-18": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-14": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-24": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-25": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-21": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-29": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-10-01": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
-            "diner": "non"
-          }
-        },
-        "2026-09-28": {
-          "status": "prevu",
-          "arrivee": "08:10",
-          "depart": "18:20",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "parent",
             "diner": "non"
           }
         }
