@@ -12,32 +12,27 @@
   "enfants": {
     "enf_1787580821157": {
       "contrat": {
-        "prenomEnfant": "Raphaël",
+        "prenomEnfant": "Raphael",
         "nomEnfant": "",
         "naissance": "",
-        "dateDebut": "",
         "sortiesVoiture": true,
         "moisLisse": true,
-        "typeContrat": "CDI",
-        "jourRepos": "",
-        "numPajemploi": "",
-        "numSecuEmployeur": "",
         "mere": {
           "nom": "",
           "prenom": "",
-          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
+          "adresse": "",
           "email": ""
         },
         "pere": {
           "nom": "",
           "prenom": "",
-          "adresse": "",
           "port": "",
           "maison": "",
           "bureau": "",
+          "adresse": "",
           "email": ""
         },
         "urgence": {
@@ -48,10 +43,11 @@
         "majoration": 0,
         "ie": 0,
         "ir": 0,
-        "hMensuel": 147,
+        "hMensuel": 156,
         "hHebdo": 34,
         "jHebdo": 4,
         "semainesAn": 52,
+        "dateDebut": "",
         "annexes": {
           "notice": false,
           "sante": false,
@@ -190,27 +186,13 @@
         },
         "2026-08-28": {
           "status": "prevu",
-          "arrivee": "06:30",
-          "depart": "14:50",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "non",
-            "diner": "non"
-          }
+          "arrivee": "08:00",
+          "depart": "17:00"
         },
         "2026-08-31": {
           "status": "prevu",
-          "arrivee": "06:30",
-          "depart": "14:50",
-          "note": "",
-          "repas": {
-            "petitDej": "parent",
-            "dejeuner": "parent",
-            "gouter": "non",
-            "diner": "non"
-          }
+          "arrivee": "08:00",
+          "depart": "17:00"
         },
         "2026-08-26": {
           "status": "prevu",
@@ -222,6 +204,11 @@
           "status": "prevu",
           "arrivee": "08:45",
           "depart": "17:05"
+        },
+        "2026-09-03": {
+          "status": "prevu",
+          "arrivee": "08:00",
+          "depart": "17:00"
         },
         "2026-09-04": {
           "status": "prevu",
@@ -732,7 +719,24 @@
           }
         }
       },
-      "presences": [],
+      "presences": [
+        {
+          "id": 1788423421744,
+          "date": "2026-09-02",
+          "arrivee": "10:30",
+          "depart": "13:00",
+          "duree": 2.5,
+          "hNorm": 2.5,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "lm",
+            "gouter": "non",
+            "diner": "non"
+          }
+        }
+      ],
       "documents": []
     }
   }
