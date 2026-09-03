@@ -774,7 +774,7 @@
         "ie": "",
         "ir": "",
         "hMensuel": "",
-        "hHebdo": 39.5,
+        "hHebdo": 30.5,
         "jHebdo": "",
         "semainesAn": "",
         "annexes": {
@@ -840,7 +840,7 @@
           }
         },
         "4": {
-          "actif": true,
+          "actif": false,
           "arrivee": "08:00",
           "depart": "17:00",
           "repas": {
