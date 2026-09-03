@@ -992,9 +992,9 @@
           "depart": "18:20",
           "note": "",
           "repas": {
-            "petitDej": "non",
-            "dejeuner": "non",
-            "gouter": "non",
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "parent",
             "diner": "non"
           }
         },
