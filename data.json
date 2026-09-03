@@ -901,6 +901,18 @@
             "gouter": "parent",
             "diner": "non"
           }
+        },
+        "2026-09-01": {
+          "status": "prevu",
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "note": "",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "parent",
+            "diner": "non"
+          }
         }
       },
       "presences": [],
