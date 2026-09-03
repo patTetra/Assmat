@@ -985,6 +985,42 @@
             "gouter": "parent",
             "diner": "non"
           }
+        },
+        "2026-09-24": {
+          "status": "prevu",
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-25": {
+          "status": "prevu",
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        "2026-09-21": {
+          "status": "prevu",
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "note": "",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         }
       },
       "presences": [],
