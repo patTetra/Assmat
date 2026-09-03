@@ -776,7 +776,10 @@
         "hMensuel": "",
         "hHebdo": "",
         "jHebdo": "",
-        "semainesAn": ""
+        "semainesAn": "",
+        "annexes": {
+          "planning": false
+        }
       },
       "engagement": {
         "dateSignature": "2026-09-03",
