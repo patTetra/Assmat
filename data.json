@@ -774,7 +774,7 @@
         "ie": "",
         "ir": "",
         "hMensuel": "",
-        "hHebdo": "",
+        "hHebdo": 39.5,
         "jHebdo": "",
         "semainesAn": "",
         "annexes": {
@@ -797,38 +797,80 @@
       "semaineType": {
         "0": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "parent",
+            "diner": "non"
+          }
         },
         "1": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "parent",
+            "diner": "non"
+          }
         },
         "2": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "3": {
           "actif": true,
-          "arrivee": "08:00",
-          "depart": "17:00"
+          "arrivee": "08:10",
+          "depart": "18:20",
+          "repas": {
+            "petitDej": "parent",
+            "dejeuner": "parent",
+            "gouter": "parent",
+            "diner": "non"
+          }
         },
         "4": {
           "actif": true,
           "arrivee": "08:00",
-          "depart": "17:00"
+          "depart": "17:00",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "5": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         },
         "6": {
           "actif": false,
-          "arrivee": "",
-          "depart": ""
+          "arrivee": "08:30",
+          "depart": "17:30",
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
         }
       },
       "planningPrevu": {},
