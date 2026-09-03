@@ -721,6 +721,22 @@
       },
       "presences": [
         {
+          "id": 1788429454893,
+          "date": "2026-09-03",
+          "arrivee": "08:00",
+          "depart": "12:00",
+          "duree": 4,
+          "hNorm": 4,
+          "hComp": 0,
+          "hSup": 0,
+          "repas": {
+            "petitDej": "non",
+            "dejeuner": "non",
+            "gouter": "non",
+            "diner": "non"
+          }
+        },
+        {
           "id": 1788423438385,
           "date": "2026-09-02",
           "arrivee": "10:30",
