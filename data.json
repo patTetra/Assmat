@@ -742,25 +742,29 @@
     "enf_1788423496652": {
       "contrat": {
         "prenomEnfant": "Lou",
-        "nomEnfant": "",
-        "naissance": "",
+        "nomEnfant": "Balpe",
+        "naissance": "2025-05-04",
         "dateDebut": "",
         "sortiesVoiture": true,
         "moisLisse": true,
+        "typeContrat": "CDI",
+        "jourRepos": "Dimanche",
+        "numPajemploi": "00000000923014",
+        "numSecuEmployeur": "28007360880226",
         "mere": {
-          "nom": "",
-          "prenom": "",
-          "adresse": "",
-          "port": "",
+          "nom": "Balpe",
+          "prenom": "Jérôme ",
+          "adresse": "18 Hent Royal 29610 plouigneau ",
+          "port": "06 78 89 38 11",
           "maison": "",
           "bureau": "",
           "email": ""
         },
         "pere": {
-          "nom": "",
-          "prenom": "",
-          "adresse": "",
-          "port": "",
+          "nom": "Chatellier",
+          "prenom": "Maryne ",
+          "adresse": "18 Hent Royal 29610 PLOUIGNEAU",
+          "port": "06 47 27 48 84",
           "maison": "",
           "bureau": "",
           "email": ""
@@ -769,14 +773,14 @@
           "nom": "",
           "tel": ""
         },
-        "tarifNet": "",
-        "majoration": "",
-        "ie": "",
-        "ir": "",
-        "hMensuel": "",
+        "tarifNet": 3.8,
+        "majoration": 25,
+        "ie": 3.92,
+        "ir": 0,
+        "hMensuel": 132,
         "hHebdo": 30.5,
-        "jHebdo": "",
-        "semainesAn": "",
+        "jHebdo": 3,
+        "semainesAn": 52,
         "annexes": {
           "planning": false
         }
